@@ -1,0 +1,22 @@
+﻿@page "/day/{inputDay}"
+@inject DayOfCodeDataAccess dayData
+
+@if (day != null) {
+    <DayView day="@day" />
+}
+@code {
+    [Parameter]
+    public string inputDay { get; set; }
+    private DayOfCodeModel? day { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshData();
+    }
+
+    private async Task RefreshData()
+    {
+        day = await dayData.GetDay(int.Parse(inputDay));
+    }
+
+}

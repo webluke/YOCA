@@ -73,6 +73,8 @@
     <Build Include="dbo\Stored Procedures\DayOfCode\spDayOfCode_GetByPageNumber.sql" />
     <Build Include="dbo\Stored Procedures\DayOfCode\spDayOfCode_GetLatestByLimit.sql" />
     <Build Include="dbo\Stored Procedures\DayOfCode\spDayOfCode_GetAll.sql" />
+    <Build Include="dbo\Tables\Projects.sql" />
+    <Build Include="dbo\Tables\Tasks.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />

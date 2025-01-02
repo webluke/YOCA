@@ -1,0 +1,12 @@
+﻿CREATE TABLE [dbo].[Projects]
+(
+	[Id] NCHAR(10) NOT NULL PRIMARY KEY UNIQUE, 
+    [Order] INT NOT NULL DEFAULT 0, 
+    [StarDate] DATE NOT NULL, 
+    [EndDate] DATE NOT NULL, 
+    [Title] NVARCHAR(50) NULL, 
+    [Description] NVARCHAR(MAX) NULL, 
+    [TimeCreated] DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(), 
+    [TimeUpdated] DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    [ViewCount] INT NOT NULL DEFAULT 0
+)

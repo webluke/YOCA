@@ -1,0 +1,27 @@
+﻿
+@if (day != null)
+{
+    <MudCard>
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h5">Day @day.Day - @day.Date.ToString("MMMM d, yyyy")</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+            <p><b>Goal:</b> @day.Goal</p>
+            <p><b>Result:</b> @day.Result</p>
+            @((MarkupString)Markdown.ParseHtmlString(day.Summary).ToString())
+        </MudCardContent>
+    </MudCard>
+}
+
+@code {
+    [Parameter]
+    public DayOfCodeModel day { get; set; }
+
+    protected override void OnInitialized()
+    {
+
+    }
+
+}
