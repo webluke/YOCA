@@ -2,7 +2,8 @@
 (
 	[Id] NCHAR(10) NOT NULL PRIMARY KEY UNIQUE, 
     [Order] INT NOT NULL DEFAULT 0, 
-    [StarDate] DATE NOT NULL, 
+    [Status] INT NOT NULL DEFAULT 0,
+    [StartDate] DATE NOT NULL, 
     [EndDate] DATE NOT NULL, 
     [Title] NVARCHAR(50) NULL, 
     [Description] NVARCHAR(MAX) NULL, 

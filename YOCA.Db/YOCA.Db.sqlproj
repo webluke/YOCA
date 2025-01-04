@@ -60,6 +60,8 @@
     <Folder Include="dbo\Tables" />
     <Folder Include="dbo\Stored Procedures" />
     <Folder Include="dbo\Stored Procedures\DayOfCode" />
+    <Folder Include="dbo\Stored Procedures\Projects" />
+    <Folder Include="dbo\Stored Procedures\ProjectTasks" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\DayOfCode.sql" />
@@ -74,12 +76,26 @@
     <Build Include="dbo\Stored Procedures\DayOfCode\spDayOfCode_GetLatestByLimit.sql" />
     <Build Include="dbo\Stored Procedures\DayOfCode\spDayOfCode_GetAll.sql" />
     <Build Include="dbo\Tables\Projects.sql" />
-    <Build Include="dbo\Tables\Tasks.sql" />
+    <Build Include="dbo\Stored Procedures\Projects\spProjects_GetById.sql" />
+    <Build Include="dbo\Stored Procedures\Projects\spProjects_GetAll.sql" />
+    <Build Include="dbo\Stored Procedures\Projects\spProjects_Insert.sql" />
+    <Build Include="dbo\Stored Procedures\Projects\spProjects_Delete.sql" />
+    <Build Include="dbo\Stored Procedures\Projects\spProjects_Update.sql" />
+    <Build Include="dbo\Tables\ProjectTasks.sql" />
+    <Build Include="dbo\Stored Procedures\ProjectTasks\spProjectTasks_GetAll.sql" />
+    <Build Include="dbo\Stored Procedures\ProjectTasks\spProjectTasks_GetAllByProjectId.sql" />
+    <Build Include="dbo\Stored Procedures\ProjectTasks\spProjectTasks_Delete.sql" />
+    <Build Include="dbo\Stored Procedures\ProjectTasks\spProjectTasks_Insert.sql" />
+    <Build Include="dbo\Stored Procedures\ProjectTasks\spProjectTasks_Update.sql" />
+    <Build Include="dbo\Stored Procedures\ProjectTasks\spProjectTasks_GetById.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="YOCA.Db.publish.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="YOCA.Db.refactorlog" />
   </ItemGroup>
 </Project>

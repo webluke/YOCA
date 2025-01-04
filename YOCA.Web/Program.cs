@@ -41,6 +41,8 @@ builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSe
 
 builder.Services.AddSingleton<ISqlDataAccess, SqlDataAccess>();
 builder.Services.AddSingleton<DayOfCodeDataAccess>();
+builder.Services.AddSingleton<ProjectDataAccess>();
+builder.Services.AddSingleton<ProjectTaskDataAccess>();
 
 builder.Services.AddMarkdown();
 

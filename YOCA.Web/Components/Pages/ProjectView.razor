@@ -1,0 +1,60 @@
+﻿@if (p != null)
+{
+    <MudCard>
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h5">@p.Title
+                @switch (p.Status)
+                {
+                    case 0:
+                        <MudChip T="string" Color="Color.Default" Label="true">Not Started</MudChip>
+                        break;
+                    case 1:
+                        <MudChip T="string" Color="Color.Warning" Label="true">Under Review</MudChip>
+                        break;
+                    case 2:
+                        <MudChip T="string" Color="Color.Info" Label="true">In Progress</MudChip>
+                        break;
+                    case 3:
+                        <MudChip T="string" Color="Color.Success" Label="true">Completed</MudChip>
+                        break;
+                    case -1:
+                        <MudChip T="string" Color="Color.Error" Label="true">Canceled</MudChip>
+                        break;
+                }
+                </MudText>
+                <MudText Typo="Typo.h6">Start: @p.StartDate - End: @p.EndDate</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+            @((MarkupString)Markdown.ParseHtmlString(p.Description).ToString())
+            @if (p.Tasks.Count > 0)
+            {
+            <MudTimeline>
+                @foreach (var task in p.Tasks)
+                {
+                <MudTimelineItem TimelineAlign="TimelineAlign.End">
+                    <ItemOpposite>
+                        <MudText>@task.Title</MudText>
+                    </ItemOpposite>
+                    <ItemContent>
+                        <MudText>@task.Description</MudText>
+                    </ItemContent>
+                </MudTimelineItem>
+                }
+            </MudTimeline>
+            }
+        </MudCardContent>
+    </MudCard>
+}
+
+@code {
+    [Parameter]
+    public ProjectModel p { get; set; }
+
+    protected override void OnInitialized()
+    {
+
+    }
+
+}

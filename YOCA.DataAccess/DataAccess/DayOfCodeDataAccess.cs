@@ -12,9 +12,9 @@ public class DayOfCodeDataAccess
         DB = db;
     }
 
-    public Task<IEnumerable<DayOfCodeModel>> GetDays()
+    public async Task<IEnumerable<DayOfCodeModel>> GetDays()
     {
-        var results = DB.LoadData<DayOfCodeModel, dynamic>("dbo.spDayOfCode_GetAll", new { });
+        var results = await DB.LoadData<DayOfCodeModel, dynamic>("dbo.spDayOfCode_GetAll", new { });
         return results;
     }
 
@@ -79,10 +79,10 @@ public class DayOfCodeDataAccess
             new { doc });
     }
 
-    public Task UpdatePost(DayOfCodeModel p) =>
+    public async Task UpdatePost(DayOfCodeModel p) => await
         DB.SaveData("dbo.spDayOfCode_Update", p);
 
-    public Task DeletePost(string id) =>
+    public async Task DeletePost(string id) => await
         DB.SaveData("dbo.spDayOfCode_Delete",
             new { Id = id });
 }
