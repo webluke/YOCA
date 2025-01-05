@@ -103,6 +103,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="YOCA.Db.publish.xml" />
+    <None Include="Local Server YOCA.Db.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="YOCA.Db.refactorlog" />
