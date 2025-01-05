@@ -14,4 +14,7 @@ BEGIN
 			(@baseId, @baseId, 10, 'Test Task 1', 'This is only a test Task 1'),
 			(@baseId, @baseId, 20, 'Test Task 2', 'This is only a test Task 2');
 
+	INSERT INTO dbo.[Page] ([Id], [Order], [Title], [Slug], [MenuName], [Icon], [Content])
+	VALUES (@baseId, 0, 'Test Page', 'test-page', 'Test', 'Icons.Custom.Uncategorized.Radioactive', 'This is only a test Page');
+
 END

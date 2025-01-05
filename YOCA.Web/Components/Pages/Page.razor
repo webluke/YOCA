@@ -1,0 +1,29 @@
+﻿@page "/page/{slug}"
+@inject PageDataAccess pageData
+@inject NavigationManager NavManager
+
+@if (p != null)
+{
+    <MudText Typo="Typo.h5" GutterBottom="true">@p.Title</MudText>
+    @((MarkupString)Markdown.ParseHtmlString(p.Content).ToString())
+}
+
+@code {
+    [Parameter]
+    public string slug { get; set; }
+    public PageModel p { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshData();
+    }
+
+    private async Task RefreshData()
+    {
+        p = (await pageData.GetSlug(slug));
+        if (p == null)
+        {
+            NavManager.NavigateTo("/");
+        }
+    }
+}

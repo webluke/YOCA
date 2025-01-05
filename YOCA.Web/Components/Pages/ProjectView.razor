@@ -1,27 +1,12 @@
-﻿@if (p != null)
+﻿@inject Statuses state
+
+@if (p != null)
 {
     <MudCard>
         <MudCardHeader>
             <CardHeaderContent>
                 <MudText Typo="Typo.h5">@p.Title
-                @switch (p.Status)
-                {
-                    case 0:
-                        <MudChip T="string" Color="Color.Default" Label="true">Not Started</MudChip>
-                        break;
-                    case 1:
-                        <MudChip T="string" Color="Color.Warning" Label="true">Under Review</MudChip>
-                        break;
-                    case 2:
-                        <MudChip T="string" Color="Color.Info" Label="true">In Progress</MudChip>
-                        break;
-                    case 3:
-                        <MudChip T="string" Color="Color.Success" Label="true">Completed</MudChip>
-                        break;
-                    case -1:
-                        <MudChip T="string" Color="Color.Error" Label="true">Canceled</MudChip>
-                        break;
-                }
+                    <MudChip T="string" Color="@state.DefaultStatuses[p.Status].Color" Label="true">@state.DefaultStatuses[p.Status].Description</MudChip>
                 </MudText>
                 <MudText Typo="Typo.h6">Start: @p.StartDate - End: @p.EndDate</MudText>
             </CardHeaderContent>
@@ -33,7 +18,10 @@
             <MudTimeline>
                 @foreach (var task in p.Tasks)
                 {
-                <MudTimelineItem TimelineAlign="TimelineAlign.End">
+                <MudTimelineItem Color="@state.DefaultStatuses[task.Status].Color" TimelineAlign="TimelineAlign.End">
+                    <ItemDot>
+                                <MudIcon Icon="@state.DefaultStatuses[task.Status].Icon" Size="Size.Medium" />
+                    </ItemDot>
                     <ItemOpposite>
                         <MudText>@task.Title</MudText>
                     </ItemOpposite>

@@ -62,6 +62,7 @@
     <Folder Include="dbo\Stored Procedures\DayOfCode" />
     <Folder Include="dbo\Stored Procedures\Projects" />
     <Folder Include="dbo\Stored Procedures\ProjectTasks" />
+    <Folder Include="dbo\Stored Procedures\Page" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\DayOfCode.sql" />
@@ -88,6 +89,14 @@
     <Build Include="dbo\Stored Procedures\ProjectTasks\spProjectTasks_Insert.sql" />
     <Build Include="dbo\Stored Procedures\ProjectTasks\spProjectTasks_Update.sql" />
     <Build Include="dbo\Stored Procedures\ProjectTasks\spProjectTasks_GetById.sql" />
+    <Build Include="dbo\Tables\Page.sql" />
+    <Build Include="dbo\Stored Procedures\Page\spPage_Insert.sql" />
+    <Build Include="dbo\Stored Procedures\Page\spPage_Update.sql" />
+    <Build Include="dbo\Stored Procedures\Page\spPage_Delete.sql" />
+    <Build Include="dbo\Stored Procedures\Page\spPage_GetAll.sql" />
+    <Build Include="dbo\Stored Procedures\Page\spPage_GetAllMenu.sql" />
+    <Build Include="dbo\Stored Procedures\Page\spPage_GetById.sql" />
+    <Build Include="dbo\Stored Procedures\Page\spPage_GetBySlug.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />

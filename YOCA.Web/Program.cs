@@ -5,6 +5,7 @@ using MudBlazor.Services;
 using YOCA.Web.Components;
 using YOCA.Web.Components.Account;
 using YOCA.Web.Data;
+using YOCA.Web.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +44,8 @@ builder.Services.AddSingleton<ISqlDataAccess, SqlDataAccess>();
 builder.Services.AddSingleton<DayOfCodeDataAccess>();
 builder.Services.AddSingleton<ProjectDataAccess>();
 builder.Services.AddSingleton<ProjectTaskDataAccess>();
+builder.Services.AddSingleton<PageDataAccess>();
+builder.Services.AddSingleton<Statuses>();
 
 builder.Services.AddMarkdown();
 
