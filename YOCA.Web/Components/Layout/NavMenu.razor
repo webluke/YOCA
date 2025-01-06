@@ -22,22 +22,34 @@
     <MudNavLink Href="https://www.twitch.tv/webluke" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.VideoChat">Twitch</MudNavLink>
     <MudNavLink Href="https://www.youtube.com/webluke" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.VideoChat">YouTube</MudNavLink>
     <MudNavLink Href="auth" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Lock">Auth Required</MudNavLink>
+    <AuthorizeView Roles="Admin">
+        <MudNavGroup Title="Admin" Icon="@Icons.Material.Filled.AdminPanelSettings" Expanded="true">
+        <MudNavLink Href="admin/days" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Today">Days</MudNavLink>
+        <MudNavLink Href="admin/projects" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ListAlt">Projects</MudNavLink>
+        <MudNavLink Href="admin/pages" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.FormatAlignLeft">Pages</MudNavLink>
+        <MudNavLink Href="admin/site" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.SettingsInputComposite">Site</MudNavLink>
+        </MudNavGroup>
+    </AuthorizeView>
     <AuthorizeView>
         <Authorized>
-            <MudNavLink Href="Account/Manage" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">@context.User.Identity?.Name</MudNavLink>
-            <form action="Account/Logout" method="post">
-                <AntiforgeryToken />
-                <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-                <button type="submit" class="mud-nav-link mud-ripple">
-                    <MudIcon Icon="@Icons.Material.Filled.Logout" Color="Color.Info" Class="mr-3"></MudIcon> Logout
-                </button>
-            </form>
+            @* <MudNavLink Href="Account/Manage" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">@context.User.Identity?.Name</MudNavLink> *@
+            <MudNavLink Href="Account/Logout" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Logout">Logout</MudNavLink>
         </Authorized>
         <NotAuthorized>
-            <MudNavLink Href="Account/Register" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">Register</MudNavLink>
-            <MudNavLink Href="Account/Login" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Password">Login</MudNavLink>
+@*             <MudNavLink Href="Account/Register" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">Register</MudNavLink>
+ *@            <MudNavLink Href="Account/Login" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Password">Login</MudNavLink>
         </NotAuthorized>
     </AuthorizeView>
+    <script src='https://storage.ko-fi.com/cdn/scripts/overlay-widget.js'></script>
+    <script style="text-align:right;">
+        kofiWidgetOverlay.draw('webluke', {
+            'type': 'floating-chat',
+            'floating-chat.donateButton.text': 'Support Me',
+            'floating-chat.donateButton.background-color': '#00b9fe',
+            'floating-chat.donateButton.text-color': '#fff'
+        });
+    </script>
+    <script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script><script type='text/javascript'>kofiwidget2.init('Support me on Ko-fi', '#00b9fe', 'G2G717JY8M');kofiwidget2.draw();</script> 
 </MudNavMenu>
 
 

@@ -1,0 +1,77 @@
+﻿@page "/admin/days"
+@attribute [Authorize(Roles = "Admin")]
+@inject DayOfCodeDataAccess dayData
+@rendermode InteractiveServer
+<MudPopoverProvider />
+
+<MudForm Model="@newDay" OnValidSubmit="OnValidSubmit">
+<MudGrid>
+    <MudItem xs="12">
+        <MudCard>
+            <MudCardContent>
+                    <MudDatePicker Label="Date" @bind-Value="newDate" />
+                    <MudNumericField @bind-Value="newDay.Day" Label="Day" HelperText="0 Start Day" />
+                    <MudTextField @bind-Value="newDay.Goal" Label="Goal" />
+                    <MudTextField @bind-Value="newDay.Result" Label="Result" />
+            </MudCardContent>
+        </MudCard>
+        <MudCard>
+            <MudCardContent>
+                    <MarkdownEditor @bind-Value="newDay.Summary" Theme="3024-night" />
+            </MudCardContent>
+        </MudCard>
+        <MudCard>
+            <MudCardContent>
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Add New Day</MudButton>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+</MudForm>
+
+<h3>Days</h3>
+
+<MudTable Items="@days" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+    <HeaderContent>
+        <MudTh>Day</MudTh>
+        <MudTh>Date</MudTh>
+        <MudTh>Goal</MudTh>
+        <MudTh>Result</MudTh>
+        <MudTh>View Count</MudTh>
+        <MudTh>Actions</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Day">@context.Day</MudTd>
+        <MudTd DataLabel="Date">@context.Date</MudTd>
+        <MudTd DataLabel="Goal">@context.Goal</MudTd>
+        <MudTd DataLabel="Result">@context.Result</MudTd>
+        <MudTd DataLabel="View Count">@context.ViewCount</MudTd>
+        <MudTd DataLabel="Actions"><a href="admin/days/edit/@context.Id">Edit</a> <a href="admin/days/delete/@context.Id">Delete</a></MudTd>
+    </RowTemplate>
+</MudTable>
+
+@code {
+    private IEnumerable<DayOfCodeModel>? days { get; set; }
+    private DayOfCodeModel newDay = new DayOfCodeModel();
+    private DateTime newDate = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshData();
+    }
+
+    private async Task RefreshData()
+    {
+        days = await dayData.GetDays();
+        newDay.Day = days.Count() + 1;
+        newDate = DateTime.Today;
+    }
+
+    private async Task OnValidSubmit()
+    {
+        newDay.Date = newDay.Date;
+        await dayData.Insert(newDay);
+        newDay = new DayOfCodeModel();
+        await RefreshData();
+    }
+}

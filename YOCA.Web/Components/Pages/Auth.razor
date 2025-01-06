@@ -1,12 +1,8 @@
 ﻿@page "/auth"
 
-@using Microsoft.AspNetCore.Authorization
-
 @attribute [Authorize]
 
 <PageTitle>Auth</PageTitle>
-
-@rendermode InteractiveServer
 
 <MudPopoverProvider />
 <MudDialogProvider />
@@ -14,6 +10,6 @@
 
 <MudText Typo="Typo.h3" GutterBottom="true">You are authenticated!</MudText>
 
-<AuthorizeView>
+<AuthorizeView Roles="Admin">
     <MudText Class="mb-4">Hello @context.User.Identity?.Name!</MudText>
 </AuthorizeView>
