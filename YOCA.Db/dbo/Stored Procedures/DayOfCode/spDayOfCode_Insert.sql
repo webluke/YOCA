@@ -8,6 +8,6 @@
 
 AS 
 BEGIN
-	INSERT INTO [dbo].[DayOfCode] (Id, Day, Date, Goal, Result, Summary)
+	INSERT INTO [dbo].[DayOfCode] ([Id], [Day], [Date], [Goal], [Result], [Summary])
 	VALUES (@Id, @Day, @Date, @Goal, @Result, @Summary)
 END

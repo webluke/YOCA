@@ -21,7 +21,6 @@
     <MudNavLink Href="https://www.x.com/webluke" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Chat">Twitter</MudNavLink>
     <MudNavLink Href="https://www.twitch.tv/webluke" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.VideoChat">Twitch</MudNavLink>
     <MudNavLink Href="https://www.youtube.com/webluke" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.VideoChat">YouTube</MudNavLink>
-    <MudNavLink Href="auth" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Lock">Auth Required</MudNavLink>
     <AuthorizeView Roles="Admin">
         <MudNavGroup Title="Admin" Icon="@Icons.Material.Filled.AdminPanelSettings" Expanded="true">
         <MudNavLink Href="admin/days" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Today">Days</MudNavLink>
@@ -40,6 +39,8 @@
  *@            <MudNavLink Href="Account/Login" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Password">Login</MudNavLink>
         </NotAuthorized>
     </AuthorizeView>
+    <br />
+    <MudText Align="Align.Center">
     <script src='https://storage.ko-fi.com/cdn/scripts/overlay-widget.js'></script>
     <script style="text-align:right;">
         kofiWidgetOverlay.draw('webluke', {
@@ -50,6 +51,7 @@
         });
     </script>
     <script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script><script type='text/javascript'>kofiwidget2.init('Support me on Ko-fi', '#00b9fe', 'G2G717JY8M');kofiwidget2.draw();</script> 
+    </MudText>
 </MudNavMenu>
 
 

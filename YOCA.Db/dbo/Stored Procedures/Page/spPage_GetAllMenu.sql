@@ -16,5 +16,5 @@ BEGIN
 	FROM dbo.[Page]
 	WHERE
 		[IsPublished] = 1
-	ORDER BY [Order], [MenuName]
+	ORDER BY [Order], [MenuName] ASC
 END

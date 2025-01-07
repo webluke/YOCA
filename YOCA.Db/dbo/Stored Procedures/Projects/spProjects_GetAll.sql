@@ -18,5 +18,7 @@ BEGIN
 		[ViewCount]
 	FROM 
 		[dbo].[Projects]
+	ORDER By 
+		[Order] ASC
 
 END

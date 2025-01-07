@@ -19,7 +19,7 @@ BEGIN
 	FROM 
 		[dbo].[DayOfCode]
 	ORDER BY 
-		[Date] ASC
+		[Date] DESC
 	OFFSET (@PageNumber - 1) * @PageSize ROWS
 	FETCH NEXT @PageSize ROWS ONLY
 

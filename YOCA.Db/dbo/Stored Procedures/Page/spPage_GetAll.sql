@@ -16,6 +16,6 @@ BEGIN
 		[TimeUpdated],
 		[ViewCount]
 	FROM dbo.[Page]
-	ORDER BY [Order], [MenuName]
+	ORDER BY [Order], [MenuName] ASC
 
 END

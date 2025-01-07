@@ -76,13 +76,15 @@ public class DayOfCodeDataAccess
     {
         doc.Id = Ids.NewId();
         await DB.SaveData("dbo.spDayOfCode_Insert",
-            new { doc });
+            new { Id = doc.Id, Day = doc.Day, Date = doc.Date, Goal = doc.Goal, Result = doc.Result, Summary = doc.Summary });
     }
 
-    public async Task UpdatePost(DayOfCodeModel p) => await
-        DB.SaveData("dbo.spDayOfCode_Update", p);
+    public async Task Update(DayOfCodeModel doc) {
+        await DB.SaveData("dbo.spDayOfCode_Update", 
+            new { Id = doc.Id, Day = doc.Day, Date = doc.Date, Goal = doc.Goal, Result = doc.Result, Summary = doc.Summary });
+    } 
 
-    public async Task DeletePost(string id) => await
+    public async Task Delete(string id) => await
         DB.SaveData("dbo.spDayOfCode_Delete",
             new { Id = id });
 }
