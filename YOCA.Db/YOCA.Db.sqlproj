@@ -63,6 +63,7 @@
     <Folder Include="dbo\Stored Procedures\Projects" />
     <Folder Include="dbo\Stored Procedures\ProjectTasks" />
     <Folder Include="dbo\Stored Procedures\Page" />
+    <Folder Include="dbo\Stored Procedures\Clipboard" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\DayOfCode.sql" />
@@ -97,6 +98,15 @@
     <Build Include="dbo\Stored Procedures\Page\spPage_GetAllMenu.sql" />
     <Build Include="dbo\Stored Procedures\Page\spPage_GetById.sql" />
     <Build Include="dbo\Stored Procedures\Page\spPage_GetBySlug.sql" />
+    <Build Include="dbo\Stored Procedures\Page\spPage_GetAllAdmin.sql" />
+    <Build Include="dbo\Stored Procedures\Page\spPage_UpdatePublished.sql" />
+    <Build Include="dbo\Tables\Clipboard.sql" />
+    <Build Include="dbo\Stored Procedures\Clipboard\spClipboard_Delete.sql" />
+    <Build Include="dbo\Stored Procedures\Clipboard\spClipboard_Insert.sql" />
+    <Build Include="dbo\Stored Procedures\Clipboard\spClipboard_Update.sql" />
+    <Build Include="dbo\Stored Procedures\Clipboard\spClipboard_GetAllAdmin.sql" />
+    <Build Include="dbo\Stored Procedures\Clipboard\spClipboard_GetAll.sql" />
+    <Build Include="dbo\Stored Procedures\Clipboard\spClipboard_GetById.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />

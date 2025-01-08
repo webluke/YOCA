@@ -24,6 +24,12 @@ public class PageDataAccess
         return results;
     }
 
+    public async Task<IEnumerable<PageModel>> GetAllAdmin()
+    {
+        IEnumerable<PageModel> results = await DB.LoadData<PageModel, dynamic>("dbo.spPage_GetAllAdmin", new { });
+        return results;
+    }
+
     public async Task<PageModel?> GetId(string id)
     {
         var results = await DB.LoadData<PageModel, dynamic>(
@@ -46,13 +52,14 @@ public class PageDataAccess
     {
         p.Id = Ids.NewId();
         await DB.SaveData("dbo.spPage_Insert",
-            new { p });
+            new { Id = p.Id, Order = p.Order, Title = p.Title, Slug = p.Slug, MenuName = p.MenuName, Icon = p.Icon, Content = p.Content, IsPublished = p.IsPublished });
     }
 
-    public async Task UpdatePost(PageModel p) => await
-        DB.SaveData("dbo.spPage_Update", p);
+    public async Task Update(PageModel p) => await
+        DB.SaveData("dbo.spPage_Update",
+            new { Id = p.Id, Order = p.Order, Title = p.Title, Slug = p.Slug, MenuName = p.MenuName, Icon = p.Icon, Content = p.Content, IsPublished = p.IsPublished });
 
-    public async Task DeletePost(string id) => await
+    public async Task Delete(string id) => await
         DB.SaveData("dbo.spPage_Delete",
             new { Id = id });
 }

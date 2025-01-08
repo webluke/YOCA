@@ -1,8 +1,61 @@
 ﻿@page "/admin/pages"
 @attribute [Authorize(Roles = "Admin")]
+@inject PageDataAccess pageData
+@rendermode InteractiveServer
+<MudPopoverProvider />
 
 <h3>Pages</h3>
+<MudButton Variant="Variant.Filled" Color="Color.Success" Href="/admin/pages/create">Create Page</MudButton>
+
+<MudTable Items="@pages" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+    <HeaderContent>
+        <MudTh>Order</MudTh>
+        <MudTh>Title</MudTh>
+        <MudTh>Icon</MudTh>
+        <MudTh>View Count</MudTh>
+        <MudTh>Published</MudTh>
+        <MudTh>Actions</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Order">@context.Order</MudTd>
+        <MudTd DataLabel="Title">@context.Title</MudTd>
+        <MudTd DataLabel="Icon"><MudIcon Icon="@($"fas {context.Icon}")" /></MudTd>
+        <MudTd DataLabel="View Count">@context.ViewCount</MudTd>
+        <MudTd DataLabel="Published">@context.IsPublished</MudTd>
+        <MudTd DataLabel="Actions">
+            <MudButton Variant="Variant.Text" Color="Color.Info" Href="@($"/admin/pages/edit/{context.Id}")">Edit</MudButton>
+            <MudButton Variant="Variant.Text" Color="Color.Error" OnClick="e => DeletePage(e, context.Id)">Delete</MudButton>
+        </MudTd>
+    </RowTemplate>
+</MudTable>
 
 @code {
+    [Inject] private IDialogService DialogService { get; set; }
+    private IEnumerable<PageModel>? pages {get; set;}
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshData();
+    }
+
+    private async Task RefreshData()
+    {
+        pages = await pageData.GetAllAdmin();
+    }
+
+    private async void DeletePage(MouseEventArgs e, string id)
+    {
+        bool? result = await DialogService.ShowMessageBox(
+        "Warning",
+        "Deleting can not be undone!",
+        yesText: "Delete!", cancelText: "Cancel");
+        //state = result == null ? "Canceled" : "Deleted!";
+        if (result == true)
+        {
+            await pageData.Delete(id);
+            await RefreshData();
+        }
+        StateHasChanged();
+    }
 
 }

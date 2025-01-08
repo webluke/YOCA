@@ -1,0 +1,50 @@
+﻿@page "/admin/pages/edit/{id}"
+@attribute [Authorize(Roles = "Admin")]
+@inject PageDataAccess pageData
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<h3>Edit Page</h3>
+<EditForm Model="@newPage" OnValidSubmit="OnValidSubmit">
+    <MudGrid>
+        <MudItem xs="12">
+            <MudCard>
+                <MudCardContent>
+                    <MudTextField @bind-Value="newPage.Title" Label="Title" />
+                    <MudTextField @bind-Value="newPage.Slug" Label="Slug" />
+                    <MudTextField @bind-Value="newPage.MenuName" Label="Menu Name" />
+                    <MudTextField @bind-Value="newPage.Icon" Label="Menu Icon" />
+                    <MudNumericField @bind-Value="newPage.Order" Label="Menu Order" />
+                    <MudCheckBox @bind-Value="newPage.IsPublished" Label="Published" />
+                    <br />
+                    <MarkdownEditor @bind-Value="newPage.Content" Theme="3024-night" />
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">Update Page</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Warning" Href="/admin/pages">Cancel</MudButton>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+
+
+@code {
+    [Parameter]
+    public string id { get; set; }
+    private PageModel newPage = new PageModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshData();
+    }
+
+    private async Task RefreshData()
+    {
+        newPage = await pageData.GetId(id);
+    }
+
+    private async Task OnValidSubmit()
+    {
+        await pageData.Update(newPage);
+        NavigationManager.NavigateTo("/admin/pages");
+    }
+}

@@ -55,6 +55,8 @@ builder.Services.AddSingleton<DayOfCodeDataAccess>();
 builder.Services.AddSingleton<ProjectDataAccess>();
 builder.Services.AddSingleton<ProjectTaskDataAccess>();
 builder.Services.AddSingleton<PageDataAccess>();
+builder.Services.AddSingleton<ClipboardDataAccess>();
+
 builder.Services.AddSingleton<Statuses>();
 
 builder.Services.AddMarkdown();

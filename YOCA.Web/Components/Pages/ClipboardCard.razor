@@ -1,0 +1,29 @@
+﻿@inject Statuses state
+
+@if (cb != null)
+{
+    <MudCard>
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h5">
+                    @cb.Title
+                    <MudChip T="string" Color="@state.DefaultStatuses[cb.Status].Color" Label="true">@state.DefaultStatuses[cb.Status].Description</MudChip>
+                </MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+            @((MarkupString)Markdown.ParseHtmlString(cb.Note).ToString())
+        </MudCardContent>
+    </MudCard>
+}
+
+@code {
+    [Parameter]
+    public ClipboardModel cb { get; set; }
+
+    protected override void OnInitialized()
+    {
+
+    }
+
+}

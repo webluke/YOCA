@@ -12,4 +12,5 @@ public class PageModel
     public DateTime TimeCreated { get; set; }
     public DateTime TimeUpdated { get; set; }
     public int ViewCount { get; set; }
+    public bool IsPublished { get; set; }
 }
