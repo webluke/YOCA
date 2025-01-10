@@ -1,0 +1,64 @@
+﻿@inject ISnackbar Snackbar
+@inject ClipboardDataAccess cbData
+@rendermode InteractiveServer
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="fas fa-clipboard" Class="mr-3 mb-n1" />
+            Clipboard Item
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+            <MudForm Model="@cb">
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudCard>
+                            <MudCardContent>
+                                <MudTextField @bind-Value="cb.Title" Label="Title" />
+                                <MudNumericField @bind-Value="cb.Order" Label="Order" />
+                                <MudNumericField @bind-Value="cb.Status" Label="Status" />
+                                <br />
+                                <MarkdownEditor @bind-Value="cb.Note" Theme="3024-night" />
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        @if (String.IsNullOrEmpty(cb.Id))
+        {
+            <MudButton Color="Color.Success" OnClick="CreateClipboard">Create Clipboard</MudButton>
+        }
+        else
+        {
+            <MudButton Color="Color.Success" OnClick="UpdateClipboard">Update Clipboard</MudButton>
+        }
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public ClipboardModel cb { get; set; }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private async void UpdateClipboard()
+    {   
+        await cbData.Update(cb);
+        Snackbar.Add("Clipboard Item Updated", Severity.Success);
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private async void CreateClipboard()
+    {
+        await cbData.Insert(cb);
+        Snackbar.Add("Clipboard Item Created", Severity.Success);
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+}
