@@ -5,6 +5,7 @@
 	@Date DATE,
 	@Goal NVARCHAR(150),
 	@Result NVARCHAR(150),
+	@Tomorrow NVARCHAR(150),
 	@Summary NVARCHAR(MAX)
 
 AS
@@ -16,6 +17,7 @@ BEGIN
 		[Date] = @Date,
 		[Goal] = @Goal,
 		[Result] = @Result,
+		[Tomorrow] = @Tomorrow,
 		[Summary] = @Summary,
 		[TimeUpdated] = SYSUTCDATETIME()
 	WHERE

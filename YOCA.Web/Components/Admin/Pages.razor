@@ -2,11 +2,13 @@
 @attribute [Authorize(Roles = "Admin")]
 @inject PageDataAccess pageData
 @rendermode InteractiveServer
-<MudPopoverProvider />
 
+<MudDialogProvider />
+<br />
 <h3>Pages</h3>
-<MudButton Variant="Variant.Filled" Color="Color.Success" Href="/admin/pages/create">Create Page</MudButton>
-
+<br />
+<MudButton Variant="Variant.Outlined" Color="Color.Success" Href="/admin/pages/create">Create Page</MudButton>
+<br />
 <MudTable Items="@pages" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
     <HeaderContent>
         <MudTh>Order</MudTh>

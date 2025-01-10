@@ -3,11 +3,54 @@
 @inject ClipboardDataAccess cbData
 @inject Statuses state
 @rendermode InteractiveServer
-<MudPopoverProvider />
 
+<MudDialogProvider />
+<EditForm Model="@newCB">
+    <MudGrid>
+        <MudItem xs="12">
+            <MudCard>
+                <MudCardContent>
+                    <MudTextField @bind-Value="newCB.Title" Label="Title" />
+                    <MudGrid>
+                        <MudItem xs="6">
+                            <MudNumericField @bind-Value="newCB.Order" Label="Order" />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <div class="mud-input-control mud-input-text-with-label mud-select">
+                                <div class="mud-input-control-input-container">
+                                    <div class="mud-input mud-input-text mud-input-text-with-label mud-input-adorned-end mud-input-underline mud-typography-input mud-select-input">
+                                        <label class="mud-input-label mud-input-label-animated mud-input-label-text mud-input-label-inputcontrol" for="Status">Status</label>
+                                        <InputSelect @bind-Value="newCB.Status" Label="Status" class="mud-input-slot mud-input-root mud-input-root-text mud-input-root-adorned-end mud-select-input">
+                                            @foreach (var status in state.DefaultStatuses)
+                                            {
+                                                <option value="@status.Key">@status.Value.Name</option>
+                                                
+                                            }
+                                        </InputSelect>
+                                    </div>
+                                </div>
+                            </div>
+                        </MudItem>
+                    </MudGrid>
+                    <br />
+                    <MarkdownEditor @bind-Value="newCB.Note" Theme="3024-night" />
+                    @if (String.IsNullOrEmpty(newCB.Id))
+                    {
+                        <MudButton Color="Color.Success" Variant="Variant.Outlined" OnClick="CreateClip">Create Clip</MudButton>
+                    }
+                    else
+                    {
+                        <MudButton Color="Color.Info" Variant="Variant.Outlined" OnClick="UpdateClip">Update Clip</MudButton>
+                        <MudButton Color="Color.Warning" Variant="Variant.Outlined" OnClick="CancelUpdate">Cancel</MudButton>
+                    }
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+<br />
 <h3>Clipboard</h3>
-<MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="e => CreateClipboard(e)">Create Clipboard Item</MudButton>
-
+<br />
 <MudTable Items="@cb" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
     <HeaderContent>
         <MudTh>Order</MudTh>
@@ -22,7 +65,7 @@
         <MudTd DataLabel="Title">@context.Title</MudTd>
         <MudTd DataLabel="Note">@context.Note</MudTd>
         <MudTd DataLabel="Actions">
-            <MudButton Variant="Variant.Text" Color="Color.Info" OnClick="e => UpdateClipboard(e, context.Id)">Edit</MudButton>
+            <MudButton Variant="Variant.Text" Color="Color.Info" OnClick="e => EditClip(e, context.Id)">Edit</MudButton>
             <MudButton Variant="Variant.Text" Color="Color.Error" OnClick="e => DeleteClipboard(e, context.Id)">Delete</MudButton>
         </MudTd>
     </RowTemplate>
@@ -31,6 +74,8 @@
 @code {
     [Inject] private IDialogService DialogService { get; set; }
     private IEnumerable<ClipboardModel>? cb { get; set; }
+    private ClipboardModel newCB = new ClipboardModel();
+    private bool isUpdate = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -42,34 +87,32 @@
         cb = await cbData.GetAllAdmin();
     }
 
-    private async Task CreateClipboard(MouseEventArgs e)
+    private async Task CreateClip()
     {
-        ClipboardModel cbm = new();
-        DialogOptions options = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
-        var parameters = new DialogParameters<ClipboardDialog> { { x => x.cb, cbm } };
-
-        var dialog = DialogService.Show<ClipboardDialog>("Create Clipboard", parameters, options);
-        var result = await dialog.Result;
-
-        if (!result.Canceled)
-        {
-            await RefreshData();
-        }
+        await cbData.Insert(newCB);
+        newCB = new ClipboardModel();
+        await RefreshData();
     }
 
-    private async Task UpdateClipboard(MouseEventArgs e, string cbId)
+    private async Task UpdateClip()
     {
-        ClipboardModel cbm = await cbData.GetId(cbId);
-        DialogOptions options = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
-        var parameters = new DialogParameters<ClipboardDialog> { { x => x.cb, cbm } };
+        await cbData.Update(newCB);
+        newCB = new ClipboardModel();
+        isUpdate = false;
+        await RefreshData();
+    }
 
-        var dialog = await DialogService.ShowAsync<ClipboardDialog>("Update Clipboard", parameters, options);
-        var result = await dialog.Result;
+    private async Task CancelUpdate()
+    {
+        newCB = new ClipboardModel();
+        isUpdate = false;
+        await RefreshData();
+    }
 
-        if (!result.Canceled)
-        {
-            await RefreshData();
-        }
+    private async Task EditClip(MouseEventArgs e, string id)
+    {
+        newCB = cb.FirstOrDefault(d => d.Id == id);
+        isUpdate = true;
     }
 
     private async void DeleteClipboard(MouseEventArgs e, string id)
@@ -86,5 +129,36 @@
         }
         StateHasChanged();
     }
+
+    // private async Task CreateClipboard(MouseEventArgs e)
+    // {
+    //     ClipboardModel cbm = new();
+    //     DialogOptions options = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+    //     var parameters = new DialogParameters<ClipboardDialog> { { x => x.cb, cbm } };
+
+    //     var dialog = DialogService.Show<ClipboardDialog>("Create Clipboard", parameters, options);
+    //     var result = await dialog.Result;
+
+    //     if (!result.Canceled)
+    //     {
+    //         await RefreshData();
+    //     }
+    // }
+
+    // private async Task UpdateClipboard(MouseEventArgs e, string cbId)
+    // {
+    //     ClipboardModel cbm = await cbData.GetId(cbId);
+    //     DialogOptions options = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+    //     var parameters = new DialogParameters<ClipboardDialog> { { x => x.cb, cbm } };
+
+    //     var dialog = await DialogService.ShowAsync<ClipboardDialog>("Update Clipboard", parameters, options);
+    //     var result = await dialog.Result;
+
+    //     if (!result.Canceled)
+    //     {
+    //         await RefreshData();
+    //     }
+    // }
+
 
 }

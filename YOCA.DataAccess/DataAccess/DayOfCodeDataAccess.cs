@@ -18,6 +18,13 @@ public class DayOfCodeDataAccess
         return results;
     }
 
+    public async Task<TomorrowModel?> GetTomorrow()
+    {
+        var results = await DB.LoadData<TomorrowModel, dynamic>("dbo.spDayOfCode_GetTomorrow", new { });
+        return results.FirstOrDefault();
+    }
+
+
     public async Task<IEnumerable<DayOfCodeModel>> GetLatest(int limit)
     {
         var results = await DB.LoadData<DayOfCodeModel, dynamic>(
@@ -76,12 +83,12 @@ public class DayOfCodeDataAccess
     {
         doc.Id = Ids.NewId();
         await DB.SaveData("dbo.spDayOfCode_Insert",
-            new { Id = doc.Id, Day = doc.Day, Date = doc.Date, Goal = doc.Goal, Result = doc.Result, Summary = doc.Summary });
+            new { Id = doc.Id, Day = doc.Day, Date = doc.Date, Goal = doc.Goal, Result = doc.Result, Tomorrow = doc.Tomorrow, Summary = doc.Summary });
     }
 
     public async Task Update(DayOfCodeModel doc) {
         await DB.SaveData("dbo.spDayOfCode_Update", 
-            new { Id = doc.Id, Day = doc.Day, Date = doc.Date, Goal = doc.Goal, Result = doc.Result, Summary = doc.Summary });
+            new { Id = doc.Id, Day = doc.Day, Date = doc.Date, Goal = doc.Goal, Result = doc.Result, Tomorrow = doc.Tomorrow, Summary = doc.Summary });
     } 
 
     public async Task Delete(string id) => await

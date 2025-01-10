@@ -10,7 +10,10 @@
         <MudCardContent>
             <p><b>Goal:</b> @day.Goal</p>
             <p><b>Result:</b> @day.Result</p>
+            <br />
             @((MarkupString)Markdown.ParseHtmlString(day.Summary).ToString())
+            <br />
+            <p><b>Tomorrow:</b> @day.Tomorrow</p>
         </MudCardContent>
     </MudCard>
 }

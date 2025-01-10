@@ -1,11 +1,12 @@
 ﻿@inherits LayoutComponentBase
 
 <MudThemeProvider IsDarkMode=true />
-
+<MudPopoverProvider />
 <MudDialogProvider />
 
 <MudLayout>
     <MudAppBar Elevation="1">
+        <MudImage Src="img/icon64.png" Alt="Year of Code Icon" Height="40" />
         <MudText Typo="Typo.h5" Class="ml-3">WebLuke Year of Code 2025</MudText>
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">

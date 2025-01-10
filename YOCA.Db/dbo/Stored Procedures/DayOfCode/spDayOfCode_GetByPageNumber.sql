@@ -13,6 +13,7 @@ BEGIN
 		[Goal], 
 		[Result], 
 		[Summary], 
+		[Tomorrow],
 		[TimeCreated], 
 		[TimeUpdated], 
 		[ViewCount]

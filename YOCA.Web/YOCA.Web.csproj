@@ -25,4 +25,9 @@
     <ProjectReference Include="..\YOCA.DataAccess\YOCA.DataAccess.csproj" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <Folder Include="wwwroot\img\" />
+  </ItemGroup>
+
 </Project>

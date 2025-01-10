@@ -2,28 +2,45 @@
 @attribute [Authorize(Roles = "Admin")]
 @inject DayOfCodeDataAccess dayData
 @rendermode InteractiveServer
-<MudPopoverProvider />
 
-<EditForm Model="@newDay" OnValidSubmit="OnValidSubmit">
-<MudGrid>
-    <MudItem xs="12">
-        <MudCard>
-            <MudCardContent>
-                <MudDatePicker Label="Date" @bind-Date="newDate" />
-                <MudNumericField @bind-Value="newDay.Day" Label="Day" HelperText="0 Start Day" />
-                <MudTextField @bind-Value="newDay.Goal" Label="Goal" />
-                <MudTextField @bind-Value="newDay.Result" Label="Result" />
-                <br />
-                <MarkdownEditor @bind-Value="newDay.Summary" Theme="3024-night" />
-                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Add New Day</MudButton>
-            </MudCardContent>
-        </MudCard>
-    </MudItem>
-</MudGrid>
+<MudDialogProvider />
+<EditForm Model="@newDay">
+    <MudGrid>
+        <MudItem xs="12">
+            <MudCard>
+                <MudCardContent>
+                    <MudGrid>
+                        <MudItem xs="6">
+                             <div class="mud-input-control mud-input-text-with-label mud-input-input-control"><div class="mud-input-control-input-container"><div class="mud-input mud-input-text mud-input-text-with-label mud-input-underline mud-typography-input">
+                            <InputDate Label="Date" @bind-Value="newDay.Date" class="mud-input-slot mud-input-root mud-input-root-text mud-input-root-adorned-end"  />
+                            </div></div></div>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudNumericField @bind-Value="newDay.Day" Label="Day" HelperText="0 Start Day" />
+                        </MudItem>
+                    </MudGrid>
+                    <MudTextField @bind-Value="newDay.Goal" Label="Goal" />
+                    <MudTextField @bind-Value="newDay.Result" Label="Result" />
+                    <MudTextField @bind-Value="newDay.Tomorrow" Label="Tomorrow" />
+                    <br />
+                    <MarkdownEditor @bind-Value="newDay.Summary" Theme="3024-night" />
+                    @if (String.IsNullOrEmpty(newDay.Id))
+                    {
+                        <MudButton Color="Color.Success" Variant="Variant.Outlined" OnClick="CreateDay">Create Day</MudButton>
+                    }
+                    else
+                    {
+                        <MudButton Color="Color.Info" Variant="Variant.Outlined" OnClick="UpdateDay">Update Day</MudButton>
+                        <MudButton Color="Color.Warning" Variant="Variant.Outlined" OnClick="CancelUpdate">Cancel</MudButton>
+                    }
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
 </EditForm>
-
+<br />
 <h3>Days</h3>
-
+<br />
 <MudTable Items="@days" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
     <HeaderContent>
         <MudTh>Day</MudTh>
@@ -39,7 +56,10 @@
         <MudTd DataLabel="Goal">@context.Goal</MudTd>
         <MudTd DataLabel="Result">@context.Result</MudTd>
         <MudTd DataLabel="View Count">@context.ViewCount</MudTd>
-        <MudTd DataLabel="Actions"><MudButton Variant="Variant.Text" Color="Color.Info" OnClick="e => EditDay(e, context.Id)">Edit</MudButton> <MudButton Variant="Variant.Text" Color="Color.Error" OnClick="e => DeleteDay(e, context.Id)">Delete</MudButton></MudTd>
+        <MudTd DataLabel="Actions">
+            <MudButton Variant="Variant.Text" Color="Color.Info" OnClick="e => EditDay(e, context.Id)">Edit</MudButton>
+            <MudButton Variant="Variant.Text" Color="Color.Error" OnClick="e => DeleteDay(e, context.Id)">Delete</MudButton>
+        </MudTd>
     </RowTemplate>
 </MudTable>
 
@@ -48,6 +68,7 @@
     private IEnumerable<DayOfCodeModel>? days { get; set; }
     private DayOfCodeModel newDay = new DayOfCodeModel();
     private DateTime? newDate { get; set; }
+    private bool isUpdate = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -59,9 +80,11 @@
     {
         days = await dayData.GetDays();
         newDay.Day = days.Count();
+        newDay.Date = DateOnly.FromDateTime(DateTime.Now);
+        newDay.Goal = days.FirstOrDefault().Tomorrow;
     }
 
-    private async Task OnValidSubmit()
+    private async Task CreateDay()
     {
         newDay.Date = DateOnly.FromDateTime(newDate.Value);
         await dayData.Insert(newDay);
@@ -69,7 +92,31 @@
         await RefreshData();
     }
 
-    private async void DeleteDay(MouseEventArgs e, string id) {
+    private async Task UpdateDay()
+    {
+        newDay.Date = DateOnly.FromDateTime(newDate.Value);
+        await dayData.Update(newDay);
+        newDay = new DayOfCodeModel();
+        isUpdate = false;
+        await RefreshData();
+    }
+
+    private async Task CancelUpdate()
+    {
+        newDay = new DayOfCodeModel();
+        isUpdate = false;
+        await RefreshData();
+    }
+
+    private async Task EditDay(MouseEventArgs e, string id)
+    {
+        newDay = days.FirstOrDefault(d => d.Id == id);
+        newDate = DateTime.Parse(newDay.Date.ToString());
+        isUpdate = true;
+    }
+
+    private async void DeleteDay(MouseEventArgs e, string id)
+    {
         bool? result = await DialogService.ShowMessageBox(
         "Warning",
         "Deleting can not be undone!",
@@ -81,11 +128,5 @@
             await RefreshData();
         }
         StateHasChanged();
-    }
-
-    private async Task EditDay(MouseEventArgs e, string id)
-    {
-        newDay = days.FirstOrDefault(d => d.Id == id);
-        newDate = DateTime.Parse(newDay.Date.ToString());
     }
 }

@@ -107,6 +107,7 @@
     <Build Include="dbo\Stored Procedures\Clipboard\spClipboard_GetAllAdmin.sql" />
     <Build Include="dbo\Stored Procedures\Clipboard\spClipboard_GetAll.sql" />
     <Build Include="dbo\Stored Procedures\Clipboard\spClipboard_GetById.sql" />
+    <Build Include="dbo\Stored Procedures\DayOfCode\spDayOfCode_GetTomorrow.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />

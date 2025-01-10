@@ -12,6 +12,7 @@ BEGIN
 		[Date], 
 		[Goal], 
 		[Result], 
+		[Tomorrow],
 		[Summary], 
 		[TimeCreated], 
 		[TimeUpdated], 
