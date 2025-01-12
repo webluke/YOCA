@@ -4,42 +4,10 @@
 @rendermode InteractiveServer
 
 <MudDialogProvider />
-<EditForm Model="@newDay">
-    <MudGrid>
-        <MudItem xs="12">
-            <MudCard>
-                <MudCardContent>
-                    <MudGrid>
-                        <MudItem xs="6">
-                             <div class="mud-input-control mud-input-text-with-label mud-input-input-control"><div class="mud-input-control-input-container"><div class="mud-input mud-input-text mud-input-text-with-label mud-input-underline mud-typography-input">
-                            <InputDate Label="Date" @bind-Value="newDay.Date" class="mud-input-slot mud-input-root mud-input-root-text mud-input-root-adorned-end"  />
-                            </div></div></div>
-                        </MudItem>
-                        <MudItem xs="6">
-                            <MudNumericField @bind-Value="newDay.Day" Label="Day" HelperText="0 Start Day" />
-                        </MudItem>
-                    </MudGrid>
-                    <MudTextField @bind-Value="newDay.Goal" Label="Goal" />
-                    <MudTextField @bind-Value="newDay.Result" Label="Result" />
-                    <MudTextField @bind-Value="newDay.Tomorrow" Label="Tomorrow" />
-                    <br />
-                    <MarkdownEditor @bind-Value="newDay.Summary" Theme="3024-night" />
-                    @if (String.IsNullOrEmpty(newDay.Id))
-                    {
-                        <MudButton Color="Color.Success" Variant="Variant.Outlined" OnClick="CreateDay">Create Day</MudButton>
-                    }
-                    else
-                    {
-                        <MudButton Color="Color.Info" Variant="Variant.Outlined" OnClick="UpdateDay">Update Day</MudButton>
-                        <MudButton Color="Color.Warning" Variant="Variant.Outlined" OnClick="CancelUpdate">Cancel</MudButton>
-                    }
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-    </MudGrid>
-</EditForm>
 <br />
 <h3>Days</h3>
+<br />
+<MudButton Variant="Variant.Outlined" Color="Color.Success" OnClick="e => Create(e)">Create</MudButton>
 <br />
 <MudTable Items="@days" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
     <HeaderContent>
@@ -57,8 +25,8 @@
         <MudTd DataLabel="Result">@context.Result</MudTd>
         <MudTd DataLabel="View Count">@context.ViewCount</MudTd>
         <MudTd DataLabel="Actions">
-            <MudButton Variant="Variant.Text" Color="Color.Info" OnClick="e => EditDay(e, context.Id)">Edit</MudButton>
-            <MudButton Variant="Variant.Text" Color="Color.Error" OnClick="e => DeleteDay(e, context.Id)">Delete</MudButton>
+            <MudButton Variant="Variant.Text" Color="Color.Info" OnClick="e => Update(e, context.Id)">Edit</MudButton>
+            <MudButton Variant="Variant.Text" Color="Color.Error" OnClick="e => Delete(e, context.Id)">Delete</MudButton>
         </MudTd>
     </RowTemplate>
 </MudTable>
@@ -115,7 +83,7 @@
         isUpdate = true;
     }
 
-    private async void DeleteDay(MouseEventArgs e, string id)
+    private async void Delete(MouseEventArgs e, string id)
     {
         bool? result = await DialogService.ShowMessageBox(
         "Warning",
@@ -128,5 +96,38 @@
             await RefreshData();
         }
         StateHasChanged();
+    }
+
+    private async Task Create(MouseEventArgs e)
+    {
+        DayOfCodeModel model = new();
+        model.Day = days.Count();
+        model.Date = DateOnly.FromDateTime(DateTime.Now);
+        model.Goal = days.FirstOrDefault().Tomorrow;
+        DialogOptions options = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var parameters = new DialogParameters<DayDialog> { { x => x.day, model } };
+
+        var dialog = DialogService.Show<DayDialog>("Create Day", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshData();
+        }
+    }
+
+    private async Task Update(MouseEventArgs e, string cbId)
+    {
+        DayOfCodeModel model = await dayData.GetId(cbId);
+        DialogOptions options = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var parameters = new DialogParameters<DayDialog> { { x => x.day, model } };
+
+        var dialog = await DialogService.ShowAsync<DayDialog>("Update Day", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshData();
+        }
     }
 }

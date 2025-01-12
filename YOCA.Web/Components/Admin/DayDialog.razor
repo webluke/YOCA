@@ -1,0 +1,78 @@
+﻿@inject ISnackbar Snackbar
+@inject DayOfCodeDataAccess dayData
+@rendermode InteractiveServer
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="fas fa-calendar-day" Class="mr-3 mb-n1" />
+            Day of Code
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <EditForm Model="@day">
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudCard>
+                        <MudCardContent>
+                            <MudGrid>
+                                <MudItem xs="6">
+                                    <div class="mud-input-control mud-input-text-with-label mud-input-input-control">
+                                        <div class="mud-input-control-input-container">
+                                            <div class="mud-input mud-input-text mud-input-text-with-label mud-input-underline mud-typography-input">
+                                                <InputDate Label="Date" @bind-Value="day.Date" class="mud-input-slot mud-input-root mud-input-root-text mud-input-root-adorned-end" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <MudNumericField @bind-Value="day.Day" Label="Day" HelperText="0 Start Day" />
+                                </MudItem>
+                            </MudGrid>
+                            <MudTextField @bind-Value="day.Goal" Label="Goal" />
+                            <MudTextField @bind-Value="day.Result" Label="Result" />
+                            <MudTextField @bind-Value="day.Tomorrow" Label="Tomorrow" />
+                            <br />
+                            <MarkdownEditor @bind-Value="day.Summary" Theme="3024-night" />
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+        </EditForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        @if (String.IsNullOrEmpty(day.Id))
+        {
+            <MudButton Color="Color.Success" Variant="Variant.Outlined" OnClick="Create">Create</MudButton>
+        }
+        else
+        {
+            <MudButton Color="Color.Info" OnClick="Update">Update</MudButton>
+        }
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public DayOfCodeModel day { get; set; }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private async void Update()
+    {
+        await dayData.Update(day);
+        Snackbar.Add("Day Item Updated", Severity.Success);
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private async void Create()
+    {
+        await dayData.Insert(day);
+        Snackbar.Add("Day Item Created", Severity.Success);
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+}

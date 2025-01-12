@@ -1,5 +1,6 @@
 ﻿@inject ISnackbar Snackbar
-@inject ClipboardDataAccess cbData
+@inject ClipboardDataAccess dataAccess
+@inject Statuses state
 @rendermode InteractiveServer
 
 <MudDialog>
@@ -10,16 +11,35 @@
         </MudText>
     </TitleContent>
     <DialogContent>
-            <MudForm Model="@cb">
+            <MudForm Model="@model">
                 <MudGrid>
                     <MudItem xs="12">
                         <MudCard>
                             <MudCardContent>
-                                <MudTextField @bind-Value="cb.Title" Label="Title" />
-                                <MudNumericField @bind-Value="cb.Order" Label="Order" />
-                                <MudNumericField @bind-Value="cb.Status" Label="Status" />
+                                <MudTextField @bind-Value="model.Title" Label="Title" />
+                            <MudGrid>
+                                <MudItem xs="6">
+                                    <MudNumericField @bind-Value="model.Order" Label="Order" />
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <div class="mud-input-control mud-input-text-with-label mud-select">
+                                        <div class="mud-input-control-input-container">
+                                            <div class="mud-input mud-input-text mud-input-text-with-label mud-input-adorned-end mud-input-underline mud-typography-input mud-select-input">
+                                                <label class="mud-input-label mud-input-label-animated mud-input-label-text mud-input-label-inputcontrol" for="Status">Status</label>
+                                                <InputSelect @bind-Value="model.Status" Label="Status" class="mud-input-slot mud-input-root mud-input-root-text mud-input-root-adorned-end mud-select-input">
+                                                    @foreach (var status in state.DefaultStatuses)
+                                                    {
+                                                        <option value="@status.Key">@status.Value.Name</option>
+
+                                                    }
+                                                </InputSelect>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </MudItem>
+                            </MudGrid>
                                 <br />
-                                <MarkdownEditor @bind-Value="cb.Note" Theme="3024-night" />
+                                <MarkdownEditor @bind-Value="model.Note" Theme="3024-night" />
                             </MudCardContent>
                         </MudCard>
                     </MudItem>
@@ -28,13 +48,13 @@
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
-        @if (String.IsNullOrEmpty(cb.Id))
+        @if (String.IsNullOrEmpty(model.Id))
         {
-            <MudButton Color="Color.Success" OnClick="CreateClipboard">Create Clipboard</MudButton>
+            <MudButton Color="Color.Success" OnClick="Create">Create Clipboard</MudButton>
         }
         else
         {
-            <MudButton Color="Color.Success" OnClick="UpdateClipboard">Update Clipboard</MudButton>
+            <MudButton Color="Color.Success" OnClick="Update">Update Clipboard</MudButton>
         }
     </DialogActions>
 </MudDialog>
@@ -44,20 +64,20 @@
     private MudDialogInstance MudDialog { get; set; }
 
     [Parameter]
-    public ClipboardModel cb { get; set; }
+    public ClipboardModel model { get; set; }
 
     private void Cancel() => MudDialog.Cancel();
 
-    private async void UpdateClipboard()
-    {   
-        await cbData.Update(cb);
+    private async void Update()
+    {
+        await dataAccess.Update(model);
         Snackbar.Add("Clipboard Item Updated", Severity.Success);
         MudDialog.Close(DialogResult.Ok(true));
     }
 
-    private async void CreateClipboard()
+    private async void Create()
     {
-        await cbData.Insert(cb);
+        await dataAccess.Insert(model);
         Snackbar.Add("Clipboard Item Created", Severity.Success);
         MudDialog.Close(DialogResult.Ok(true));
     }

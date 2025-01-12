@@ -1,28 +1,29 @@
-﻿@page "/admin/clipboard"
+﻿@page "/admin/links"
 @attribute [Authorize(Roles = "Admin")]
-@inject ClipboardDataAccess cbData
-@inject Statuses state
+@inject LinkDataAccess linkData
 @rendermode InteractiveServer
 
 <MudDialogProvider />
 <br />
-<h3>Clipboard</h3>
+<h3>Links</h3>
 <br />
 <MudButton Variant="Variant.Outlined" Color="Color.Success" OnClick="e => Create(e)">Create</MudButton>
 <br />
-<MudTable Items="@cb" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+<MudTable Items="@links" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
     <HeaderContent>
         <MudTh>Order</MudTh>
-        <MudTh>Status</MudTh>
         <MudTh>Title</MudTh>
-        <MudTh>Note</MudTh>
+        <MudTh>Icon</MudTh>
+        <MudTh>Menu Name</MudTh>
+        <MudTh>Published</MudTh>
         <MudTh>Actions</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Order">@context.Order</MudTd>
-        <MudTd DataLabel="Status"><MudChip T="string" Color="@state.DefaultStatuses[context.Status].Color" Label="true">@state.DefaultStatuses[context.Status].Description</MudChip></MudTd>
         <MudTd DataLabel="Title">@context.Title</MudTd>
-        <MudTd DataLabel="Note">@context.Note</MudTd>
+        <MudTd DataLabel="Icon"><MudIcon Icon="@($"fas {context.Icon}")" /></MudTd>
+        <MudTd DataLabel="Menu Name">@context.MenuName</MudTd>
+        <MudTd DataLabel="Published">@context.IsPublished</MudTd>
         <MudTd DataLabel="Actions">
             <MudButton Variant="Variant.Text" Color="Color.Info" OnClick="e => Update(e, context.Id)">Edit</MudButton>
             <MudButton Variant="Variant.Text" Color="Color.Error" OnClick="e => Delete(e, context.Id)">Delete</MudButton>
@@ -32,8 +33,7 @@
 
 @code {
     [Inject] private IDialogService DialogService { get; set; }
-    private IEnumerable<ClipboardModel>? cb { get; set; }
-    private ClipboardModel newCB = new ClipboardModel();
+    private IEnumerable<LinkModel>? links { get; set; }
     private bool isUpdate = false;
 
     protected override async Task OnInitializedAsync()
@@ -43,35 +43,7 @@
 
     private async Task RefreshData()
     {
-        cb = await cbData.GetAllAdmin();
-    }
-
-    private async Task CreateClip()
-    {
-        await cbData.Insert(newCB);
-        newCB = new ClipboardModel();
-        await RefreshData();
-    }
-
-    private async Task UpdateClip()
-    {
-        await cbData.Update(newCB);
-        newCB = new ClipboardModel();
-        isUpdate = false;
-        await RefreshData();
-    }
-
-    private async Task CancelUpdate()
-    {
-        newCB = new ClipboardModel();
-        isUpdate = false;
-        await RefreshData();
-    }
-
-    private async Task EditClip(MouseEventArgs e, string id)
-    {
-        newCB = cb.FirstOrDefault(d => d.Id == id);
-        isUpdate = true;
+        links = await linkData.GetAllAdmin();
     }
 
     private async void Delete(MouseEventArgs e, string id)
@@ -83,7 +55,7 @@
         //state = result == null ? "Canceled" : "Deleted!";
         if (result == true)
         {
-            await cbData.Delete(id);
+            await linkData.Delete(id);
             await RefreshData();
         }
         StateHasChanged();
@@ -91,11 +63,11 @@
 
     private async Task Create(MouseEventArgs e)
     {
-        ClipboardModel model = new();
+        LinkModel model = new();
         DialogOptions options = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
-        var parameters = new DialogParameters<ClipboardDialog> { { x => x.model, model } };
+        var parameters = new DialogParameters<LinkDialog> { { x => x.model, model } };
 
-        var dialog = DialogService.Show<ClipboardDialog>("Create Link", parameters, options);
+        var dialog = DialogService.Show<LinkDialog>("Create Link", parameters, options);
         var result = await dialog.Result;
 
         if (!result.Canceled)
@@ -106,11 +78,11 @@
 
     private async Task Update(MouseEventArgs e, string cbId)
     {
-        ClipboardModel model = await cbData.GetId(cbId);
+        LinkModel model = await linkData.GetId(cbId);
         DialogOptions options = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
-        var parameters = new DialogParameters<ClipboardDialog> { { x => x.model, model } };
+        var parameters = new DialogParameters<LinkDialog> { { x => x.model, model } };
 
-        var dialog = await DialogService.ShowAsync<ClipboardDialog>("Update Link", parameters, options);
+        var dialog = await DialogService.ShowAsync<LinkDialog>("Update Link", parameters, options);
         var result = await dialog.Result;
 
         if (!result.Canceled)

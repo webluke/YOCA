@@ -1,0 +1,81 @@
+﻿@inject ISnackbar Snackbar
+@inject LinkDataAccess dataAccess
+@rendermode InteractiveServer
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="fas fa-link" Class="mr-3 mb-n1" />
+            Link
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm Model="@model">
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudCard>
+                        <MudCardContent>
+                            <MudTextField @bind-Value="model.Title" Label="Title" />
+                            <MudTextField @bind-Value="model.MenuName" Label="Menu Name" />
+                            <MudGrid>
+                                <MudItem xs="4">
+                                    <MudTextField @bind-Value="model.Icon" Label="Icon" />
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <MudIcon Icon="@model.Icon" Class="mr-3 mb-n1" />
+                                </MudItem>
+                            </MudGrid>
+                            <MudGrid>
+                                <MudItem xs="4">
+                                    <MudNumericField @bind-Value="model.Order" Label="Order" />
+                                </MudItem>
+                                <MudItem xs="4">
+                                    <MudNumericField @bind-Value="model.Type" Label="Type" />
+                                </MudItem>
+                                <MudItem xs="4">
+                                    <MudCheckBox @bind-Value="model.IsPublished" Label="Published" />
+                                </MudItem>
+                            </MudGrid>
+                            <MudTextField @bind-Value="model.URL" Label="URL" />
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        @if (String.IsNullOrEmpty(model.Id))
+        {
+            <MudButton Color="Color.Success" Variant="Variant.Outlined" OnClick="Create">Create</MudButton>
+        }
+        else
+        {
+            <MudButton Color="Color.Info" OnClick="Update">Update</MudButton>
+        }
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public LinkModel model { get; set; }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private async void Update()
+    {
+        await dataAccess.Update(model);
+        Snackbar.Add("Link Updated", Severity.Success);
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private async void Create()
+    {
+        await dataAccess.Insert(model);
+        Snackbar.Add("Link Created", Severity.Success);
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+}

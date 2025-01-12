@@ -7,7 +7,7 @@
 <br />
 <h3>Pages</h3>
 <br />
-<MudButton Variant="Variant.Outlined" Color="Color.Success" Href="/admin/pages/create">Create Page</MudButton>
+<MudButton Variant="Variant.Outlined" Color="Color.Success" OnClick="e => Create(e)">Create</MudButton>
 <br />
 <MudTable Items="@pages" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
     <HeaderContent>
@@ -25,8 +25,8 @@
         <MudTd DataLabel="View Count">@context.ViewCount</MudTd>
         <MudTd DataLabel="Published">@context.IsPublished</MudTd>
         <MudTd DataLabel="Actions">
-            <MudButton Variant="Variant.Text" Color="Color.Info" Href="@($"/admin/pages/edit/{context.Id}")">Edit</MudButton>
-            <MudButton Variant="Variant.Text" Color="Color.Error" OnClick="e => DeletePage(e, context.Id)">Delete</MudButton>
+            <MudButton Variant="Variant.Text" Color="Color.Info" OnClick="e => Update(e, context.Id)">Edit</MudButton>
+            <MudButton Variant="Variant.Text" Color="Color.Error" OnClick="e => Delete(e, context.Id)">Delete</MudButton>
         </MudTd>
     </RowTemplate>
 </MudTable>
@@ -45,7 +45,8 @@
         pages = await pageData.GetAllAdmin();
     }
 
-    private async void DeletePage(MouseEventArgs e, string id)
+
+    private async void Delete(MouseEventArgs e, string id)
     {
         bool? result = await DialogService.ShowMessageBox(
         "Warning",
@@ -60,4 +61,33 @@
         StateHasChanged();
     }
 
+    private async Task Create(MouseEventArgs e)
+    {
+        PageModel model = new();
+        DialogOptions options = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var parameters = new DialogParameters<PageDialog> { { x => x.model, model } };
+
+        var dialog = DialogService.Show<PageDialog>("Create Page", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshData();
+        }
+    }
+
+    private async Task Update(MouseEventArgs e, string cbId)
+    {
+        PageModel model = await pageData.GetId(cbId);
+        DialogOptions options = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var parameters = new DialogParameters<PageDialog> { { x => x.model, model } };
+
+        var dialog = await DialogService.ShowAsync<PageDialog>("Update Page", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await RefreshData();
+        }
+    }
 }

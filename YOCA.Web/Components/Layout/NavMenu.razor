@@ -1,29 +1,26 @@
 ﻿@implements IDisposable
 
-@inject PageDataAccess pageData
+@inject LinkDataAccess linkData
 @inject NavigationManager NavigationManager
 
 <MudNavMenu>
     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="fas fa-house-laptop">Home</MudNavLink>
     <MudNavLink Href="clipboard" Match="NavLinkMatch.Prefix" Icon="fas fa-clipboard">Clipboard</MudNavLink>
     <MudNavLink Href="projects" Match="NavLinkMatch.Prefix" Icon="fas fa-list-check">Projects</MudNavLink>
-    @if (pages != null)
+    @if (menuLinks != null)
     {
-        foreach (var p in pages)
+        foreach (var l in menuLinks)
         {
-            string href = $"page/{p.Slug}";
-            <MudNavLink Href="@href" Match="NavLinkMatch.All" Icon="@($"fas {p.Icon}")">@p.MenuName</MudNavLink>
+            <MudNavLink Href="@l.URL" Match="NavLinkMatch.All" Icon="@($"fas {l.Icon}")">@l.MenuName</MudNavLink>
         }
     }
-    <MudNavLink Href="https://www.x.com/webluke" Match="NavLinkMatch.All" Icon="fab fa-x-twitter">Twitter</MudNavLink>
-    <MudNavLink Href="https://www.twitch.tv/webluke" Match="NavLinkMatch.All" Icon="fab fa-twitch">Twitch</MudNavLink>
-    <MudNavLink Href="https://www.youtube.com/webluke" Match="NavLinkMatch.All" Icon="fab fa-youtube">YouTube</MudNavLink>
     <AuthorizeView Roles="Admin">
         <MudNavGroup Title="Admin" Icon="fas fa-toolbox" Expanded="true">
         <MudNavLink Href="admin/days" Match="NavLinkMatch.Prefix" Icon="fas fa-calendar-day">Days</MudNavLink>
         <MudNavLink Href="admin/clipboard" Match="NavLinkMatch.Prefix" Icon="fas fa-clipboard">Clipboard</MudNavLink>
         <MudNavLink Href="admin/projects" Match="NavLinkMatch.Prefix" Icon="fas fa-list-check">Projects</MudNavLink>
         <MudNavLink Href="admin/pages" Match="NavLinkMatch.Prefix" Icon="fas fa-newspaper">Pages</MudNavLink>
+        <MudNavLink Href="admin/links" Match="NavLinkMatch.Prefix" Icon="fas fa-link">Links</MudNavLink>
         <MudNavLink Href="admin/site" Match="NavLinkMatch.Prefix" Icon="fas fa-sliders">Site</MudNavLink>
         </MudNavGroup>
     </AuthorizeView>
@@ -33,29 +30,16 @@
             <MudNavLink Href="Account/Logout" Match="NavLinkMatch.Prefix" Icon="fas fa-person-through-window">Logout</MudNavLink>
         </Authorized>
         <NotAuthorized>
-@*             <MudNavLink Href="Account/Register" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">Register</MudNavLink>
- *@            <MudNavLink Href="Account/Login" Match="NavLinkMatch.Prefix" Icon="fas fa-user-lock">Login</MudNavLink>
+            <MudNavLink Href="Account/Login" Match="NavLinkMatch.Prefix" Icon="fas fa-user-lock">Login</MudNavLink>
         </NotAuthorized>
     </AuthorizeView>
     <br />
-@*     <MudText Align="Align.Center">
-    <script src='https://storage.ko-fi.com/cdn/scripts/overlay-widget.js'></script>
-    <script style="text-align:right;">
-        kofiWidgetOverlay.draw('webluke', {
-            'type': 'floating-chat',
-            'floating-chat.donateButton.text': 'Support Me',
-            'floating-chat.donateButton.background-color': '#00b9fe',
-            'floating-chat.donateButton.text-color': '#fff'
-        });
-    </script>
-    <script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script><script type='text/javascript'>kofiwidget2.init('Support me on Ko-fi', '#00b9fe', 'G2G717JY8M');kofiwidget2.draw();</script> 
-    </MudText>
- *@</MudNavMenu>
+</MudNavMenu>
 
 
 @code {
     private string? currentUrl;
-    private IEnumerable<PageModel> pages;
+    private IEnumerable<MenuLinksModel> menuLinks;
 
     protected override async Task OnInitializedAsync()
     {
@@ -77,7 +61,7 @@
 
     private async Task RefreshData()
     {
-        pages = await pageData.GetAllMenu();
+        menuLinks = await linkData.GetAllMenu();
     }
 }
 

@@ -64,6 +64,7 @@
     <Folder Include="dbo\Stored Procedures\ProjectTasks" />
     <Folder Include="dbo\Stored Procedures\Page" />
     <Folder Include="dbo\Stored Procedures\Clipboard" />
+    <Folder Include="dbo\Stored Procedures\Links" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\DayOfCode.sql" />
@@ -108,6 +109,14 @@
     <Build Include="dbo\Stored Procedures\Clipboard\spClipboard_GetAll.sql" />
     <Build Include="dbo\Stored Procedures\Clipboard\spClipboard_GetById.sql" />
     <Build Include="dbo\Stored Procedures\DayOfCode\spDayOfCode_GetTomorrow.sql" />
+    <Build Include="dbo\Tables\Links.sql" />
+    <Build Include="dbo\Stored Procedures\Links\spLinks_Insert.sql" />
+    <Build Include="dbo\Stored Procedures\Links\spLinks_Delete.sql" />
+    <Build Include="dbo\Stored Procedures\Links\spLinks_Update.sql" />
+    <Build Include="dbo\Stored Procedures\Links\spLinks_GetAll.sql" />
+    <Build Include="dbo\Stored Procedures\Links\spLinks_GetAllAdmin.sql" />
+    <Build Include="dbo\Stored Procedures\Links\spLinks_GetAllLinksPagesMenu.sql" />
+    <Build Include="dbo\Stored Procedures\Links\spLinks_GetById.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />
