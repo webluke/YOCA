@@ -1,0 +1,102 @@
+﻿@inject ISnackbar Snackbar
+@inject ProjectDataAccess dataAccess
+@inject Statuses state
+@rendermode InteractiveServer
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="fas fa-list-check" Class="mr-3 mb-n1" />
+            Project
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm Model="@model">
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudCard>
+                        <MudCardContent>
+                            <MudTextField @bind-Value="model.Title" Label="Title" />
+                            <MudGrid>
+                                <MudItem xs="6">
+                                    <div class="mud-input-control mud-input-text-with-label mud-input-input-control">
+                                        <div class="mud-input-control-input-container">
+                                            <div class="mud-input mud-input-text mud-input-text-with-label mud-input-underline mud-typography-input">
+                                                <InputDate Label="Start Date" @bind-Value="model.StartDate" class="mud-input-slot mud-input-root mud-input-root-text mud-input-root-adorned-end" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <div class="mud-input-control mud-input-text-with-label mud-input-input-control">
+                                        <div class="mud-input-control-input-container">
+                                            <div class="mud-input mud-input-text mud-input-text-with-label mud-input-underline mud-typography-input">
+                                                <InputDate Label="End Date" @bind-Value="model.EndDate" class="mud-input-slot mud-input-root mud-input-root-text mud-input-root-adorned-end" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <MudNumericField @bind-Value="model.Order" Label="Order" />
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <div class="mud-input-control mud-input-text-with-label mud-select">
+                                        <div class="mud-input-control-input-container">
+                                            <div class="mud-input mud-input-text mud-input-text-with-label mud-input-adorned-end mud-input-underline mud-typography-input mud-select-input">
+                                                <label class="mud-input-label mud-input-label-animated mud-input-label-text mud-input-label-inputcontrol" for="Status">Status</label>
+                                                <InputSelect @bind-Value="model.Status" Label="Status" class="mud-input-slot mud-input-root mud-input-root-text mud-input-root-adorned-end mud-select-input">
+                                                    @foreach (var status in state.DefaultStatuses)
+                                                    {
+                                                        <option value="@status.Key">@status.Value.Name</option>
+
+                                                    }
+                                                </InputSelect>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </MudItem>
+                            </MudGrid>
+                            <br />
+                            <MarkdownEditor @bind-Value="model.Description" Theme="3024-night" />
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        @if (String.IsNullOrEmpty(model.Id))
+        {
+            <MudButton Color="Color.Success" OnClick="Create">Create</MudButton>
+        }
+        else
+        {
+            <MudButton Color="Color.Success" OnClick="Update">Update</MudButton>
+        }
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public ProjectModel model { get; set; }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private async void Update()
+    {
+        await dataAccess.Update(model);
+        Snackbar.Add("Project Updated", Severity.Success);
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private async void Create()
+    {
+        await dataAccess.Insert(model);
+        Snackbar.Add("Project Created", Severity.Success);
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+}

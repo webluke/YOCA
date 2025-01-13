@@ -5,6 +5,10 @@
 AS
 BEGIN
 
+	DELETE FROM [dbo].[ProjectTasks]
+	WHERE
+		[ProjectId] = @Id
+
 	DELETE FROM [dbo].[Projects]
 	WHERE
 		[Id] = @Id

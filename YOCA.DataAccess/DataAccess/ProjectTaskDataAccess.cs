@@ -41,13 +41,16 @@ public class ProjectTaskDataAccess
     {
         pt.Id = Ids.NewId();
         await DB.SaveData("dbo.spProjectTasks_Insert",
-            new { pt });
+            new { Id = pt.Id, ProjectId = pt.ProjectId, Order = pt.Order, Status = pt.Status, Title = pt.Title, Description = pt.Description });
     }
 
-    public Task UpdatePost(ProjectTaskModel pt) =>
-        DB.SaveData("dbo.spProjectTasks_Update", pt);
+    public async Task Update(ProjectTaskModel pt)
+    {
+        await DB.SaveData("dbo.spProjectTasks_Update",
+            new { Id = pt.Id, ProjectId = pt.ProjectId, Order = pt.Order, Status = pt.Status, Title = pt.Title, Description = pt.Description });
+    }
 
-    public Task DeletePost(string id) =>
+    public Task Delete(string id) =>
         DB.SaveData("dbo.spProjectTasks_Delete",
             new { Id = id });
 }
