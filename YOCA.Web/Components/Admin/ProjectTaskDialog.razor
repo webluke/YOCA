@@ -3,6 +3,9 @@
 @inject Statuses state
 @rendermode InteractiveServer
 
+<MudPopoverProvider />
+<MudSnackbarProvider />
+
 <MudDialog>
     <TitleContent>
         <MudText Typo="Typo.h6">
@@ -22,20 +25,12 @@
                                     <MudNumericField @bind-Value="model.Order" Label="Order" />
                                 </MudItem>
                                 <MudItem xs="6">
-                                    <div class="mud-input-control mud-input-text-with-label mud-select">
-                                        <div class="mud-input-control-input-container">
-                                            <div class="mud-input mud-input-text mud-input-text-with-label mud-input-adorned-end mud-input-underline mud-typography-input mud-select-input">
-                                                <label class="mud-input-label mud-input-label-animated mud-input-label-text mud-input-label-inputcontrol" for="Status">Status</label>
-                                                <InputSelect @bind-Value="model.Status" Label="Status" class="mud-input-slot mud-input-root mud-input-root-text mud-input-root-adorned-end mud-select-input">
-                                                    @foreach (var status in state.DefaultStatuses)
-                                                    {
-                                                        <option value="@status.Key">@status.Value.Name</option>
-
-                                                    }
-                                                </InputSelect>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <MudSelect @bind-Value="@model.Status" Label="Status">
+                                        @foreach (var status in state.DefaultStatuses)
+                                        {
+                                            <MudSelectItem Value="@status.Key">@status.Value.Name</MudSelectItem>
+                                        }
+                                    </MudSelect>
                                 </MudItem>
                             </MudGrid>
                             <br />
@@ -61,7 +56,7 @@
 
 @code {
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance MudDialog { get; set; }
 
     [Parameter]
     public ProjectTaskModel model { get; set; }

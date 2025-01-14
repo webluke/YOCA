@@ -4,8 +4,10 @@
 @rendermode InteractiveServer
 
 <MudDialogProvider />
-<br />
-<h3>Days</h3>
+<MudSnackbarProvider />
+
+<PageTitle>Admin - Day</PageTitle>
+<MudText Typo="Typo.h4">Day</MudText>
 <br />
 <MudButton Variant="Variant.Outlined" Color="Color.Success" OnClick="e => Create(e)">Create</MudButton>
 <br />
@@ -105,7 +107,7 @@
         model.Date = DateOnly.FromDateTime(DateTime.Now);
         model.Goal = days.FirstOrDefault().Tomorrow;
         DialogOptions options = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
-        var parameters = new DialogParameters<DayDialog> { { x => x.day, model } };
+        var parameters = new DialogParameters<DayDialog> { { x => x.model, model } };
 
         var dialog = DialogService.Show<DayDialog>("Create Day", parameters, options);
         var result = await dialog.Result;
@@ -120,7 +122,7 @@
     {
         DayOfCodeModel model = await dayData.GetId(cbId);
         DialogOptions options = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
-        var parameters = new DialogParameters<DayDialog> { { x => x.day, model } };
+        var parameters = new DialogParameters<DayDialog> { { x => x.model, model } };
 
         var dialog = await DialogService.ShowAsync<DayDialog>("Update Day", parameters, options);
         var result = await dialog.Result;

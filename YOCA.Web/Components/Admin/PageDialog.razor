@@ -15,14 +15,14 @@
                 <MudItem xs="12">
                     <MudCard>
                         <MudCardContent>
-                            <MudTextField @bind-Value="model.Title" Label="Title" />
-                            <MudTextField @bind-Value="model.Slug" Label="Slug" />
-                            <MudTextField @bind-Value="model.MenuName" Label="Menu Name" />
-                            <MudTextField @bind-Value="model.Icon" Label="Menu Icon" />
-                            <MudNumericField @bind-Value="model.Order" Label="Menu Order" />
-                            <MudCheckBox @bind-Value="model.IsPublished" Label="Published" />
+                            <MudTextField @bind-Value="@model.Title" Label="Title" />
+                            <MudTextField @bind-Value="@model.Slug" Label="Slug" />
+                            <MudTextField @bind-Value="@model.MenuName" Label="Menu Name" />
+                            <MudTextField @bind-Value="@model.Icon" Label="Menu Icon" />
+                            <MudNumericField @bind-Value="@model.Order" Label="Menu Order" />
+                            <MudCheckBox @bind-Value="@model.IsPublished" Label="Published" />
                             <br />
-                            <MarkdownEditor @bind-Value="model.Content" Theme="3024-night" />
+                            <MarkdownEditor @bind-Value="@model.Content" Theme="3024-night" />
                         </MudCardContent>
                     </MudCard>
                 </MudItem>
@@ -44,7 +44,7 @@
 
 @code {
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
+    private IMudDialogInstance MudDialog { get; set; }
 
     [Parameter]
     public PageModel model { get; set; }

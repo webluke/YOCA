@@ -1,7 +1,13 @@
 ﻿@page "/"
 @inject DayOfCodeDataAccess dayData
+@rendermode InteractiveServer
 
-<PageTitle>Home</PageTitle>
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<PageTitle>Year of Code</PageTitle>
+
 @if (tm != null) {
 <MudAlert Severity="Severity.Normal" Variant="Variant.Outlined">
     <b>Tomorrow:</b> Day @tm.Day - @tm.Date.ToString("MMMM d, yyyy") - @tm.Tomorrow

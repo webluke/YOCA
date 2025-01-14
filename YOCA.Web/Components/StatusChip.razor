@@ -1,0 +1,7 @@
+﻿@inject Statuses state
+<MudChip T="string" Icon= "@state.DefaultStatuses[s].Icon" Color="@state.DefaultStatuses[s].Color" Label="true">@state.DefaultStatuses[s].Description</MudChip>
+
+@code {
+    [Parameter]
+    public int s { get; set; }
+}

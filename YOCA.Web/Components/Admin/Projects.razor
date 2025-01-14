@@ -6,8 +6,10 @@
 @rendermode InteractiveServer
 
 <MudDialogProvider />
-<br />
-<h3>Projects</h3>
+<MudSnackbarProvider />
+
+<PageTitle>Admin - Projects</PageTitle>
+<MudText Typo="Typo.h4">Projects</MudText>
 <br />
 <MudButton Variant="Variant.Outlined" Color="Color.Success" OnClick="e => Create(e)">Create</MudButton>
 <br />
@@ -17,7 +19,7 @@
     <MudCard>
         <MudCardHeader>
             <CardHeaderContent>
-                <MudText Typo="Typo.h4">@project.Title</MudText>
+                    <MudText Typo="Typo.h4">@project.Title <StatusChip s="@project.Status" /></MudText>
                 <MudText Typo="Typo.subtitle1"><b>Start Date: </b> @project.StartDate.ToString("MMMM d, yyyy") - <b>End Date: </b>@project.EndDate.ToString("MMMM d, yyyy")</MudText>
             </CardHeaderContent>
         </MudCardHeader>
@@ -27,8 +29,11 @@
             <MudButton Variant="Variant.Text" Color="Color.Error" OnClick="e => Delete(e, project.Id)">Delete</MudButton>
         </MudCardActions>
         <MudCardContent>
-            <MudText><b>Description: </b></MudText>
-            <MudText>@project.Description</MudText>
+            <MudCard Outlined="true">
+                <MudCardContent>
+                        @((MarkupString)Markdown.ParseHtmlString(project.Description).ToString())
+                </MudCardContent>
+            </MudCard>
             <MudTable Items="@project.Tasks" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
                 <HeaderContent>
                     <MudTh>Order</MudTh>
@@ -39,9 +44,9 @@
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd DataLabel="Order">@context.Order</MudTd>
-                    <MudTd DataLabel="Title"><MudChip T="string" Color="@state.DefaultStatuses[context.Status].Color" Label="true">@state.DefaultStatuses[context.Status].Description</MudChip></MudTd>
-                    <MudTd DataLabel="Menu Name">@context.Title</MudTd>
-                    <MudTd DataLabel="Description">@context.Description</MudTd>
+                    <MudTd DataLabel="Status"><StatusChip s="@context.Status" /></MudTd>
+                    <MudTd DataLabel="Title">@context.Title</MudTd>
+                        <MudTd DataLabel="Description">@((MarkupString)Markdown.ParseHtmlString(context.Description).ToString())</MudTd>
                     <MudTd DataLabel="Actions">
                         <MudButton Variant="Variant.Text" Color="Color.Info" OnClick="e => UpdateTask(e, context.Id)">Edit</MudButton>
                         <MudButton Variant="Variant.Text" Color="Color.Error" OnClick="e => DeleteTask(e, context.Id)">Delete</MudButton>

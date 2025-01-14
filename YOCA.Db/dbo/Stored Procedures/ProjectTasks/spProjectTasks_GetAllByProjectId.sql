@@ -18,7 +18,6 @@ BEGIN
 		[dbo].[ProjectTasks]
 	WHERE
 		[ProjectId] = @ProjectId
-	ORDER BY
-		[Order]
+	ORDER BY [Order] DESC, [Status] ASC
 
 END

@@ -1,7 +1,9 @@
 ﻿@page "/projects"
 @inject ProjectDataAccess projectAccess;
 
-<h3>Projects</h3>
+<PageTitle>Projects</PageTitle>
+<MudText Typo="Typo.h4">Projects</MudText>
+<br />
 @if (proj != null)
 {
     foreach (var p in proj)

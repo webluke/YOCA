@@ -4,8 +4,14 @@
 
 @if (p != null)
 {
-    <MudText Typo="Typo.h5" GutterBottom="true">@p.Title</MudText>
-    @((MarkupString)Markdown.ParseHtmlString(p.Content).ToString())
+    <PageTitle>@p.Title</PageTitle>
+    <MudText Typo="Typo.h4">@p.Title</MudText>
+    <br />
+    <MudCard>
+        <MudCardContent>
+        @((MarkupString)Markdown.ParseHtmlString(p.Content).ToString())
+        </MudCardContent>
+    </MudCard>
 }
 
 @code {
