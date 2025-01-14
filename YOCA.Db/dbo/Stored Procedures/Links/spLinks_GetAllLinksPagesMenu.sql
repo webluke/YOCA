@@ -8,6 +8,7 @@ BEGIN
 	SELECT 
 		[Id],
 		[Order],
+		[Type],
 		[Title],
 		[URL],
 		[MenuName],
@@ -20,6 +21,7 @@ BEGIN
 	SELECT 
 		[Id],
 		[Order],
+		[Type] = 0,
 		[Title],
 		[URL] = 'page/'+[Slug],
 		[MenuName],

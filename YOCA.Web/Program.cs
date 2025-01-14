@@ -36,6 +36,7 @@ builder.Services.AddSingleton<ClipboardDataAccess>();
 builder.Services.AddSingleton<LinkDataAccess>();
 
 builder.Services.AddSingleton<Statuses>();
+builder.Services.AddSingleton<LinkTargets>();
 
 builder.Services.AddMarkdown();
 

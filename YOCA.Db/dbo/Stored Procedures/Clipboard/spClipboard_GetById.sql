@@ -9,6 +9,7 @@ BEGIN
 		[Id],
 		[Order],
 		[Status],
+		[DateCompleted],
 		[Title],
 		[Note],
 		[TimeCreated],

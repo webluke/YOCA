@@ -19,18 +19,22 @@
             </MudCard>
             @if (p.Tasks.Count > 0)
             {
-            <MudTimeline>
+            <MudTimeline Modifiers="false">
                 @foreach (var task in p.Tasks)
                 {
-                <MudTimelineItem Color="@state.DefaultStatuses[task.Status].Color" TimelineAlign="TimelineAlign.End" Size="Size.Large">
+                <MudTimelineItem Color="@state.DefaultStatuses[task.Status].Color" TimelineAlign="TimelineAlign.End" Variant="Variant.Filled" Size="Size.Medium">
                     <ItemDot>
-                        <MudIcon Icon="@state.DefaultStatuses[task.Status].Icon" Size="Size.Medium" />
+                        <MudIcon style="text-align: center;" Icon="@state.DefaultStatuses[task.Status].Icon" Size="Size.Medium" />
                     </ItemDot>
                     <ItemOpposite>
                         <MudText Color="@state.DefaultStatuses[task.Status].Color" Typo="Typo.h6" GutterBottom="true">@task.Title</MudText>
                     </ItemOpposite>
                     <ItemContent>
+                        <MudCard Outlined="true">
+                        <MudCardContent>
                         @((MarkupString)Markdown.ParseHtmlString(task.Description).ToString())
+                        </MudCardContent>    
+                        </MudCard>
                     </ItemContent>
                 </MudTimelineItem>
                 }

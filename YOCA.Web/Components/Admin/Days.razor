@@ -37,52 +37,16 @@
     [Inject] private IDialogService DialogService { get; set; }
     private IEnumerable<DayOfCodeModel>? days { get; set; }
     private DayOfCodeModel newDay = new DayOfCodeModel();
-    private DateTime? newDate { get; set; }
     private bool isUpdate = false;
 
     protected override async Task OnInitializedAsync()
     {
         await RefreshData();
-        newDate = DateTime.Now;
     }
 
     private async Task RefreshData()
     {
         days = await dayData.GetDays();
-        newDay.Day = days.Count();
-        newDay.Date = DateOnly.FromDateTime(DateTime.Now);
-        newDay.Goal = days.FirstOrDefault().Tomorrow;
-    }
-
-    private async Task CreateDay()
-    {
-        newDay.Date = DateOnly.FromDateTime(newDate.Value);
-        await dayData.Insert(newDay);
-        newDay = new DayOfCodeModel();
-        await RefreshData();
-    }
-
-    private async Task UpdateDay()
-    {
-        newDay.Date = DateOnly.FromDateTime(newDate.Value);
-        await dayData.Update(newDay);
-        newDay = new DayOfCodeModel();
-        isUpdate = false;
-        await RefreshData();
-    }
-
-    private async Task CancelUpdate()
-    {
-        newDay = new DayOfCodeModel();
-        isUpdate = false;
-        await RefreshData();
-    }
-
-    private async Task EditDay(MouseEventArgs e, string id)
-    {
-        newDay = days.FirstOrDefault(d => d.Id == id);
-        newDate = DateTime.Parse(newDay.Date.ToString());
-        isUpdate = true;
     }
 
     private async void Delete(MouseEventArgs e, string id)

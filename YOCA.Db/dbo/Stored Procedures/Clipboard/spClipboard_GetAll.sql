@@ -5,17 +5,20 @@
 AS
 BEGIN
 
-	SELECT 
-		[Id],
-		[Order],
-		[Status],
-		[Title],
-		[Note],
-		[TimeCreated],
-		[TimeUpdated]
-	FROM dbo.[Clipboard]
-	WHERE NOT [Status] > 299
-	ORDER BY [Order] DESC, [Status] ASC
+   SELECT  
+	   [Id],  
+	   [Order],  
+	   [Status],  
+	   [DateCompleted],  
+	   [Title],  
+	   [Note],  
+	   [TimeCreated],  
+	   [TimeUpdated]  
+   FROM dbo.[Clipboard]  
+   WHERE [Status] > 299  
+   OR ([Status] = 100 AND [DateCompleted] >= DATEADD(DAY, -14, GETDATE()))
+   OR ([Status] != 100 )
+   ORDER BY [Order] DESC, [Status] ASC
 
 END
 

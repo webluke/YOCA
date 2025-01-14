@@ -1,0 +1,23 @@
+﻿@page "/streaming/tomorrowgoal"
+@layout StreamLayout
+
+@inject DayOfCodeDataAccess dayData
+
+@if (tm != null) {
+
+    <h1 style="text-align: center; color: white; text-shadow: 1px 1px 1px black; font-size: 45px; ">Day @tm.Day - @tm.Date.ToString("MMMM d, yyyy") - @tm.Tomorrow</h1>
+}
+
+@code {
+    private TomorrowModel tm { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshData();
+    }
+
+    private async Task RefreshData()
+    {
+        tm = await dayData.GetTomorrow();
+    }
+}

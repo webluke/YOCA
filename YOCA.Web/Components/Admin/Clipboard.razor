@@ -36,7 +36,6 @@
     [Inject] private IDialogService DialogService { get; set; }
     private IEnumerable<ClipboardModel>? cb { get; set; }
     private ClipboardModel newCB = new ClipboardModel();
-    private bool isUpdate = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -46,34 +45,6 @@
     private async Task RefreshData()
     {
         cb = await cbData.GetAllAdmin();
-    }
-
-    private async Task CreateClip()
-    {
-        await cbData.Insert(newCB);
-        newCB = new ClipboardModel();
-        await RefreshData();
-    }
-
-    private async Task UpdateClip()
-    {
-        await cbData.Update(newCB);
-        newCB = new ClipboardModel();
-        isUpdate = false;
-        await RefreshData();
-    }
-
-    private async Task CancelUpdate()
-    {
-        newCB = new ClipboardModel();
-        isUpdate = false;
-        await RefreshData();
-    }
-
-    private async Task EditClip(MouseEventArgs e, string id)
-    {
-        newCB = cb.FirstOrDefault(d => d.Id == id);
-        isUpdate = true;
     }
 
     private async void Delete(MouseEventArgs e, string id)
@@ -94,6 +65,7 @@
     private async Task Create(MouseEventArgs e)
     {
         ClipboardModel model = new();
+        model.DateCompleted = DateOnly.FromDateTime(DateTime.Now);
         DialogOptions options = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
         var parameters = new DialogParameters<ClipboardDialog> { { x => x.model, model } };
 

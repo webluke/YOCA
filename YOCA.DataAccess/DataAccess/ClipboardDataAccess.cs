@@ -37,12 +37,12 @@ public class ClipboardDataAccess
     {
         cb.Id = Ids.NewId();
         await DB.SaveData("dbo.spClipboard_Insert",
-            new { Id = cb.Id, Order = cb.Order, Status = cb.Status, Title = cb.Title, Note = cb.Note });
+            new { Id = cb.Id, Order = cb.Order, Status = cb.Status, DateCompleted = cb.DateCompleted, Title = cb.Title, Note = cb.Note });
     }
 
     public async Task Update(ClipboardModel cb) => await
         DB.SaveData("dbo.spClipboard_Update",
-            new { Id = cb.Id, Order = cb.Order, Status = cb.Status, Title = cb.Title, Note = cb.Note });
+            new { Id = cb.Id, Order = cb.Order, Status = cb.Status, DateCompleted = cb.DateCompleted, Title = cb.Title, Note = cb.Note });
 
     public async Task Delete(string id) => await
         DB.SaveData("dbo.spClipboard_Delete",

@@ -3,6 +3,7 @@
 	@Id NCHAR(10),
 	@Order INT,
 	@Status INT,
+	@DateCompleted DATE,
 	@Title NVARCHAR(50),
 	@Note NVARCHAR(MAX)
 
@@ -14,6 +15,7 @@ BEGIN
 		[Id],
 		[Order],
 		[Status],
+		[DateCompleted],
 		[Title],
 		[Note]
 	)
@@ -22,6 +24,7 @@ BEGIN
 		@Id,
 		@Order,
 		@Status,
+		@DateCompleted,
 		@Title,
 		@Note
 	)

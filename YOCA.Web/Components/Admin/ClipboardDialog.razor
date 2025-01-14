@@ -33,6 +33,11 @@
                                     </MudSelect>
                                 </MudItem>
                             </MudGrid>
+                            <MudGrid>
+                                <MudItem xs="6">
+                                    <MudDatePicker @bind-Date="@tempDate" Label="Date Completed" />
+                                </MudItem>
+                            </MudGrid>
                                 <br />
                                 <MarkdownEditor @bind-Value="@model.Note" Theme="3024-night" />
                             </MudCardContent>
@@ -60,11 +65,18 @@
 
     [Parameter]
     public ClipboardModel model { get; set; }
+    private DateTime? tempDate = DateTime.Today;
+
+    protected override void OnInitialized()
+    {
+        tempDate = model.DateCompleted.ToDateTime(TimeOnly.MinValue);
+    }
 
     private void Cancel() => MudDialog.Cancel();
 
     private async void Update()
     {
+        model.DateCompleted = DateOnly.FromDateTime(tempDate.Value);
         await dataAccess.Update(model);
         Snackbar.Add("Clipboard Item Updated", Severity.Success);
         MudDialog.Close(DialogResult.Ok(true));
@@ -72,6 +84,7 @@
 
     private async void Create()
     {
+        model.DateCompleted = DateOnly.FromDateTime(tempDate.Value);
         await dataAccess.Insert(model);
         Snackbar.Add("Clipboard Item Created", Severity.Success);
         MudDialog.Close(DialogResult.Ok(true));

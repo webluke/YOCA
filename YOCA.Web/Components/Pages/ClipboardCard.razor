@@ -12,6 +12,11 @@
             </CardHeaderContent>
         </MudCardHeader>
         <MudCardContent>
+            @if(cb.Status == 100)
+            {
+                <p><b>Completed:</b> @cb.DateCompleted.ToString("MMMM d, yyyy")</p>
+                <br />
+            }
             @((MarkupString)Markdown.ParseHtmlString(cb.Note).ToString())
         </MudCardContent>
     </MudCard>
