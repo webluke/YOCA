@@ -25,7 +25,7 @@ builder.Services
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-
+builder.Services.AddMvc(options => options.EnableEndpointRouting = false);
 
 builder.Services.AddSingleton<ISqlDataAccess, SqlDataAccess>();
 builder.Services.AddSingleton<DayOfCodeDataAccess>();
@@ -57,6 +57,9 @@ else
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
+
+app.UseMvcWithDefaultRoute();
+
 app.UseAntiforgery();
 
 app.MapGet("/Account/Login", async (HttpContext httpContext, string returnUrl = "/") =>

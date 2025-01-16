@@ -4,7 +4,6 @@
 @rendermode InteractiveServer
 
 <MudPopoverProvider />
-<MudSnackbarProvider />
 
 <MudDialog>
     <TitleContent>
@@ -39,7 +38,7 @@
                                 </MudItem>
                             </MudGrid>
                                 <br />
-                                <MarkdownEditor @bind-Value="@model.Note" Theme="3024-night" />
+                                <MarkdownEditor SpellChecker @bind-Value="@model.Note" Theme="3024-night" />
                             </MudCardContent>
                         </MudCard>
                     </MudItem>

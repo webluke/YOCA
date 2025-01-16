@@ -3,7 +3,6 @@
 @rendermode InteractiveServer
 
 <MudPopoverProvider />
-<MudSnackbarProvider />
 
 <MudDialog>
     <TitleContent>
@@ -20,7 +19,7 @@
                         <MudCardContent>
                             <MudGrid>
                                 <MudItem xs="6">
-                                    <MudDatePicker @bind-Date="@tempDate" Label="Date" />
+                                    <MudDatePicker @bind-Date="@tempDate" Label="Date" AnchorOrigin="Origin.TopLeft" TransformOrigin="Origin.TopLeft" />
                                 </MudItem>
                                 <MudItem xs="6">
                                     <MudNumericField @bind-Value="@model.Day" Label="Day" HelperText="0 Start Day" />
