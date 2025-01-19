@@ -20,13 +20,13 @@ public class PageDataAccess
 
     public async Task<IEnumerable<PageModel>> GetAllMenu()
     {
-        IEnumerable<PageModel> results = await DB.LoadData<PageModel, dynamic>("dbo.spPage_GetAllMenu", new { });
+        var results = await DB.LoadData<PageModel, dynamic>("dbo.spPage_GetAllMenu", new { });
         return results;
     }
 
     public async Task<IEnumerable<PageModel>> GetAllAdmin()
     {
-        IEnumerable<PageModel> results = await DB.LoadData<PageModel, dynamic>("dbo.spPage_GetAllAdmin", new { });
+        var results = await DB.LoadData<PageModel, dynamic>("dbo.spPage_GetAllAdmin", new { });
         return results;
     }
 

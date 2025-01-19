@@ -68,7 +68,7 @@
     {
         model.Date = DateOnly.FromDateTime(tempDate.Value);
         await dayData.Update(model);
-        Snackbar.Add("Day Item Updated", Severity.Success);
+        Snackbar.Add("Day of Code Updated", Severity.Success);
         MudDialog.Close(DialogResult.Ok(true));
     }
 
@@ -76,7 +76,7 @@
     {
         model.Date = DateOnly.FromDateTime(tempDate.Value);
         await dayData.Insert(model);
-        Snackbar.Add("Day Item Created", Severity.Success);
+        Snackbar.Add("Day of Code Created", Severity.Success);
         MudDialog.Close(DialogResult.Ok(true));
     }
 }
