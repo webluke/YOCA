@@ -1,0 +1,21 @@
+﻿@if (day != null)
+{
+    <FluentCard Height="auto">
+        <h4>Day @day.Day - @day.Date.ToString("MMMM d, yyyy")</h4>
+        <p><b>Goal:</b> @day.Goal</p>
+        <p><b>Result:</b> @day.Result</p>
+        @((MarkupString)Markdown.ParseHtmlString(day.Summary).ToString())
+        <p><b>Tomorrow:</b> @day.Tomorrow</p>
+    </FluentCard>
+}
+
+@code {
+    [Parameter]
+    public DayOfCodeModel day { get; set; }
+
+    protected override void OnInitialized()
+    {
+
+    }
+
+}

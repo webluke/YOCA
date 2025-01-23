@@ -1,0 +1,42 @@
+﻿@inject Statuses state
+
+@if (project != null)
+{
+    <FluentCard Height="auto">
+        <h4>@project.Title</h4>
+        <StatusBadge statusIndex="@project.Status" />
+        <br />
+        <h5>Start: @project.StartDate - End: @project.EndDate</h5>
+        <FluentCard Height="auto">
+            @((MarkupString)Markdown.ParseHtmlString(project.Description).ToString())
+        </FluentCard>
+        <br />
+        @if (project.Tasks.Count > 0)
+        {
+        <FluentGrid>
+            @foreach (var task in project.Tasks)
+            {
+                <FluentGridItem xs="12" sm="6" md="4" lg="3">
+                    <FluentCard>
+                        <h4>@task.Title</h4>
+                        <StatusBadge statusIndex="@task.Status" />
+                        <br />
+                        @((MarkupString)Markdown.ParseHtmlString(task.Description).ToString())
+                    </FluentCard>
+                </FluentGridItem>
+            }
+        </FluentGrid>
+        }
+    </FluentCard>
+}
+
+@code {
+    [Parameter]
+    public ProjectModel project { get; set; }
+
+    protected override void OnInitialized()
+    {
+
+    }
+
+}

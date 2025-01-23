@@ -1,28 +1,21 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>aspnet-YOCA.Web-26bf5b23-75f7-4f9c-a26d-dfeceb92bece</UserSecretsId>
+    <UserSecretsId>048e17d3-25b2-49d3-8eeb-56ce14523616</UserSecretsId>
   </PropertyGroup>
-
 
   <ItemGroup>
     <PackageReference Include="Auth0.AspNetCore.Authentication" Version="1.4.1" />
-    <PackageReference Include="MudBlazor" Version="8.0.0" />
+    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.11.3" />
+    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.11.3" />
     <PackageReference Include="PSC.Blazor.Components.MarkdownEditor" Version="8.0.5" />
     <PackageReference Include="Westwind.AspNetCore.Markdown" Version="3.21.0" />
   </ItemGroup>
 
-
   <ItemGroup>
     <ProjectReference Include="..\YOCA.DataAccess\YOCA.DataAccess.csproj" />
   </ItemGroup>
-
-
-  <ItemGroup>
-    <Folder Include="wwwroot\img\" />
-  </ItemGroup>
-
 </Project>

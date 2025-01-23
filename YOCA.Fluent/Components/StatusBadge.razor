@@ -1,0 +1,7 @@
+﻿@inject Statuses state
+<FluentBadge Fill="somevalue" Color="@state.DefaultStatuses[statusIndex].Color" BackgroundColor="@state.DefaultStatuses[statusIndex].BackgroundColor"><i class="@state.DefaultStatuses[statusIndex].Icon" />&nbsp;&nbsp;@state.DefaultStatuses[statusIndex].Description</FluentBadge>
+
+@code {
+    [Parameter]
+    public int statusIndex { get; set; }
+}

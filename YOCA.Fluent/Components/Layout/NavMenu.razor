@@ -1,0 +1,74 @@
+﻿@* @rendermode InteractiveServer *@
+
+@inject LinkDataAccess linkData
+@inject NavigationManager NavigationManager
+@inject LinkTargets targets
+
+<div class="navmenu">
+    <input type="checkbox" title="Menu expand/collapse toggle" id="navmenu-toggle" class="navmenu-icon" />
+    <label for="navmenu-toggle" class="navmenu-icon"><FluentIcon Value="@(new Icons.Regular.Size20.Navigation())" Color="Color.Fill" /></label>
+    <nav class="sitenav" aria-labelledby="main-menu">
+        <FluentNavMenu Id="main-menu" Collapsible="true" Width="250" Title="Navigation menu" @bind-Expanded="expanded" CustomToggle="true">
+            <FluentNavLink Href="/" Match="NavLinkMatch.All"><i class="fas fa-house-laptop" /> Home</FluentNavLink>
+            <FluentNavLink Href="clipboard" Match="NavLinkMatch.Prefix"><i class="fas fa-clipboard" /> Clipboard</FluentNavLink>
+            <FluentNavLink Href="projects" Match="NavLinkMatch.Prefix"><i class="fas fa-list-check" /> Projects</FluentNavLink>
+@*             <FluentNavLink Href="counter" Icon="@(new Icons.Regular.Size20.NumberSymbolSquare())" IconColor="Color.Accent">Counter</FluentNavLink>
+            <FluentNavLink Href="weather" Icon="@(new Icons.Regular.Size20.WeatherPartlyCloudyDay())" IconColor="Color.Accent">Weather</FluentNavLink> *@
+            @if (menuLinks != null)
+            {
+                foreach (var l in menuLinks)
+                {
+                    <FluentNavLink Href="@l.URL" Match="NavLinkMatch.All" Target="@targets.DefaultLinkTargets[l.Type].Code"><i class="@($"fas {l.Icon}")" /> @l.MenuName</FluentNavLink>
+                }
+            }
+        <AuthorizeView Roles="Admin">
+            <FluentNavGroup Title="Admin" Expanded="true">
+                <FluentNavLink Href="admin/days" Match="NavLinkMatch.Prefix"><i class="fas fa-calendar-day" /> Days</FluentNavLink>
+                <FluentNavLink Href="admin/clipboard" Match="NavLinkMatch.Prefix"><i class="fas fa-clipboard" /> Clipboard</FluentNavLink>
+                <FluentNavLink Href="admin/projects" Match="NavLinkMatch.Prefix"><i class="fas fa-list-check" /> Projects</FluentNavLink>
+                <FluentNavLink Href="admin/pages" Match="NavLinkMatch.Prefix"><i class="fas fa-newspaper" /> Pages</FluentNavLink>
+                <FluentNavLink Href="admin/links" Match="NavLinkMatch.Prefix"><i class="fas fa-link" /> Links</FluentNavLink>
+                <FluentNavLink Href="admin/site" Match="NavLinkMatch.Prefix"><i class="fas fa-sliders" /> Site</FluentNavLink>
+            </FluentNavGroup>
+        </AuthorizeView>
+        <AuthorizeView>
+            <Authorized>
+                        @* <FluentNavLink Href="Account/Manage" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">@context.User.Identity?.Name</MudNavLink> *@
+                    <FluentNavLink Href="Account/Logout" Match="NavLinkMatch.Prefix"><i class="fas fa-person-through-window" /> Logout</FluentNavLink>
+            </Authorized>
+            <NotAuthorized>
+                    <FluentNavLink Href="Account/Login" Match="NavLinkMatch.Prefix"><i class="fas fa-user-lock" /> Login</FluentNavLink>
+            </NotAuthorized>
+        </AuthorizeView>
+        </FluentNavMenu>
+    </nav>
+</div>
+
+@code {
+    private bool expanded = true;
+    private string? currentUrl;
+    private IEnumerable<MenuLinksModel> menuLinks;
+
+    protected override async Task OnInitializedAsync()
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+        await RefreshData();
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+
+    private async Task RefreshData()
+    {
+        menuLinks = await linkData.GetAllMenu();
+    }
+}

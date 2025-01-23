@@ -10,5 +10,5 @@
 AS 
 BEGIN
 	INSERT INTO [dbo].[DayOfCode] ([Id], [Day], [Date], [Goal], [Result], [Tomorrow], [Summary])
-	VALUES (@Id, @Day, @Date, @Goal, @Result, @Tomorrow, @Summary)
+	VALUES (@Id, @Day, @Date, @Goal, @Result, @Tomorrow, @Summary);
 END

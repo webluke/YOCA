@@ -18,6 +18,6 @@ BEGIN
 		[ViewCount]
 	FROM
 		[dbo].[DayOfCode]
-	ORDER BY [Date] DESC
+	ORDER BY [Date] DESC;
 
 END

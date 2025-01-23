@@ -1,0 +1,31 @@
+﻿@page "/clipboard"
+@inject ClipboardDataAccess clipboardData;
+
+<PageTitle>Clipboard</PageTitle>
+<h3>Clipboard</h3>
+<br />
+<FluentGrid>
+@if (cb != null)
+{
+    foreach (var c in cb)
+    {
+        <FluentGridItem xs="12" sm="6" md="4" lg="3">
+            <ClipboardCard cb="@c" />
+        </FluentGridItem>
+    }
+}
+</FluentGrid>
+
+@code {
+    private IEnumerable<ClipboardModel>? cb { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshData();
+    }
+
+    private async Task RefreshData()
+    {
+        cb = await clipboardData.GetAll();
+    }
+}

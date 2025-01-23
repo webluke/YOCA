@@ -1,0 +1,33 @@
+﻿@page "/page/{slug}"
+@inject PageDataAccess pageData
+@inject NavigationManager NavManager
+
+@if (p != null)
+{
+    <PageTitle>@p.Title</PageTitle>
+    <h3>@p.Title</h3>
+    <br />
+    <FluentCard Height="auto">
+        @((MarkupString)Markdown.ParseHtmlString(p.Content).ToString())
+    </FluentCard>
+}
+
+@code {
+    [Parameter]
+    public string slug { get; set; }
+    public PageModel p { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshData();
+    }
+
+    private async Task RefreshData()
+    {
+        p = (await pageData.GetSlug(slug));
+        if (p == null)
+        {
+            NavManager.NavigateTo("/");
+        }
+    }
+}

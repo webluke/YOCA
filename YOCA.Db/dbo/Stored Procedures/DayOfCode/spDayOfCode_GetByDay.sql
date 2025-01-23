@@ -19,6 +19,6 @@ BEGIN
 	FROM
 		[dbo].[DayOfCode]
 	WHERE
-		[Day] = @Day
+		[Day] = @Day;
 
 END

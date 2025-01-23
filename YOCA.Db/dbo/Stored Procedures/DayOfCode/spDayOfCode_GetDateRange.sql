@@ -22,6 +22,6 @@ BEGIN
 	WHERE 
 		[Date] BETWEEN @Start AND @End
 	ORDER BY 
-		[Date] DESC
+		[Date] DESC;
 
 END

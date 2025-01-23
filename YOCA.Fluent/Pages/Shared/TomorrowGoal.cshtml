@@ -1,0 +1,21 @@
+﻿@inject DayOfCodeDataAccess dayData
+@model TomorrowModel
+<!doctype html>
+<html class="no-js" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+    @if (Model != null)
+    {
+        <h1 style="text-align: center; color: white; text-shadow: 1px 1px 1px black; font-size: 45px; ">Day @Model.Day - @Model.Date.ToString("MMMM d, yyyy") - @Model.Tomorrow</h1>
+    }
+</body>
+
+</html>
+@{
+
+}

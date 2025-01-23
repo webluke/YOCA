@@ -1,0 +1,26 @@
+﻿@inject Statuses state
+
+@if (cb != null)
+{
+    <FluentCard>
+        <h4>@cb.Title</h4>
+        <StatusBadge statusIndex="@cb.Status" />
+        <br />
+        @if(cb.Status == 100)
+        {
+            <p><b>Completed:</b> @cb.DateCompleted.ToString("MMMM d, yyyy")</p>
+            <br />
+        }
+        @((MarkupString)Markdown.ParseHtmlString(cb.Note).ToString())
+    </FluentCard>
+}
+
+@code {
+    [Parameter]
+    public ClipboardModel cb { get; set; }
+
+    protected override void OnInitialized()
+    {
+
+    }
+}

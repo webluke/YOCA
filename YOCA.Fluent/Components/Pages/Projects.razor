@@ -1,0 +1,29 @@
+﻿@page "/projects"
+@inject ProjectDataAccess projectAccess;
+
+<PageTitle>Projects</PageTitle>
+<h3>Projects</h3>
+<br />
+@if (proj != null)
+{
+    foreach (var p in proj)
+    {
+        <ProjectView project="@p" />
+        <br />
+    }
+
+}
+
+@code {
+    private IEnumerable<ProjectModel>? proj { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshData();
+    }
+
+    private async Task RefreshData()
+    {
+        proj = await projectAccess.GetAllWithTasks();
+    }
+}

@@ -22,6 +22,6 @@ BEGIN
 	ORDER BY 
 		[Date] DESC
 	OFFSET (@PageNumber - 1) * @PageSize ROWS
-	FETCH NEXT @PageSize ROWS ONLY
+	FETCH NEXT @PageSize ROWS ONLY;
 
 END

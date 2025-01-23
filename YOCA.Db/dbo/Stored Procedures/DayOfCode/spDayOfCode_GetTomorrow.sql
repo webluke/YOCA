@@ -12,6 +12,6 @@ BEGIN
 		[Tomorrow]
 	FROM
 		[dbo].[DayOfCode]
-	ORDER BY [Day] DESC
+	ORDER BY [Day] DESC;
 
 END

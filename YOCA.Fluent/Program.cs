@@ -1,14 +1,18 @@
-using MudBlazor.Services;
-using YOCA.Web.Components;
-using YOCA.Web.Models;
 using Auth0.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.FluentUI.AspNetCore.Components;
+using Westwind.AspNetCore.Markdown;
+using YOCA.DataAccess.DataAccess;
+using YOCA.Fluent.Components;
+using YOCA.Fluent.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add MudBlazor services
-builder.Services.AddMudServices();
+// Add services to the container.
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
+builder.Services.AddFluentUIComponents();
 
 // Auth0 services
 builder.Services
@@ -38,11 +42,7 @@ builder.Services.AddMarkdown();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    //app.UseMigrationsEndPoint();
-}
-else
+if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
@@ -51,11 +51,11 @@ else
 
 app.UseHttpsRedirection();
 
-app.UseStaticFiles();
-
 app.UseMvcWithDefaultRoute();
 
 app.UseAntiforgery();
+
+app.MapStaticAssets();
 
 app.MapGet("/Account/Login", async (HttpContext httpContext, string returnUrl = "/") =>
 {
@@ -78,8 +78,5 @@ app.MapGet("/Account/Logout", async (HttpContext httpContext) =>
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
-
-// Add additional endpoints required by the Identity /Account Razor components.
-//app.MapAdditionalIdentityEndpoints();
 
 app.Run();

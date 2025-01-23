@@ -1,0 +1,46 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <link href="https://use.fontawesome.com/releases/v6.7.2/css/all.css" rel="stylesheet">
+    <link rel="stylesheet" href="@Assets["app.css"]" />
+    <link rel="stylesheet" href="@Assets["YOCA.Fluent.styles.css"]" />
+    <link href="_content/PSC.Blazor.Components.MarkdownEditor/css/markdowneditor.css" rel="stylesheet" />
+    <link href="_content/PSC.Blazor.Components.MarkdownEditor/css/easymde.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/theme/3024-night.min.css">
+    <ImportMap />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <HeadOutlet />
+</head>
+
+<body>
+    <Routes />
+    <script src="_framework/blazor.web.js"></script>
+
+    <script src="_content/PSC.Blazor.Components.MarkdownEditor/js/easymde.min.js"></script>
+    <script src="_content/PSC.Blazor.Components.MarkdownEditor/js/markdownEditor.js"></script>
+
+    <script src='https://storage.ko-fi.com/cdn/scripts/overlay-widget.js'></script>
+    <script>
+        kofiWidgetOverlay.draw('webluke', {
+            'type': 'floating-chat',
+            'floating-chat.donateButton.text': 'Support Me',
+            'floating-chat.donateButton.background-color': '#00b9fe',
+            'floating-chat.donateButton.text-color': '#fff'
+        });
+    </script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8N96PS57PB"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-8N96PS57PB');
+    </script>
+</body>
+
+</html>

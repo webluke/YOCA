@@ -6,6 +6,6 @@ AS
 BEGIN 
 
 	DELETE FROM [dbo].[DayOfCode]
-	WHERE [Id] = @Id
+	WHERE [Id] = @Id;
 
 END
