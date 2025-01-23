@@ -55,7 +55,7 @@
 
     [Parameter]
     public DayOfCodeModel model { get; set; }
-    private DateTime? tempDate = DateTime.Today;
+    private DateTime? tempDate = DateTime.Now.ToLocalTime();
 
     protected override void OnInitialized()
     {

@@ -66,9 +66,9 @@
     [Parameter]
     public ProjectModel model { get; set; }
 
-    private DateTime? tempStartDate = DateTime.Today;
-    private DateTime? tempEndDate = DateTime.Today;
-    private DateTime? _date = DateTime.Today;
+    private DateTime? tempStartDate = DateTime.Now.ToLocalTime();
+    private DateTime? tempEndDate = DateTime.Now.ToLocalTime();
+    private DateTime? _date = DateTime.Now.ToLocalTime();
 
     protected override void OnInitialized()
     {

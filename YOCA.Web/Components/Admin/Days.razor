@@ -38,6 +38,7 @@
     private IEnumerable<DayOfCodeModel>? days { get; set; }
     private DayOfCodeModel newDay = new DayOfCodeModel();
     private bool isUpdate = false;
+    TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById("Mountain Standard Time");
 
     protected override async Task OnInitializedAsync()
     {
@@ -68,7 +69,7 @@
     {
         DayOfCodeModel model = new();
         model.Day = days.Count();
-        model.Date = DateOnly.FromDateTime(DateTime.Now);
+        model.Date = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone));
         model.Goal = days.FirstOrDefault().Tomorrow;
         DialogOptions options = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
         var parameters = new DialogParameters<DayDialog> { { x => x.model, model } };
