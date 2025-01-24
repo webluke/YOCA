@@ -1,6 +1,4 @@
-﻿using Microsoft.FluentUI.AspNetCore.Components;
-
-namespace YOCA.Fluent.Models;
+﻿namespace YOCA.Fluent.Models;
 
 public class Status
 {

@@ -1,0 +1,39 @@
+﻿@implements IDialogContentComponent<DeleteDialogModel>
+
+@* Header *@
+<FluentDialogHeader ShowDismiss="true">
+    <FluentStack VerticalAlignment="VerticalAlignment.Center">
+        <FluentIcon Value="@(new Icons.Regular.Size24.Delete())" />
+        <FluentLabel Typo="Typography.PaneHeader">
+            @Dialog.Instance.Parameters.Title
+        </FluentLabel>
+    </FluentStack>
+</FluentDialogHeader>
+
+@* Body *@
+<FluentDialogBody>
+    <h5><i>🚨 WARNING 🚨</i></h5>
+    <p>Are you sure you want to delete @Content.Name with ID: @Content.Id?</p>
+    <p><em>This action can not be undone!</em></p>
+</FluentDialogBody>
+
+@* Footer *@
+<FluentDialogFooter>
+    <FluentButton Appearance="Appearance.Accent" OnClick="@Delete">Delete</FluentButton>
+    <FluentButton Appearance="Appearance.Neutral" OnClick="@Cancel">Cancel</FluentButton>
+</FluentDialogFooter>
+
+@code {
+    [CascadingParameter]
+    public FluentDialog Dialog { get; set; } = default!;
+    [Parameter]
+    public DeleteDialogModel Content { get; set; } = default!;
+
+    private async Task Delete()
+    {
+        // await Dialog.CloseAsync(Content.Id);
+        await Dialog.CloseAsync();
+    }
+
+    private void Cancel() => Dialog.CancelAsync();
+}

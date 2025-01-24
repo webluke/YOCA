@@ -1,0 +1,88 @@
+﻿@inject LinkDataAccess dataAccess
+@inject LinkTargets targets
+@implements IDialogContentComponent<LinkModel>
+
+<!-- Header -->
+<FluentDialogHeader ShowDismiss="true">
+    <FluentStack VerticalAlignment="VerticalAlignment.Center">
+        <FluentIcon Value="@(new Icons.Regular.Size24.WindowApps())" />
+        <FluentLabel Typo="Typography.PaneHeader">
+            <i class="fas fa-link" /> @Dialog.Instance.Parameters.Title
+        </FluentLabel>
+    </FluentStack>
+</FluentDialogHeader>
+
+<!-- Body -->
+<FluentDialogBody>
+    <FluentStack Orientation="Orientation.Vertical">
+        <FluentTextField @bind-Value="@Content.Title">Title:</FluentTextField>
+        <FluentTextField @bind-Value="@Content.MenuName">Menu Name:</FluentTextField>
+        <FluentTextField @bind-Value="@Content.Icon">Icon:</FluentTextField>
+        <FluentNumberField @bind-Value="@Content.Order">Order:</FluentNumberField>
+        <InputSelect @bind-Value="@Content.Type">
+        @foreach (var t in targets.DefaultLinkTargets)
+        {
+            <option value=@t.Key>@t.Value.Name</option>
+        }
+        </InputSelect>
+        <FluentCheckbox @bind-Value="@Content.IsPublished">Published:</FluentCheckbox>
+        <FluentTextField @bind-Value="@Content.URL">URL:</FluentTextField>
+    </FluentStack>
+</FluentDialogBody>
+
+<!-- Footer -->
+<FluentDialogFooter>
+    @if (String.IsNullOrEmpty(Content.Id))
+    {
+        <FluentButton Appearance="Appearance.Accent" OnClick="@Create">Create</FluentButton>
+    }
+    else
+    {
+        <FluentButton Appearance="Appearance.Accent" OnClick="@Update">Update</FluentButton>
+    }
+    <FluentButton Appearance="Appearance.Neutral" OnClick="@Cancel">Cancel</FluentButton>
+</FluentDialogFooter>
+
+@code {
+    [CascadingParameter]
+    public FluentDialog Dialog { get; set; } = default!;
+    [Parameter]
+    public LinkModel Content { get; set; } = default!;
+    List<Option<int>> TargeOptions = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        foreach (var item in targets.DefaultLinkTargets)
+        {
+            TargeOptions.Add(new Option<int>
+                {
+                    Value = item.Key,
+                    Text = item.Value.Name
+                });
+        }
+        selectedTargetOption = TargeOptions[Content.Type];
+    }
+
+
+    // {
+    //     new Option<int> { Value = 0, Text = "Internal" },
+    //     new Option<int> { Value = 1, Text = "External" }
+    // };
+
+    Option<int>? selectedTargetOption;
+    string? targetValue;
+
+    private void Cancel() => Dialog.CancelAsync();
+
+    private async void Update()
+    {
+        await dataAccess.Update(Content);
+        await Dialog.CloseAsync();
+    }
+
+    private async void Create()
+    {
+        await dataAccess.Insert(Content);
+        await Dialog.CloseAsync();
+    }
+}
