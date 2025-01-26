@@ -12,7 +12,7 @@
     {
         foreach (var l in menuLinks)
         {
-            <MudNavLink Href="@l.URL" Match="NavLinkMatch.All" Target="@targets.DefaultLinkTargets[l.Type].Code" Icon="@($"fas {l.Icon}")">@l.MenuName</MudNavLink>
+            <MudNavLink Href="@l.URL" Match="NavLinkMatch.All" Target="@targets.DefaultLinkTargets[l.Type].Code" Icon="@($"{l.Icon}")">@l.MenuName</MudNavLink>
         }
     }
     <AuthorizeView Roles="Admin">

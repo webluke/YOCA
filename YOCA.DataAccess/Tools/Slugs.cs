@@ -8,7 +8,12 @@ public static class Slugs
     {
         title = Regex.Replace(title, @"[^a-zA-Z0-9\s_\-]", "");
         string slug = title.ToLower().Replace(' ', '-');
-        slug.Substring(0, length);
+        if (slug.Length >= length)
+        {
+            slug.Substring(0, length-1);
+        } else {
+            slug.Substring(0, slug.Length-1);
+        }
         return slug;
     }
 
@@ -16,7 +21,14 @@ public static class Slugs
     {
         title = Regex.Replace(title, @"[^a-zA-Z0-9\s_\-]", "");
         string slug = title.ToLower().Replace(' ', '-');
-        slug.Substring(0, length);
+        if (slug.Length >= length)
+        {
+            slug.Substring(0, length - 1);
+        }
+        else
+        {
+            slug.Substring(0, slug.Length - 1);
+        }
         slug = slug + "-" + id;
         return slug;
     }

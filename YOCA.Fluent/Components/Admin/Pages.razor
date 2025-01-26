@@ -1,21 +1,24 @@
-﻿@page "/admin/days"
+﻿@page "/admin/pages"
 @attribute [Authorize(Roles = "Admin")]
-@inject DayOfCodeDataAccess dayData
+@inject PageDataAccess pageData
 @rendermode InteractiveServer
 @inject IToastService ToastService
 
 <FluentDialogProvider />
 
-<PageTitle>Admin - Day</PageTitle>
-<h5>Day</h5>
+<PageTitle>Admin - Pages</PageTitle>
+<h5>Pages</h5>
 <br />
 <FluentButton Color="Color.Success" OnClick="Create">Create</FluentButton>
 <br />
-<FluentDataGrid AutoFit Items="@query">
-    <PropertyColumn Title="Day" Property="@(c => c.Day)" />
-    <PropertyColumn Title="Date" Property="@(c => c.Date)" />
-    <PropertyColumn Title="Goal" Property="@(c => c.Goal)" />
-    <PropertyColumn Title="Result" Property="@(c => c.Result)" />
+<FluentDataGrid AutoFit Items="@query" id="Data">
+    <PropertyColumn Title="Order" Property="@(c => c.Order)" />
+    <PropertyColumn Title="Title" Property="@(c => c.Title)" />
+    <TemplateColumn Title="Icon">
+        <i class="@context.Icon" />
+    </TemplateColumn>
+    <PropertyColumn Title="Menu Name" Property="@(c => c.MenuName)" />
+    <PropertyColumn Title="Published" Property="@(c => c.IsPublished)" />
     <TemplateColumn Title="Actions" Align="@Align.End">
         <FluentButton aria-label="Edit item" IconEnd="@(new Icons.Regular.Size16.Edit())" OnClick="e => Update(e, context.Id)" />
         <FluentButton aria-label="Delete item" IconEnd="@(new Icons.Regular.Size16.Delete())" OnClick="e => Delete(e, context)" />
@@ -24,11 +27,9 @@
 
 @code {
     [Inject] private IDialogService DialogService { get; set; }
-    private IEnumerable<DayOfCodeModel>? days { get; set; }
-    IQueryable<DayOfCodeModel>? query { get; set; }
-    private DayOfCodeModel newDay = new DayOfCodeModel();
-    private bool isUpdate = false;
-    TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById("Mountain Standard Time");
+    private IEnumerable<PageModel>? pages { get; set; }
+    IQueryable<PageModel>? query { get; set; }
+    private PageModel newPage = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -37,20 +38,20 @@
 
     private async Task RefreshData()
     {
-        days = await dayData.GetDays();
-        query = days.AsQueryable(); 
+        pages = await pageData.GetAllAdmin();
+        query = pages.AsQueryable();
     }
 
-    private async void Delete(MouseEventArgs e, DayOfCodeModel model)
+    private async void Delete(MouseEventArgs e, PageModel link)
     {
         DeleteDialogModel item = new();
-        item.Id = model.Id;
-        item.Name = $"Day Number {model.Day}";
+        item.Id = link.Id;
+        item.Name = link.Title;
         var parameters = new DialogParameters()
             {
                 Height = "auto",
-                Width = "auto",
-                Title = $"Delete Link",
+                Width = "650px",
+                Title = $"Delete Page",
                 PreventDismissOnOverlayClick = true,
                 PreventScroll = true,
             };
@@ -60,8 +61,8 @@
 
         if (!result.Cancelled)
         {
-            await dayData.Delete(model.Id);
-            ToastService.ShowSuccess("Day of Code Deleted.");
+            await pageData.Delete(link.Id);
+            ToastService.ShowSuccess("Link Page.");
             await RefreshData();
             StateHasChanged();
         }
@@ -69,48 +70,45 @@
 
     private async Task Create()
     {
-        DayOfCodeModel model = new();
-        model.Day = days.Count();
-        model.Date = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone));
-        model.Goal = days.FirstOrDefault().Tomorrow;
+        PageModel model = new();
         var parameters = new DialogParameters()
             {
                 Height = "auto",
                 Width = "650px",
-                Title = $"Create Day of Code",
+                Title = $"Create Page",
                 PreventDismissOnOverlayClick = true,
                 PreventScroll = true,
             };
 
-        var dialog = await DialogService.ShowDialogAsync<DayDialog>(model, parameters);
+        var dialog = await DialogService.ShowDialogAsync<PageDialog>(model, parameters);
         var result = await dialog.Result;
 
         if (!result.Cancelled)
         {
-            ToastService.ShowSuccess("Day of Code Created.");
+            ToastService.ShowSuccess("Page Created.");
             await RefreshData();
             StateHasChanged();
         }
     }
 
-    private async Task Update(MouseEventArgs e, string cbId)
+    private async Task Update(MouseEventArgs e, string id)
     {
-        DayOfCodeModel model = await dayData.GetId(cbId);
+        PageModel model = await pageData.GetId(id);
         var parameters = new DialogParameters()
             {
                 Height = "auto",
-                Width = "650px",
-                Title = $"Update Day of Code",
+                Width = "auto",
+                Title = $"Create Page",
                 PreventDismissOnOverlayClick = true,
                 PreventScroll = true,
             };
 
-        var dialog = await DialogService.ShowDialogAsync<DayDialog>(model, parameters);
+        var dialog = await DialogService.ShowDialogAsync<PageDialog>(model, parameters);
         var result = await dialog.Result;
 
         if (!result.Cancelled)
         {
-            ToastService.ShowSuccess("Day of Code Updated.");
+            ToastService.ShowSuccess("Page Updated.");
             await RefreshData();
             StateHasChanged();
         }

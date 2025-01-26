@@ -1,12 +1,11 @@
-﻿@inject LinkDataAccess dataAccess
-@inject LinkTargets targets
-@implements IDialogContentComponent<LinkModel>
+﻿@inject DayOfCodeDataAccess dataAccess
+@implements IDialogContentComponent<DayOfCodeModel>
 
 <!-- Header -->
 <FluentDialogHeader ShowDismiss="true">
     <FluentStack VerticalAlignment="VerticalAlignment.Center">
         <FluentLabel Typo="Typography.PaneHeader">
-            <i class="fas fa-link" /> @Dialog.Instance.Parameters.Title
+            <i class="fas fa-calendar-day" /> @Dialog.Instance.Parameters.Title
         </FluentLabel>
     </FluentStack>
 </FluentDialogHeader>
@@ -14,18 +13,12 @@
 <!-- Body -->
 <FluentDialogBody>
     <FluentStack Orientation="Orientation.Vertical">
-        <FluentTextField @bind-Value="@Content.Title" Label="Title" style="width: 100%;" />
-        <FluentTextField @bind-Value="@Content.MenuName" Label="Menu Name" style="width: 100%;" />
-        <FluentTextField @bind-Value="@Content.Icon" Label="Icon" style="width: 100%;" />
-        <FluentNumberField @bind-Value="@Content.Order" Label="Order" style="width: 100%;" />
-        <InputSelect @bind-Value="@Content.Type">
-            @foreach (var t in targets.DefaultLinkTargets)
-            {
-                <option value=@t.Key>@t.Value.Name</option>
-            }
-        </InputSelect>
-        <FluentSwitch @bind-Value="@Content.IsPublished" Label="Published" style="width: 100%;" />
-        <FluentTextField @bind-Value="@Content.URL" Label="URL" style="width: 100%;" />
+        <FluentNumberField @bind-Value="@Content.Day" Label="Day" style="width: 100%;" />
+        <FluentDatePicker Value="@(Content.Date.ToDateTime(TimeOnly.MinValue))" ValueChanged="@(e => Content.Date = DateOnly.FromDateTime(e ?? DateTime.MinValue))" Label="Date" style="width: 100%;" />
+        <FluentTextField @bind-Value="@Content.Goal" Label="Goal" style="width: 100%;" />
+        <FluentTextField @bind-Value="@Content.Result" Label="Result" style="width: 100%;" />
+        <FluentTextField @bind-Value="@Content.Tomorrow" Label="Tomorrow" style="width: 100%;" />
+        <MarkdownEditor @bind-Value="@Content.Summary" />
     </FluentStack>
 </FluentDialogBody>
 
@@ -46,12 +39,11 @@
     [CascadingParameter]
     public FluentDialog Dialog { get; set; } = default!;
     [Parameter]
-    public LinkModel Content { get; set; } = default!;
-    List<Option<int>> TargeOptions = new();
+    public DayOfCodeModel Content { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
-        
+
     }
 
     private void Cancel() => Dialog.CancelAsync();

@@ -1,21 +1,25 @@
-﻿@page "/admin/days"
+﻿@page "/admin/clipboard"
 @attribute [Authorize(Roles = "Admin")]
-@inject DayOfCodeDataAccess dayData
+@inject ClipboardDataAccess clipboardData
+@inject Statuses state
 @rendermode InteractiveServer
 @inject IToastService ToastService
 
 <FluentDialogProvider />
 
-<PageTitle>Admin - Day</PageTitle>
-<h5>Day</h5>
+<PageTitle>Admin - Clipboard</PageTitle>
+<h5>Clipboard</h5>
 <br />
 <FluentButton Color="Color.Success" OnClick="Create">Create</FluentButton>
 <br />
-<FluentDataGrid AutoFit Items="@query">
-    <PropertyColumn Title="Day" Property="@(c => c.Day)" />
-    <PropertyColumn Title="Date" Property="@(c => c.Date)" />
-    <PropertyColumn Title="Goal" Property="@(c => c.Goal)" />
-    <PropertyColumn Title="Result" Property="@(c => c.Result)" />
+<FluentDataGrid AutoFit Items="@query" id="Data">
+    <PropertyColumn Title="Order" Property="@(c => c.Order)" />
+    <PropertyColumn Title="Title" Property="@(c => c.Status)" />
+    <TemplateColumn Title="Status">
+        <StatusBadge statusIndex="@context.Status" />
+    </TemplateColumn>
+    <PropertyColumn Title="Date Completed" Property="@(c => c.DateCompleted)" />
+    <PropertyColumn Title="Title" Property="@(c => c.Title)" />
     <TemplateColumn Title="Actions" Align="@Align.End">
         <FluentButton aria-label="Edit item" IconEnd="@(new Icons.Regular.Size16.Edit())" OnClick="e => Update(e, context.Id)" />
         <FluentButton aria-label="Delete item" IconEnd="@(new Icons.Regular.Size16.Delete())" OnClick="e => Delete(e, context)" />
@@ -24,10 +28,9 @@
 
 @code {
     [Inject] private IDialogService DialogService { get; set; }
-    private IEnumerable<DayOfCodeModel>? days { get; set; }
-    IQueryable<DayOfCodeModel>? query { get; set; }
-    private DayOfCodeModel newDay = new DayOfCodeModel();
-    private bool isUpdate = false;
+    private IEnumerable<ClipboardModel>? clipboardItems { get; set; }
+    IQueryable<ClipboardModel>? query { get; set; }
+    private ClipboardModel newClipboard = new();
     TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById("Mountain Standard Time");
 
     protected override async Task OnInitializedAsync()
@@ -37,20 +40,20 @@
 
     private async Task RefreshData()
     {
-        days = await dayData.GetDays();
-        query = days.AsQueryable(); 
+        clipboardItems = await clipboardData.GetAllAdmin();
+        query = clipboardItems.AsQueryable();
     }
 
-    private async void Delete(MouseEventArgs e, DayOfCodeModel model)
+    private async void Delete(MouseEventArgs e, ClipboardModel clipboardItem)
     {
         DeleteDialogModel item = new();
-        item.Id = model.Id;
-        item.Name = $"Day Number {model.Day}";
+        item.Id = clipboardItem.Id;
+        item.Name = clipboardItem.Title;
         var parameters = new DialogParameters()
             {
                 Height = "auto",
-                Width = "auto",
-                Title = $"Delete Link",
+                Width = "650px",
+                Title = $"Delete Clipboard Item",
                 PreventDismissOnOverlayClick = true,
                 PreventScroll = true,
             };
@@ -60,8 +63,8 @@
 
         if (!result.Cancelled)
         {
-            await dayData.Delete(model.Id);
-            ToastService.ShowSuccess("Day of Code Deleted.");
+            await clipboardData.Delete(clipboardItem.Id);
+            ToastService.ShowSuccess("Clipboard Item Deleted.");
             await RefreshData();
             StateHasChanged();
         }
@@ -69,48 +72,46 @@
 
     private async Task Create()
     {
-        DayOfCodeModel model = new();
-        model.Day = days.Count();
-        model.Date = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone));
-        model.Goal = days.FirstOrDefault().Tomorrow;
+        ClipboardModel model = new();
+        model.DateCompleted = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone));
         var parameters = new DialogParameters()
             {
                 Height = "auto",
                 Width = "650px",
-                Title = $"Create Day of Code",
+                Title = $"Create Clipboard Item",
                 PreventDismissOnOverlayClick = true,
                 PreventScroll = true,
             };
 
-        var dialog = await DialogService.ShowDialogAsync<DayDialog>(model, parameters);
+        var dialog = await DialogService.ShowDialogAsync<ClipboardDialog>(model, parameters);
         var result = await dialog.Result;
 
         if (!result.Cancelled)
         {
-            ToastService.ShowSuccess("Day of Code Created.");
+            ToastService.ShowSuccess("Clipboard Item Created.");
             await RefreshData();
             StateHasChanged();
         }
     }
 
-    private async Task Update(MouseEventArgs e, string cbId)
+    private async Task Update(MouseEventArgs e, string id)
     {
-        DayOfCodeModel model = await dayData.GetId(cbId);
+        ClipboardModel model = await clipboardData.GetId(id);
         var parameters = new DialogParameters()
             {
                 Height = "auto",
-                Width = "650px",
-                Title = $"Update Day of Code",
+                Width = "auto",
+                Title = $"Create Link",
                 PreventDismissOnOverlayClick = true,
                 PreventScroll = true,
             };
 
-        var dialog = await DialogService.ShowDialogAsync<DayDialog>(model, parameters);
+        var dialog = await DialogService.ShowDialogAsync<ClipboardDialog>(model, parameters);
         var result = await dialog.Result;
 
         if (!result.Cancelled)
         {
-            ToastService.ShowSuccess("Day of Code Updated.");
+            ToastService.ShowSuccess("Link Update.");
             await RefreshData();
             StateHasChanged();
         }

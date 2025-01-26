@@ -6,8 +6,8 @@
 
 <FluentDialogProvider />
 
-<PageTitle>Admin - Day</PageTitle>
-<h5>Day</h5>
+<PageTitle>Admin - Links</PageTitle>
+<h5>Links</h5>
 <br />
 <FluentButton Color="Color.Success" OnClick="Create">Create</FluentButton>
 <br />
@@ -27,7 +27,7 @@
 
 @code {
     [Inject] private IDialogService DialogService { get; set; }
-    private IEnumerable<LinkModel>? days { get; set; }
+    private IEnumerable<LinkModel>? links { get; set; }
     IQueryable<LinkModel>? query { get; set; }
     private LinkModel newLink = new ();
 
@@ -38,8 +38,8 @@
 
     private async Task RefreshData()
     {
-        days = await linkData.GetAllAdmin();
-        query = days.AsQueryable();
+        links = await linkData.GetAllAdmin();
+        query = links.AsQueryable();
     }
 
     private async void Delete(MouseEventArgs e, LinkModel link)
@@ -50,7 +50,7 @@
         var parameters = new DialogParameters()
             {
                 Height = "auto",
-                Width = "auto",
+                Width = "650px",
                 Title = $"Delete Link",
                 PreventDismissOnOverlayClick = true,
                 PreventScroll = true,
@@ -74,7 +74,7 @@
         var parameters = new DialogParameters()
             {
                 Height = "auto",
-                Width = "auto",
+                Width = "650px",
                 Title = $"Create Link",
                 PreventDismissOnOverlayClick = true,
                 PreventScroll = true,            };
