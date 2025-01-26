@@ -1,5 +1,18 @@
-﻿<h3>Site</h3>
+﻿@page "/admin/site"
+@attribute [Authorize(Roles = "Admin")]
+
+
+<PageTitle>Admin - Site Settings</PageTitle>
+<h5>Site Settings</h5>
 
 @code {
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshData();
+    }
 
+    private async Task RefreshData()
+    {
+
+    }
 }

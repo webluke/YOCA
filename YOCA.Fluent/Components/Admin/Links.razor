@@ -9,7 +9,7 @@
 <PageTitle>Admin - Links</PageTitle>
 <h5>Links</h5>
 <br />
-<FluentButton Color="Color.Success" OnClick="Create">Create</FluentButton>
+<FluentButton Appearance="Appearance.Accent" OnClick="Create">Create</FluentButton>
 <br />
 <FluentDataGrid AutoFit Items="@query" id="Data">
     <PropertyColumn Title="Order" Property="@(c => c.Order)" />

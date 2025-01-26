@@ -6,10 +6,10 @@
 
 <FluentDialogProvider />
 
-<PageTitle>Admin - Day</PageTitle>
-<h5>Day</h5>
+<PageTitle>Admin - Days</PageTitle>
+<h5>Days</h5>
 <br />
-<FluentButton Color="Color.Success" OnClick="Create">Create</FluentButton>
+<FluentButton Appearance="Appearance.Accent" OnClick="Create">Create</FluentButton>
 <br />
 <FluentDataGrid AutoFit Items="@query">
     <PropertyColumn Title="Day" Property="@(c => c.Day)" />

@@ -1,5 +1,68 @@
-﻿<h3>ProjectDialog</h3>
+﻿@inject ProjectDataAccess dataAccess
+@inject Statuses states
+@implements IDialogContentComponent<ProjectModel>
+
+<!-- Header -->
+<FluentDialogHeader ShowDismiss="true">
+    <FluentStack VerticalAlignment="VerticalAlignment.Center">
+        <FluentLabel Typo="Typography.PaneHeader">
+            <i class="fas fa-list-check" /> @Dialog.Instance.Parameters.Title
+        </FluentLabel>
+    </FluentStack>
+</FluentDialogHeader>
+
+<!-- Body -->
+<FluentDialogBody>
+    <FluentStack Orientation="Orientation.Vertical">
+        <FluentNumberField @bind-Value="@Content.Order" Label="Order" style="width: 100%;" />
+        <InputSelect @bind-Value="@Content.Status" style="font-family: 'FontAwesome', 'sans-serif'">
+            @foreach (var t in states.DefaultStatuses)
+            {
+                <option value=@t.Key style="background: @t.Value.BackgroundColor; color: @t.Value.Color;">@((MarkupString)$"{t.Value.UnicodeIcon}&nbsp;&nbsp;{t.Value.Name}")</option>
+            }
+        </InputSelect>
+        <FluentTextField @bind-Value="@Content.Title" Label="Title" style="width: 100%;" />
+        <FluentDatePicker Value="@(Content.StartDate.ToDateTime(TimeOnly.MinValue))" ValueChanged="@(e => Content.StartDate = DateOnly.FromDateTime(e ?? DateTime.MinValue))" Label="Date" style="width: 100%;" />
+        <FluentDatePicker Value="@(Content.EndDate.ToDateTime(TimeOnly.MinValue))" ValueChanged="@(e => Content.EndDate = DateOnly.FromDateTime(e ?? DateTime.MinValue))" Label="Date" style="width: 100%;" />
+        <MarkdownEditor @bind-Value="@Content.Description" />
+    </FluentStack>
+</FluentDialogBody>
+
+<!-- Footer -->
+<FluentDialogFooter>
+    @if (String.IsNullOrEmpty(Content.Id))
+    {
+        <FluentButton Appearance="Appearance.Accent" OnClick="@Create">Create</FluentButton>
+    }
+    else
+    {
+        <FluentButton Appearance="Appearance.Accent" OnClick="@Update">Update</FluentButton>
+    }
+    <FluentButton Appearance="Appearance.Neutral" OnClick="@Cancel">Cancel</FluentButton>
+</FluentDialogFooter>
 
 @code {
+    [CascadingParameter]
+    public FluentDialog Dialog { get; set; } = default!;
+    [Parameter]
+    public ProjectModel Content { get; set; } = default!;
 
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+    private void Cancel() => Dialog.CancelAsync();
+
+    private async void Update()
+    {
+        await dataAccess.Update(Content);
+        await Dialog.CloseAsync();
+    }
+
+    private async void Create()
+    {
+        await dataAccess.Insert(Content);
+        await Dialog.CloseAsync();
+    }
 }

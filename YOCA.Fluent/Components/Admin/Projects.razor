@@ -1,5 +1,213 @@
-﻿<h3>Projects</h3>
+﻿@page "/admin/projects"
+@attribute [Authorize(Roles = "Admin")]
+@inject ProjectDataAccess projectData
+@inject ProjectTaskDataAccess taskData
+@inject Statuses state
+@rendermode InteractiveServer
+@inject IToastService ToastService
+
+<FluentDialogProvider />
+
+<PageTitle>Admin - Projects</PageTitle>
+<h5>Projects</h5>
+<br />
+<FluentButton Appearance="Appearance.Accent" OnClick="Create">Create</FluentButton>
+<br />
+<br />
+@if (projectItems != null)
+{
+    @foreach (var p in projectItems)
+    {
+        <FluentCard Height="auto">
+            <h4>@p.Title</h4>
+            <StatusBadge statusIndex="@p.Status" />
+            <br />
+            <h5>Start: @p.StartDate - End: @p.EndDate</h5>
+            <FluentCard Height="auto">
+                @((MarkupString)Markdown.ParseHtmlString(p.Description).ToString())
+            </FluentCard>
+            <br />
+            <FluentStack>
+                <FluentButton Appearance="Appearance.Accent" OnClick="e => CreateTask(e, p.Id)">Create Task</FluentButton>
+                <FluentButton Color="Color.Success" OnClick="e => Update(e, p.Id)">Edit Project</FluentButton>
+                <FluentButton Color="Color.Success" OnClick="e => Delete(e, p)">Delete Project</FluentButton>
+            </FluentStack>
+            <br />
+            <FluentDataGrid AutoFit Items="@p.Tasks.AsQueryable()" id="Data">
+                <PropertyColumn Title="Order" Property="@(c => c.Order)" />
+                <TemplateColumn Title="Status">
+                    <StatusBadge statusIndex="@context.Status" />
+                </TemplateColumn>
+                <PropertyColumn Title="Title" Property="@(c => c.Title)" />
+                <TemplateColumn Title="Actions" Align="@Align.End">
+                    <FluentButton aria-label="Edit item" IconEnd="@(new Icons.Regular.Size16.Edit())" OnClick="e => UpdateTask(e, context.Id)" />
+                    <FluentButton aria-label="Delete item" IconEnd="@(new Icons.Regular.Size16.Delete())" OnClick="e => DeleteTask(e, context)" />
+                </TemplateColumn>
+            </FluentDataGrid>
+        </FluentCard>
+        <br />
+    }
+}
 
 @code {
+    [Inject] private IDialogService DialogService { get; set; }
+    private IEnumerable<ProjectModel>? projectItems { get; set; }
+    private ProjectModel newProject = new();
+    TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById("Mountain Standard Time");
 
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshData();
+    }
+
+    private async Task RefreshData()
+    {
+        projectItems = await projectData.GetAllWithTasks();    }
+
+    private async void Delete(MouseEventArgs e, ProjectModel project)
+    {
+        DeleteDialogModel item = new();
+        item.Id = project.Id;
+        item.Name = project.Title;
+        var parameters = new DialogParameters()
+            {
+                Height = "auto",
+                Width = "650px",
+                Title = $"Delete Project",
+                PreventDismissOnOverlayClick = true,
+                PreventScroll = true,
+            };
+
+        var dialog = await DialogService.ShowDialogAsync<DeleteDialog>(item, parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            await projectData.Delete(project.Id);
+            ToastService.ShowSuccess("Project Deleted.");
+            await RefreshData();
+            StateHasChanged();
+        }
+    }
+
+    private async Task Create()
+    {
+        ProjectModel model = new();
+        model.StartDate = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone));
+        model.EndDate = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone).AddDays(14));
+        var parameters = new DialogParameters()
+            {
+                Height = "auto",
+                Width = "650px",
+                Title = $"Create Project",
+                PreventDismissOnOverlayClick = true,
+                PreventScroll = true,
+            };
+
+        var dialog = await DialogService.ShowDialogAsync<ProjectDialog>(model, parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            ToastService.ShowSuccess("Project Created.");
+            await RefreshData();
+            StateHasChanged();
+        }
+    }
+
+    private async Task Update(MouseEventArgs e, string id)
+    {
+        ProjectModel model = await projectData.GetId(id);
+        var parameters = new DialogParameters()
+            {
+                Height = "auto",
+                Width = "auto",
+                Title = $"Create Project",
+                PreventDismissOnOverlayClick = true,
+                PreventScroll = true,
+            };
+
+        var dialog = await DialogService.ShowDialogAsync<ProjectDialog>(model, parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            ToastService.ShowSuccess("Project Update.");
+            await RefreshData();
+            StateHasChanged();
+        }
+    }
+
+    private async void DeleteTask(MouseEventArgs e, ProjectTaskModel projectTaskItem)
+    {
+        DeleteDialogModel item = new();
+        item.Id = projectTaskItem.Id;
+        item.Name = projectTaskItem.Title;
+        var parameters = new DialogParameters()
+            {
+                Height = "auto",
+                Width = "650px",
+                Title = $"Delete Project Task",
+                PreventDismissOnOverlayClick = true,
+                PreventScroll = true,
+            };
+
+        var dialog = await DialogService.ShowDialogAsync<DeleteDialog>(item, parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            await taskData.Delete(projectTaskItem.Id);
+            ToastService.ShowSuccess("Project Task Deleted.");
+            await RefreshData();
+            StateHasChanged();
+        }
+    }
+
+    private async Task CreateTask(MouseEventArgs e, string projectId)
+    {
+        ProjectTaskModel model = new();
+        model.ProjectId = projectId;
+        var parameters = new DialogParameters()
+            {
+                Height = "auto",
+                Width = "650px",
+                Title = $"Create Clipboard Item",
+                PreventDismissOnOverlayClick = true,
+                PreventScroll = true,
+            };
+
+        var dialog = await DialogService.ShowDialogAsync<ProjectTaskDialog>(model, parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            ToastService.ShowSuccess("Project Task Created.");
+            await RefreshData();
+            StateHasChanged();
+        }
+    }
+
+    private async Task UpdateTask(MouseEventArgs e, string id)
+    {
+        ProjectTaskModel model = await taskData.GetId(id);
+        var parameters = new DialogParameters()
+            {
+                Height = "auto",
+                Width = "auto",
+                Title = $"Create Project Task",
+                PreventDismissOnOverlayClick = true,
+                PreventScroll = true,
+            };
+
+        var dialog = await DialogService.ShowDialogAsync<ProjectTaskDialog>(model, parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            ToastService.ShowSuccess("Project Task Update.");
+            await RefreshData();
+            StateHasChanged();
+        }
+    }
 }

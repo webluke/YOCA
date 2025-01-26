@@ -10,11 +10,10 @@
 <PageTitle>Admin - Clipboard</PageTitle>
 <h5>Clipboard</h5>
 <br />
-<FluentButton Color="Color.Success" OnClick="Create">Create</FluentButton>
+<FluentButton Appearance="Appearance.Accent" OnClick="Create">Create</FluentButton>
 <br />
 <FluentDataGrid AutoFit Items="@query" id="Data">
     <PropertyColumn Title="Order" Property="@(c => c.Order)" />
-    <PropertyColumn Title="Title" Property="@(c => c.Status)" />
     <TemplateColumn Title="Status">
         <StatusBadge statusIndex="@context.Status" />
     </TemplateColumn>
@@ -101,7 +100,7 @@
             {
                 Height = "auto",
                 Width = "auto",
-                Title = $"Create Link",
+                Title = $"Create Clipboard",
                 PreventDismissOnOverlayClick = true,
                 PreventScroll = true,
             };
@@ -111,7 +110,7 @@
 
         if (!result.Cancelled)
         {
-            ToastService.ShowSuccess("Link Update.");
+            ToastService.ShowSuccess("Clipboard Update.");
             await RefreshData();
             StateHasChanged();
         }
