@@ -4,8 +4,9 @@
 <!-- Header -->
 <FluentDialogHeader ShowDismiss="true">
     <FluentStack VerticalAlignment="VerticalAlignment.Center">
+        <FluentIcon Value="@(FontAwesome.Icon("fas fa-calendar-day"))" />
         <FluentLabel Typo="Typography.PaneHeader">
-            <i class="fas fa-calendar-day" /> @Dialog.Instance.Parameters.Title
+            @Dialog.Instance.Parameters.Title
         </FluentLabel>
     </FluentStack>
 </FluentDialogHeader>

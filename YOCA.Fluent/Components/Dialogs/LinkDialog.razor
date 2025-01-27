@@ -5,8 +5,9 @@
 <!-- Header -->
 <FluentDialogHeader ShowDismiss="true">
     <FluentStack VerticalAlignment="VerticalAlignment.Center">
+        <FluentIcon Value="@(FontAwesome.Icon("fas fa-link"))" />
         <FluentLabel Typo="Typography.PaneHeader">
-            <i class="fas fa-link" /> @Dialog.Instance.Parameters.Title
+            @Dialog.Instance.Parameters.Title
         </FluentLabel>
     </FluentStack>
 </FluentDialogHeader>
