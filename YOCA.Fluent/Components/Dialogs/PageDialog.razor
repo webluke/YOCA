@@ -14,7 +14,10 @@
 
 <!-- Body -->
 <FluentDialogBody>
+    <EditForm Model="@Content">
     <FluentStack Orientation="Orientation.Vertical">
+        <DataAnnotationsValidator />
+        <FluentValidationSummary />
         <FluentNumberField @bind-Value="@Content.Order" Label="Order" style="width: 100%;" />
         <FluentTextField Value="@Content.Title" ValueChanged="@(e => UpdateTitle(e))" Label="Title" style="width: 100%;" />
         <FluentTextField @bind-Value="@Content.Slug"  Label="Slug" style="width: 100%;" />
@@ -26,6 +29,7 @@
         <FluentSwitch @bind-Value="@Content.IsPublished" Label="Published" style="width: 100%;" />
         <MarkdownEditor @bind-Value="@Content.Content" />
     </FluentStack>
+    </EditForm>
 </FluentDialogBody>
 
 <!-- Footer -->

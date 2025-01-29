@@ -1,9 +1,12 @@
-﻿namespace YOCA.DataAccess.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace YOCA.DataAccess.Models;
 
 public class PageModel
 {
     public string Id { get; set; }
     public int Order { get; set; }
+    [Required(ErrorMessage = "Please enter a title"), MaxLength(50)]
     public string Title { get; set; }
     public string Slug { get; set; }
     public string MenuName { get; set; }
