@@ -33,6 +33,7 @@ builder.Services.AddSingleton<ProjectTaskDataAccess>();
 builder.Services.AddSingleton<PageDataAccess>();
 builder.Services.AddSingleton<ClipboardDataAccess>();
 builder.Services.AddSingleton<LinkDataAccess>();
+builder.Services.AddSingleton<RewindDataAccess>();
 
 builder.Services.AddSingleton<Statuses>();
 builder.Services.AddSingleton<LinkTargets>();

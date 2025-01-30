@@ -1,0 +1,30 @@
+﻿@page "/rewind"
+
+@inject RewindDataAccess rewindData
+@rendermode InteractiveServer
+
+<PageTitle>Rewind</PageTitle>
+<br />
+@if (rewinds != null)
+{
+    foreach (var r in rewinds)
+    {
+        <RewindPreView rewind="@r" />
+        <br />
+    }
+
+}
+
+@code {
+    private IEnumerable<RewindModel>? rewinds;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshData();
+    }
+
+    private async Task RefreshData()
+    {
+        rewinds = await rewindData.GetAllPreview();
+    }
+}

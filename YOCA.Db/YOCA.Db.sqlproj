@@ -65,6 +65,7 @@
     <Folder Include="dbo\Stored Procedures\Page" />
     <Folder Include="dbo\Stored Procedures\Clipboard" />
     <Folder Include="dbo\Stored Procedures\Links" />
+    <Folder Include="dbo\Stored Procedures\Rewind" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\DayOfCode.sql" />
@@ -117,6 +118,17 @@
     <Build Include="dbo\Stored Procedures\Links\spLinks_GetAllAdmin.sql" />
     <Build Include="dbo\Stored Procedures\Links\spLinks_GetAllLinksPagesMenu.sql" />
     <Build Include="dbo\Stored Procedures\Links\spLinks_GetById.sql" />
+    <Build Include="dbo\Tables\Rewind.sql" />
+    <Build Include="dbo\Stored Procedures\Rewind\spRewind_GetAll.sql" />
+    <Build Include="dbo\Stored Procedures\Rewind\spRewind_GetAllPreview.sql" />
+    <Build Include="dbo\Stored Procedures\Rewind\spRewind_GetAllAdmin.sql" />
+    <Build Include="dbo\Stored Procedures\Rewind\spRewind_GetById.sql" />
+    <Build Include="dbo\Stored Procedures\Rewind\spRewind_GetBySlug.sql" />
+    <Build Include="dbo\Stored Procedures\Rewind\spRewind_GetByDate.sql" />
+    <Build Include="dbo\Stored Procedures\Rewind\spRewind_GetByYearMonth.sql" />
+    <Build Include="dbo\Stored Procedures\Rewind\spRewind_Insert.sql" />
+    <Build Include="dbo\Stored Procedures\Rewind\spRewind_Update.sql" />
+    <Build Include="dbo\Stored Procedures\Rewind\spRewind_Delete.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />

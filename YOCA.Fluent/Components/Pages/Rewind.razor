@@ -1,0 +1,33 @@
+﻿@page "/rewind/{year}/{month}"
+
+@inject RewindDataAccess rewindData
+@rendermode InteractiveServer
+
+@if (rewind != null)
+{
+    <PageTitle>@rewind.Date.ToString("MMMM yyyy") - @rewind.Title</PageTitle>
+    <h3>@rewind.Date.ToString("MMMM yyyy") - @rewind.Title</h3>
+    <br />
+    <FluentCard Height="auto">
+        @((MarkupString)Markdown.ParseHtmlString(rewind.Content).ToString())
+    </FluentCard>
+}
+
+
+@code {
+    [Parameter]
+    public int year { get; set; }
+    [Parameter]
+    public int month { get; set; }
+    private RewindModel? rewind;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshData();
+    }
+
+    private async Task RefreshData()
+    {
+        rewind = await rewindData.GetYearMonth(year, month);
+    }
+}
