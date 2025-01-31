@@ -15,7 +15,7 @@
 <FluentDialogBody>
     <FluentStack Orientation="Orientation.Vertical">
         <FluentNumberField @bind-Value="@Content.Day" Label="Day" style="width: 100%;" />
-        <FluentDatePicker Value="@(Content.Date.ToDateTime(TimeOnly.MinValue))" ValueChanged="@(e => Content.Date = DateOnly.FromDateTime(e ?? DateTime.MinValue))" Label="Date" style="width: 100%;" />
+        <FluentDatePicker Value="@(Content.Date.ToDateTime(TimeOnly.MinValue))" ValueChanged="@(e => Content.Date = DateOnly.FromDateTime(e ?? DateTime.Today))" Label="Date" style="width: 100%;" />
         <FluentTextField @bind-Value="@Content.Goal" Label="Goal" style="width: 100%;" />
         <FluentTextField @bind-Value="@Content.Result" Label="Result" style="width: 100%;" />
         <FluentTextField @bind-Value="@Content.Tomorrow" Label="Tomorrow" style="width: 100%;" />

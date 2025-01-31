@@ -1,4 +1,4 @@
-﻿@page "/rewind/{year}/{month}"
+﻿@page "/rewind/{year:int}/{month:int}/{slug}"
 
 @inject RewindDataAccess rewindData
 @rendermode InteractiveServer
@@ -19,6 +19,8 @@
     public int year { get; set; }
     [Parameter]
     public int month { get; set; }
+    [Parameter]
+    public string slug { get; set; }
     private RewindModel? rewind;
 
     protected override async Task OnInitializedAsync()

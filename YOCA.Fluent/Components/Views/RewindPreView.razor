@@ -1,13 +1,14 @@
 ﻿@if (rewind != null)
 {
     <FluentCard Height="auto">
-        <FluentNavLink Href="@($"/review/{rewind.Year}/{rewind.Month}/{rewind.Slug}")">
+        <FluentNavLink Href="@($"/rewind/{rewind.Year}/{rewind.Month}/{rewind.Slug}")">
             <h4>@rewind.Date.ToString("MMMM yyyy") - @rewind.Title</h4>
         </FluentNavLink>
         <FluentCard Height="auto">
         @((MarkupString)Markdown.ParseHtmlString(rewind.Content).ToString())
         </FluentCard>
-        <FluentNavLink Href="@($"/review/{rewind.Year}/{rewind.Month}/{rewind.Slug}")">
+        <br />
+        <FluentNavLink Href="@($"/rewind/{rewind.Year}/{rewind.Month}/{rewind.Slug}")">
             <h6>Read More...</h6>
         </FluentNavLink>
     </FluentCard>

@@ -1,23 +1,21 @@
-﻿@page "/admin/pages"
+﻿@page "/admin/rewind"
 @attribute [Authorize(Roles = "Admin")]
-@inject PageDataAccess pageData
+@inject RewindDataAccess rewindData
 @rendermode InteractiveServer
 @inject IToastService ToastService
 
 <FluentDialogProvider />
 
-<PageTitle>Admin - Pages</PageTitle>
-<h5>Pages</h5>
+<PageTitle>Admin - Monthly Rewind</PageTitle>
+<h5>Monthly Rewinds</h5>
 <br />
 <FluentButton Appearance="Appearance.Accent" OnClick="Create">Create</FluentButton>
 <br />
 <FluentDataGrid AutoFit Items="@query" id="Data">
-    <PropertyColumn Title="Order" Property="@(c => c.Order)" />
+    <PropertyColumn Title="Year" Property="@(c => c.Year)" />
+    <PropertyColumn Title="Month" Property="@(c => c.Month)" />
+    <PropertyColumn Title="Date" Property="@(c => c.Date)" />
     <PropertyColumn Title="Title" Property="@(c => c.Title)" />
-    <TemplateColumn Title="Icon">
-        <i class="@context.Icon" />
-    </TemplateColumn>
-    <PropertyColumn Title="Menu Name" Property="@(c => c.MenuName)" />
     <PropertyColumn Title="Published" Property="@(c => c.IsPublished)" />
     <TemplateColumn Title="Actions" Align="@Align.End">
         <FluentButton aria-label="Edit item" IconEnd="@(new Icons.Regular.Size16.Edit())" OnClick="e => Update(e, context.Id)" />
@@ -27,9 +25,10 @@
 
 @code {
     [Inject] private IDialogService DialogService { get; set; }
-    private IEnumerable<PageModel>? pages { get; set; }
-    IQueryable<PageModel>? query { get; set; }
-    private PageModel newPage = new();
+    private IEnumerable<RewindModel>? rewinds { get; set; }
+    IQueryable<RewindModel>? query { get; set; }
+    private RewindModel newRewind = new();
+    TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById("Mountain Standard Time");
 
     protected override async Task OnInitializedAsync()
     {
@@ -38,20 +37,20 @@
 
     private async Task RefreshData()
     {
-        pages = await pageData.GetAllAdmin();
-        query = pages.AsQueryable();
+        rewinds = await rewindData.GetAllAdmin();
+        query = rewinds.AsQueryable();
     }
 
-    private async void Delete(MouseEventArgs e, PageModel page)
+    private async void Delete(MouseEventArgs e, RewindModel rewind)
     {
         DeleteDialogModel item = new();
-        item.Id = page.Id;
-        item.Name = page.Title;
+        item.Id = rewind.Id;
+        item.Name = rewind.Title;
         var parameters = new DialogParameters()
             {
                 Height = "auto",
                 Width = "650px",
-                Title = $"Delete Page",
+                Title = $"Delete Rewind",
                 PreventDismissOnOverlayClick = true,
                 PreventScroll = true,
             };
@@ -61,8 +60,8 @@
 
         if (!result.Cancelled)
         {
-            await pageData.Delete(page.Id);
-            ToastService.ShowSuccess("Deleted Page.");
+            await rewindData.Delete(rewind.Id);
+            ToastService.ShowSuccess("Delete Rewind");
             await RefreshData();
             StateHasChanged();
         }
@@ -70,17 +69,20 @@
 
     private async Task Create()
     {
-        PageModel model = new();
+        RewindModel model = new();
+        model.Date = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone));
+        model.Year = model.Date.Year;
+        model.Month = model.Date.Month;
         var parameters = new DialogParameters()
             {
                 Height = "auto",
                 Width = "650px",
-                Title = $"Create Page",
+                Title = $"Create Rewind",
                 PreventDismissOnOverlayClick = true,
                 PreventScroll = true,
             };
 
-        var dialog = await DialogService.ShowDialogAsync<PageDialog>(model, parameters);
+        var dialog = await DialogService.ShowDialogAsync<RewindDialog>(model, parameters);
         var result = await dialog.Result;
 
         if (!result.Cancelled)
@@ -93,17 +95,17 @@
 
     private async Task Update(MouseEventArgs e, string id)
     {
-        PageModel model = await pageData.GetId(id);
+        RewindModel model = await rewindData.GetId(id);
         var parameters = new DialogParameters()
             {
                 Height = "auto",
                 Width = "auto",
-                Title = $"Update Page",
+                Title = $"Update Rewind",
                 PreventDismissOnOverlayClick = true,
                 PreventScroll = true,
             };
 
-        var dialog = await DialogService.ShowDialogAsync<PageDialog>(model, parameters);
+        var dialog = await DialogService.ShowDialogAsync<RewindDialog>(model, parameters);
         var result = await dialog.Result;
 
         if (!result.Cancelled)

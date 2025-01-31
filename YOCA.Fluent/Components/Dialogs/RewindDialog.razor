@@ -1,0 +1,82 @@
+﻿@inject RewindDataAccess dataAccess
+@using YOCA.DataAccess.Tools
+@implements IDialogContentComponent<RewindModel>
+
+<!-- Header -->
+<FluentDialogHeader ShowDismiss="true">
+    <FluentStack VerticalAlignment="VerticalAlignment.Center">
+        <FluentIcon Value="@(FontAwesome.Icon("fas fa-newspaper"))" />
+        <FluentLabel Typo="Typography.PaneHeader">
+            @Dialog.Instance.Parameters.Title
+        </FluentLabel>
+    </FluentStack>
+</FluentDialogHeader>
+
+<!-- Body -->
+<FluentDialogBody>
+    <EditForm Model="@Content">
+        <FluentStack Orientation="Orientation.Vertical">
+            <DataAnnotationsValidator />
+            <FluentValidationSummary />
+            <FluentDatePicker Value="@(Content.Date.ToDateTime(TimeOnly.MinValue))" ValueChanged="@(e => UpdateDate(e))" Label="Date" style="width: 100%;" />
+            <FluentTextField Value="@Content.Title" ValueChanged="@(e => UpdateTitle(e))" Label="Title" style="width: 100%;" />
+            <FluentTextField @bind-Value="@Content.Slug" Label="Slug" style="width: 100%;" />
+            <FluentNumberField @bind-Value="@Content.Year" Label="Year" style="width: 100%;" ReadOnly />
+            <FluentNumberField @bind-Value="@Content.Month" Label="Month" style="width: 100%;" ReadOnly />
+            <FluentSwitch @bind-Value="@Content.IsPublished" Label="Published" style="width: 100%;" />
+            <MarkdownEditor @bind-Value="@Content.Content" />
+        </FluentStack>
+    </EditForm>
+</FluentDialogBody>
+
+<!-- Footer -->
+<FluentDialogFooter>
+    @if (String.IsNullOrEmpty(Content.Id))
+    {
+        <FluentButton Appearance="Appearance.Accent" OnClick="@Create">Create</FluentButton>
+    }
+    else
+    {
+        <FluentButton Appearance="Appearance.Accent" OnClick="@Update">Update</FluentButton>
+    }
+    <FluentButton Appearance="Appearance.Neutral" OnClick="@Cancel">Cancel</FluentButton>
+</FluentDialogFooter>
+
+@code {
+    [CascadingParameter]
+    public FluentDialog Dialog { get; set; } = default!;
+    [Parameter]
+    public RewindModel Content { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+    private void Cancel() => Dialog.CancelAsync();
+
+    private async void Update()
+    {
+        await dataAccess.Update(Content);
+        await Dialog.CloseAsync();
+    }
+
+    private async void Create()
+    {
+        await dataAccess.Insert(Content);
+        await Dialog.CloseAsync();
+    }
+
+    private void UpdateTitle(string title)
+    {
+        Content.Title = title;
+        Content.Slug = Slugs.NewSlug(title);
+    }
+
+    private void UpdateDate(DateTime? date)
+    {
+        Content.Date = DateOnly.FromDateTime(date ?? DateTime.Today);
+        Content.Year = Content.Date.Year;
+        Content.Month = Content.Date.Month;
+    }
+}
