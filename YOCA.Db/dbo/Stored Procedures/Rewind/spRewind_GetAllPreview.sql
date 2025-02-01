@@ -9,7 +9,7 @@ BEGIN
 		[Month],
 		[Title],
 		[Slug],
-		LEFT([Content], 200) AS [Content],
+		LEFT([Content], 300) AS [Content],
 		[TimeCreated],
 		[TimeUpdated],
 		[ViewCount],
