@@ -24,7 +24,7 @@
         </InputSelect>
         <FluentTextField @bind-Value="@Content.Title" Label="Title" style="width: 100%;" />
         <FluentDatePicker Value="@(Content.DateCompleted.ToDateTime(TimeOnly.MinValue))" ValueChanged="@(e => Content.DateCompleted = DateOnly.FromDateTime(e ?? DateTime.MinValue))" Label="Date" style="width: 100%;" />
-        <MarkdownEditor @bind-Value="@Content.Note" />
+        <MarkdownEditor @bind-Value="@Content.Note" NativeSpellChecker="true" />
     </FluentStack>
 </FluentDialogBody>
 

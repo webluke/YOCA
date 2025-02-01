@@ -24,7 +24,7 @@
             <FluentNumberField @bind-Value="@Content.Year" Label="Year" style="width: 100%;" ReadOnly />
             <FluentNumberField @bind-Value="@Content.Month" Label="Month" style="width: 100%;" ReadOnly />
             <FluentSwitch @bind-Value="@Content.IsPublished" Label="Published" style="width: 100%;" />
-            <MarkdownEditor @bind-Value="@Content.Content" />
+            <MarkdownEditor @bind-Value="@Content.Content" NativeSpellChecker="true" />
         </FluentStack>
     </EditForm>
 </FluentDialogBody>

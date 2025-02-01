@@ -19,7 +19,7 @@
         <FluentTextField @bind-Value="@Content.Goal" Label="Goal" style="width: 100%;" />
         <FluentTextField @bind-Value="@Content.Result" Label="Result" style="width: 100%;" />
         <FluentTextField @bind-Value="@Content.Tomorrow" Label="Tomorrow" style="width: 100%;" />
-        <MarkdownEditor @bind-Value="@Content.Summary" />
+        <MarkdownEditor @bind-Value="@Content.Summary" NativeSpellChecker="true" />
     </FluentStack>
 </FluentDialogBody>
 

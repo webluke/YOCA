@@ -23,7 +23,7 @@
             }
         </InputSelect>
         <FluentTextField @bind-Value="@Content.Title" Label="Title" style="width: 100%;" />
-        <MarkdownEditor @bind-Value="@Content.Description" />
+        <MarkdownEditor @bind-Value="@Content.Description" NativeSpellChecker="true" />
     </FluentStack>
 </FluentDialogBody>
 

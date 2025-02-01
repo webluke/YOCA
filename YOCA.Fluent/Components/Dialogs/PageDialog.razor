@@ -27,7 +27,7 @@
             <FluentTextField @bind-Value="@Content.Icon" Label="Icon" style="width: 100%;" />
         </FluentStack>
         <FluentSwitch @bind-Value="@Content.IsPublished" Label="Published" style="width: 100%;" />
-        <MarkdownEditor @bind-Value="@Content.Content" />
+            <MarkdownEditor @bind-Value="@Content.Content" NativeSpellChecker="true" />
     </FluentStack>
     </EditForm>
 </FluentDialogBody>
