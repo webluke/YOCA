@@ -1,7 +1,8 @@
 ﻿@page "/admin/site"
 @attribute [Authorize(Roles = "Admin")]
-
-
+@inject IToastService ToastService
+<FluentToastProvider />
+<FluentDialogProvider />
 <PageTitle>Admin - Site Settings</PageTitle>
 <h5>Site Settings</h5>
 

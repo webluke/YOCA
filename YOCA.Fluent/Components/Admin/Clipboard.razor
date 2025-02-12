@@ -4,9 +4,9 @@
 @inject Statuses state
 @rendermode InteractiveServer
 @inject IToastService ToastService
-
+<FluentToastProvider />
 <FluentDialogProvider />
-
+<FluentButton @onclick="@ShowToast" Appearance="Appearance.Accent">Open</FluentButton>
 <PageTitle>Admin - Clipboard</PageTitle>
 <h5>Clipboard</h5>
 <br />
@@ -31,10 +31,19 @@
     IQueryable<ClipboardModel>? query { get; set; }
     private ClipboardModel newClipboard = new();
     TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById("Mountain Standard Time");
-
+    int counter = 1;
     protected override async Task OnInitializedAsync()
     {
         await RefreshData();
+    }
+
+    void ShowToast()
+    {
+        Random rnd = new();
+
+        var intent = Enum.GetValues<ToastIntent>()[rnd.Next(10)];
+        var message = $"Simple Toast #{counter++}";
+        ToastService.ShowToast(intent, message);
     }
 
     private async Task RefreshData()
