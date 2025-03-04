@@ -11,6 +11,7 @@
         <FluentNavMenu Id="main-menu" Collapsible="true" Width="250" Title="Navigation menu" @bind-Expanded="expanded" CustomToggle="true">
             <FluentNavLink Icon="@(FontAwesome.Icon("fas fa-house-laptop"))" IconColor="Color.Accent" Href="/" Match="NavLinkMatch.All">Home</FluentNavLink>
             <FluentNavLink Icon="@(FontAwesome.Icon("fas fa-clipboard"))" IconColor="Color.Accent" Href="clipboard" Match="NavLinkMatch.Prefix">Clipboard</FluentNavLink>
+            <FluentNavLink Icon="@(FontAwesome.Icon("fas fa-lightbulb"))" IconColor="Color.Accent" Href="ideas" Match="NavLinkMatch.Prefix">Ideas</FluentNavLink>
             <FluentNavLink Icon="@(FontAwesome.Icon("fas fa-list-check"))" IconColor="Color.Accent" Href="projects" Match="NavLinkMatch.Prefix">Projects</FluentNavLink>
             <FluentNavLink Icon="@(FontAwesome.Icon("fas fa-clock-rotate-left"))" IconColor="Color.Accent" Href="rewind" Match="NavLinkMatch.Prefix">Rewind</FluentNavLink>
 @*             <FluentNavLink Href="counter" Icon="@(new Icons.Regular.Size20.NumberSymbolSquare())" IconColor="Color.Accent">Counter</FluentNavLink>
@@ -26,6 +27,7 @@
                 <FluentNavGroup Title="Admin" Icon="@(FontAwesome.Icon("fas fa-toolbox"))" IconColor="Color.Accent" Expanded="true">
                     <FluentNavLink Icon="@(FontAwesome.Icon("fas fa-calendar-day"))" IconColor="Color.Accent" Href="admin/days" Match="NavLinkMatch.Prefix">Days</FluentNavLink>
                     <FluentNavLink Icon="@(FontAwesome.Icon("fas fa-clipboard"))" IconColor="Color.Accent" Href="admin/clipboard" Match="NavLinkMatch.Prefix">Clipboard</FluentNavLink>
+                    <FluentNavLink Icon="@(FontAwesome.Icon("fas fa-lightbulb"))" IconColor="Color.Accent" Href="admin/ideas" Match="NavLinkMatch.Prefix">Ideas</FluentNavLink>
                     <FluentNavLink Icon="@(FontAwesome.Icon("fas fa-list-check"))" IconColor="Color.Accent" Href="admin/projects" Match="NavLinkMatch.Prefix">Projects</FluentNavLink>
                     <FluentNavLink Icon="@(FontAwesome.Icon("fas fa-clock-rotate-left"))" IconColor="Color.Accent" Href="admin/rewind" Match="NavLinkMatch.Prefix">Rewind</FluentNavLink>
                     <FluentNavLink Icon="@(FontAwesome.Icon("fas fa-newspaper"))" IconColor="Color.Accent" Href="admin/pages" Match="NavLinkMatch.Prefix">Pages</FluentNavLink>

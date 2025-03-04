@@ -1,0 +1,115 @@
+﻿@page "/admin/ideas"
+@attribute [Authorize(Roles = "Admin")]
+@inject IdeaDataAccess DataAccess
+@inject Statuses state
+@rendermode InteractiveServer
+@inject IToastService ToastService
+<FluentToastProvider />
+<FluentDialogProvider />
+<PageTitle>Admin - Ideas</PageTitle>
+<h5>Ideas</h5>
+<br />
+<FluentButton Appearance="Appearance.Accent" OnClick="Create">Create</FluentButton>
+<br />
+<FluentDataGrid AutoFit Items="@query" id="Data">
+    <PropertyColumn Title="Order" Property="@(c => c.Order)" />
+    <TemplateColumn Title="Status">
+        <StatusBadge statusIndex="@context.Status" />
+    </TemplateColumn>
+    <PropertyColumn Title="Title" Property="@(c => c.Title)" />
+    <TemplateColumn Title="Actions" Align="@Align.End">
+        <FluentButton aria-label="Edit item" IconEnd="@(new Icons.Regular.Size16.Edit())" OnClick="e => Update(e, context.Id)" />
+        <FluentButton aria-label="Delete item" IconEnd="@(new Icons.Regular.Size16.Delete())" OnClick="e => Delete(e, context)" />
+    </TemplateColumn>
+</FluentDataGrid>
+
+@code {
+    [Inject] private IDialogService DialogService { get; set; }
+    private IEnumerable<IdeaModel>? IdeaItems { get; set; }
+    IQueryable<IdeaModel>? query { get; set; }
+    private IdeaModel newIdea = new();
+    TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById("Mountain Standard Time");
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshData();
+    }
+
+    private async Task RefreshData()
+    {
+        IdeaItems = await DataAccess.GetAllAdmin();
+        query = IdeaItems.AsQueryable();
+    }
+
+    private async void Delete(MouseEventArgs e, IdeaModel model)
+    {
+        DeleteDialogModel item = new();
+        item.Id = model.Id;
+        item.Name = model.Title;
+        var parameters = new DialogParameters()
+            {
+                Height = "auto",
+                Width = "650px",
+                Title = $"Delete Idea",
+                PreventDismissOnOverlayClick = true,
+                PreventScroll = true,
+            };
+
+        var dialog = await DialogService.ShowDialogAsync<DeleteDialog>(item, parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            await DataAccess.Delete(model.Id);
+            ToastService.ShowSuccess("Idea Deleted.");
+            await RefreshData();
+            StateHasChanged();
+        }
+    }
+
+    private async Task Create()
+    {
+        IdeaModel model = new();
+        var parameters = new DialogParameters()
+            {
+                Height = "auto",
+                Width = "650px",
+                Title = $"Create Idea",
+                PreventDismissOnOverlayClick = true,
+                PreventScroll = true,
+            };
+
+        var dialog = await DialogService.ShowDialogAsync<IdeaDialog>(model, parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            ToastService.ShowSuccess("Idea Created.");
+            await RefreshData();
+            StateHasChanged();
+        }
+    }
+
+    private async Task Update(MouseEventArgs e, string id)
+    {
+        IdeaModel model = await DataAccess.GetId(id);
+        var parameters = new DialogParameters()
+            {
+                Height = "auto",
+                Width = "auto",
+                Title = $"Create Idea",
+                PreventDismissOnOverlayClick = true,
+                PreventScroll = true,
+            };
+
+        var dialog = await DialogService.ShowDialogAsync<IdeaDialog>(model, parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            ToastService.ShowSuccess("Idea Update.");
+            await RefreshData();
+            StateHasChanged();
+        }
+    }
+}

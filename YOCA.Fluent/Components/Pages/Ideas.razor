@@ -1,0 +1,31 @@
+﻿@page "/ideas"
+@inject IdeaDataAccess DataAccess;
+
+<PageTitle>Ideas</PageTitle>
+<h3>Ideas</h3>
+<br />
+<FluentGrid>
+@if (data != null)
+{
+    foreach (var d in data)
+    {
+        <FluentGridItem xs="12" sm="6" md="4" lg="3">
+            <IdeaCard data="@d" />
+        </FluentGridItem>
+    }
+}
+</FluentGrid>
+
+@code {
+    private IEnumerable<IdeaModel>? data { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshData();
+    }
+
+    private async Task RefreshData()
+    {
+        data = await DataAccess.GetAll();
+    }
+}

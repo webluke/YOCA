@@ -1,0 +1,21 @@
+﻿@inject Statuses state
+
+@if (data != null)
+{
+    <FluentCard>
+        <h4>@data.Title</h4>
+        <StatusBadge statusIndex="@data.Status" />
+        <br />
+        @((MarkupString)Markdown.ParseHtmlString(data.Content).ToString())
+    </FluentCard>
+}
+
+@code {
+    [Parameter]
+    public IdeaModel data { get; set; }
+
+    protected override void OnInitialized()
+    {
+
+    }
+}
