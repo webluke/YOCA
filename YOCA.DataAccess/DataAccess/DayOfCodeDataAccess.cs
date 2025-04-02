@@ -34,11 +34,11 @@ public class DayOfCodeDataAccess
         return results;
     }
 
-    public async Task<IEnumerable<DayOfCodeModel>> GetPageRange(int pageNumber, int perPage)
+    public async Task<(IEnumerable<DayOfCodeModel>, int Count)> GetPageRange(int pageNumber, int perPage)
     {
-        var results = await DB.LoadData<DayOfCodeModel, dynamic>(
+        var results = await DB.LoadCountData<DayOfCodeModel, dynamic>(
             "dbo.spDayOfCode_GetByPageNumber",
-            new { PageNumber = pageNumber, RowsPerPage = perPage });
+            new { PageNumber = pageNumber, PageSize = perPage });
 
         return results;
     }

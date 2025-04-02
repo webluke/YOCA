@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[spDayOfCode_GetByPageNumber]
 
-	@PageNumber INT,
-	@PageSize INT
+	@PageNumber INT = 1,
+	@PageSize INT = 30
 
 AS
 BEGIN
@@ -23,5 +23,8 @@ BEGIN
 		[Date] DESC
 	OFFSET (@PageNumber - 1) * @PageSize ROWS
 	FETCH NEXT @PageSize ROWS ONLY;
+
+	SELECT COUNT(*) AS TotalCount
+	FROM [dbo].[DayOfCode];
 
 END

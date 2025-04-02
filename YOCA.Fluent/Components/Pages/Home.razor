@@ -1,15 +1,16 @@
 ﻿@page "/"
 
 @inject DayOfCodeDataAccess dayData
+@inject IJSRuntime JS
 @rendermode InteractiveServer
 
 <PageTitle>Year of Code</PageTitle>
 <br />
 @if (tm != null) {
-<FluentCard Height="auto">
-    <b>Tomorrow:</b> Day @tm.Day - @tm.Date.ToString("MMMM d, yyyy") - @tm.Tomorrow
-</FluentCard>
-<br />
+    <FluentCard Height="auto">
+        <b>Tomorrow:</b> Day @tm.Day - @tm.Date.ToString("MMMM d, yyyy") - @tm.Tomorrow
+    </FluentCard>
+    <br />
 }
 
 <FluentCard Height="auto">
@@ -17,7 +18,8 @@
     <a href="https://www.github.com/webluke/YOCA" trget="_blank">GitHub/WebLuke/YOCA</a>
 </FluentCard>
 <br />
-@if (days != null)
+<div @ref="PostsContainer">
+@if (days.Any())
 {
     foreach (var day in days)
     {
@@ -26,19 +28,84 @@
     }
 
 }
+else
+{
+    <p>No Days to Display.</p>
+}
+</div>
+<FluentStack HorizontalAlignment="HorizontalAlignment.Center" VerticalGap="10">
+    <FluentButton 
+        Disabled="@(CurrentPage <= 1)" 
+        OnClick="@(() => LoadPosts(CurrentPage - 1))">
+        Previous
+    </FluentButton>
+
+    @for (int i = 1; i <= TotalPages; i++)
+    {
+        int p = i;
+        <FluentButton 
+            Appearance="@(CurrentPage == p ? Appearance.Accent : Appearance.Neutral)"
+            OnClick="@(() => LoadPosts(p))">
+            @p
+        </FluentButton>
+    }
+
+    <FluentButton 
+        Disabled="@(CurrentPage >= TotalPages)" 
+        OnClick="@(() => LoadPosts(CurrentPage + 1))">
+        Next
+    </FluentButton>
+</FluentStack>
+<br />
+
+<script>
+    window.scrollElementIntoView = (element) => {
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    };
+</script>
 
 @code {
-    private IEnumerable<DayOfCodeModel>? days { get; set; }
-    private TomorrowModel tm { get; set; }
+    private List<DayOfCodeModel> days = new();
+    private TomorrowModel tm = new();
+    private int TotalPosts = 0;
+    private int CurrentPage = 1;
+    private const int PageSize = 15;
+    private int TotalPages => (int)Math.Ceiling((double)TotalPosts / PageSize);
+    private ElementReference PostsContainer;
+    private bool firstLoad = true;
 
     protected override async Task OnInitializedAsync()
     {
-        await RefreshData();
+        await LoadPosts(1);
+        tm = await dayData.GetTomorrow();
+        firstLoad = false;
     }
 
-    private async Task RefreshData()
+    private async Task LoadPosts(int pageNumber)
     {
-        days = await dayData.GetDays();
-        tm = await dayData.GetTomorrow();
+        var (posts, totalPosts) = await dayData.GetPageRange(pageNumber, PageSize);
+        days = posts.ToList();
+        TotalPosts = totalPosts;
+        CurrentPage = pageNumber;
+        if (!firstLoad)
+        {
+            await Task.Delay(100);
+            await ScrollToTop();
+        }
+        StateHasChanged(); 
+    }
+
+    private async Task ScrollToTop()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("scrollElementIntoView", PostsContainer);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Scroll error: {ex.Message}");
+        }
     }
 }
