@@ -17,6 +17,11 @@ public class ProjectTaskDataAccess
         var results = DB.LoadData<ProjectTaskModel, dynamic>("dbo.spProjectTasks_GetAll", new { });
         return results;
     }
+    public Task<IEnumerable<ProjectTaskModel>> GetAllAdmin()
+    {
+        var results = DB.LoadData<ProjectTaskModel, dynamic>("dbo.spProjectTasks_GetAllAdmin", new { });
+        return results;
+    }
 
     public async Task<IEnumerable<ProjectTaskModel>> GetProjectTasks(string projectId)
     {
@@ -26,7 +31,14 @@ public class ProjectTaskDataAccess
 
         return results;
     }
+    public async Task<IEnumerable<ProjectTaskModel>> GetProjectTasksAdmin(string projectId)
+    {
+        var results = await DB.LoadData<ProjectTaskModel, dynamic>(
+            "dbo.spProjectTasks_GetAllAdminByProjectId",
+            new { ProjectId = projectId });
 
+        return results;
+    }
 
     public async Task<ProjectTaskModel?> GetId(string id)
     {

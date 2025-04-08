@@ -137,6 +137,9 @@
     <Build Include="dbo\Stored Procedures\Ideas\spIdeas_GetAllAdmin.sql" />
     <Build Include="dbo\Stored Procedures\Ideas\spIdeas_GetById.sql" />
     <Build Include="dbo\Stored Procedures\Ideas\spIdeas_Insert.sql" />
+    <Build Include="dbo\Stored Procedures\Projects\spProjects_GetAllAdmin.sql" />
+    <Build Include="dbo\Stored Procedures\ProjectTasks\spProjectTasks_GetAllAdmin.sql" />
+    <Build Include="dbo\Stored Procedures\ProjectTasks\spProjectTasks_GetAllAdminByProjectId.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />

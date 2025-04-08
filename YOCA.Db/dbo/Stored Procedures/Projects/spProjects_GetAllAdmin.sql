@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[spProjects_GetAll]
+﻿CREATE PROCEDURE [dbo].[spProjects_GetAllAdmin]
 
 	
 
@@ -18,7 +18,6 @@ BEGIN
 		[ViewCount]
 	FROM 
 		[dbo].[Projects]
-	WHERE [Status] < 299 
 	ORDER BY [Order] DESC, [Status] ASC;
 
 END

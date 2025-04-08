@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[spProjectTasks_GetAllByProjectId]
+﻿CREATE PROCEDURE [dbo].[spProjectTasks_GetAllAdminByProjectId]
 
 	@ProjectId NCHAR(10)
 
@@ -16,8 +16,8 @@ BEGIN
 		[TimeUpdated]
 	FROM
 		[dbo].[ProjectTasks]
-	WHERE [ProjectId] = @ProjectId
-	AND [Status] < 299
-	ORDER BY [Order] DESC, [Status] ASC;
+	WHERE
+		[ProjectId] = @ProjectId
+	ORDER BY [Order] DESC, [Status] ASC
 
 END

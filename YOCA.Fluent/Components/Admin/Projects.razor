@@ -61,7 +61,7 @@
 
     private async Task RefreshData()
     {
-        projectItems = await projectData.GetAllWithTasks();    }
+        projectItems = await projectData.GetAllAdminWithTasks();    }
 
     private async void Delete(MouseEventArgs e, ProjectModel project)
     {

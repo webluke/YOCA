@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[spProjectTasks_GetAll]
+﻿CREATE PROCEDURE [dbo].[spProjectTasks_GetAllAdmin]
 
 	
 

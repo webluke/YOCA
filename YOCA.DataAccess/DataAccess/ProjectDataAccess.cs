@@ -30,6 +30,24 @@ public class ProjectDataAccess
         return results;
     }
 
+    public async Task<IEnumerable<ProjectModel>> GetAllAdmin()
+    {
+        var results = await DB.LoadData<ProjectModel, dynamic>("dbo.spProjects_GetAllAdmin", new { });
+        return results;
+    }
+
+    public async Task<IEnumerable<ProjectModel>> GetAllAdminWithTasks()
+    {
+        IEnumerable<ProjectModel> results = await DB.LoadData<ProjectModel, dynamic>("dbo.spProjects_GetAllAdmin", new { });
+        foreach (var project in results)
+        {
+            project.Tasks = (await DB.LoadData<ProjectTaskModel, dynamic>(
+                "dbo.spProjectTasks_GetAllAdminByProjectId",
+                new { ProjectId = project.Id })).ToList();
+        }
+        return results;
+    }
+
     public async Task<ProjectModel?> GetId(string id)
     {
         var results = await DB.LoadData<ProjectModel, dynamic>(
