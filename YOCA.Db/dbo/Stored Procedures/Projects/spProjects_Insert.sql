@@ -30,6 +30,6 @@ BEGIN
 		@EndDate,
 		@Title,
 		@Description
-	)
+	);
 
 END

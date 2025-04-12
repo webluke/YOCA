@@ -2,6 +2,7 @@
 
 	@Id NCHAR(10),
 	@ProjectId NCHAR(10),
+	@BoardId NCHAR(10),
 	@Order INT,
 	@Status INT,
 	@Title NVARCHAR(50),
@@ -14,6 +15,7 @@ BEGIN
 	(
 		[Id],
 		[ProjectId],
+		[BoardId],
 		[Order],
 		[Status],
 		[Title],
@@ -23,6 +25,7 @@ BEGIN
 	(
 		@Id,
 		@ProjectId,
+		@BoardId,
 		@Order,
 		@Status,
 		@Title,

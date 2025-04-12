@@ -67,6 +67,7 @@
     <Folder Include="dbo\Stored Procedures\Links" />
     <Folder Include="dbo\Stored Procedures\Rewind" />
     <Folder Include="dbo\Stored Procedures\Ideas" />
+    <Folder Include="dbo\Stored Procedures\ProjectBoards" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\DayOfCode.sql" />
@@ -140,6 +141,14 @@
     <Build Include="dbo\Stored Procedures\Projects\spProjects_GetAllAdmin.sql" />
     <Build Include="dbo\Stored Procedures\ProjectTasks\spProjectTasks_GetAllAdmin.sql" />
     <Build Include="dbo\Stored Procedures\ProjectTasks\spProjectTasks_GetAllAdminByProjectId.sql" />
+    <Build Include="dbo\Tables\ProjectBoards.sql" />
+    <Build Include="dbo\Stored Procedures\ProjectBoards\spProjectBoards_Update.sql" />
+    <Build Include="dbo\Stored Procedures\ProjectBoards\spProjectBoards_Delete.sql" />
+    <Build Include="dbo\Stored Procedures\ProjectBoards\spProjectBoards_GetAll.sql" />
+    <Build Include="dbo\Stored Procedures\ProjectBoards\spProjectBoards_GetAllAdmin.sql" />
+    <Build Include="dbo\Stored Procedures\ProjectBoards\spProjectBoards_GetById.sql" />
+    <Build Include="dbo\Stored Procedures\ProjectBoards\spProjectBoards_Insert.sql" />
+    <Build Include="dbo\Stored Procedures\ProjectBoards\spProjectBoards_GetProjectBoardWithTasks.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />

@@ -7,10 +7,14 @@ BEGIN
 
 	DELETE FROM [dbo].[ProjectTasks]
 	WHERE
-		[ProjectId] = @Id
+		[ProjectId] = @Id;
+
+	DELETE FROM [dbo].[ProjectBoards]
+	WHERE
+		[ProjectId] = @Id;
 
 	DELETE FROM [dbo].[Projects]
 	WHERE
-		[Id] = @Id
+		[Id] = @Id;
 
 END

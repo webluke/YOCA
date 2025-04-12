@@ -19,6 +19,6 @@ BEGIN
 	FROM 
 		[dbo].[Projects]
 	WHERE
-		[Id] = @Id
+		[Id] = @Id;
 
 END

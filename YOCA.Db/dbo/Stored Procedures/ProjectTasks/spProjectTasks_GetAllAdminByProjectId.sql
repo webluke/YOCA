@@ -8,6 +8,7 @@ BEGIN
 	SELECT
 		[Id],
 		[ProjectId],
+		[BoardId],
 		[Order],
 		[Status],
 		[Title],

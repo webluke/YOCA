@@ -2,6 +2,7 @@
 	
 	@Id NCHAR(10),
 	@ProjectId NCHAR(10),
+	@BoardId NCHAR(10),
 	@Order INT,
 	@Status INT,
 	@Title NVARCHAR(50),
@@ -13,6 +14,7 @@ BEGIN
 	UPDATE dbo.[ProjectTasks]
 	SET 
 		[ProjectId] = @ProjectId,
+		[BoardId] = @BoardId,
 		[Order] = @Order,
 		[Status] = @Status,
 		[Title] = @Title,

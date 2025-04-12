@@ -21,6 +21,6 @@ BEGIN
 		[Description] = @Description,
 		[TimeUpdated] = SYSUTCDATETIME()
 	WHERE
-		[Id] = @Id
+		[Id] = @Id;
 
 END
