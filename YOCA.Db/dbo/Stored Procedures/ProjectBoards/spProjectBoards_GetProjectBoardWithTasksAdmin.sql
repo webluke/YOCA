@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[spProjectBoards_GetProjectBoardWithTasks]
+﻿CREATE PROCEDURE [dbo].[spProjectBoards_GetProjectBoardWithTasksAdmin]
 	
 	@ProjectId NCHAR(10)
 
@@ -9,7 +9,6 @@ BEGIN
             FROM [dbo].[ProjectBoards] b
             LEFT JOIN [dbo].[ProjectTasks] t ON b.Id = t.BoardId
             WHERE b.ProjectId = @ProjectId
-            AND t.Status < 299
             ORDER BY b.[Order], t.[Order];
 
 END

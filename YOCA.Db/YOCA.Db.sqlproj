@@ -149,6 +149,7 @@
     <Build Include="dbo\Stored Procedures\ProjectBoards\spProjectBoards_GetById.sql" />
     <Build Include="dbo\Stored Procedures\ProjectBoards\spProjectBoards_Insert.sql" />
     <Build Include="dbo\Stored Procedures\ProjectBoards\spProjectBoards_GetProjectBoardWithTasks.sql" />
+    <Build Include="dbo\Stored Procedures\ProjectBoards\spProjectBoards_GetProjectBoardWithTasksAdmin.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />
