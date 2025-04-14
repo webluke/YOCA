@@ -1,6 +1,6 @@
-﻿@inject ProjectTaskDataAccess dataAccess
+﻿@inject ProjectBoardDataAccess dataAccess
 @inject Statuses states
-@implements IDialogContentComponent<ProjectTaskModel>
+@implements IDialogContentComponent<ProjectBoardModel>
 
 <!-- Header -->
 <FluentDialogHeader ShowDismiss="true">
@@ -16,14 +16,7 @@
 <FluentDialogBody>
     <FluentStack Orientation="Orientation.Vertical">
         <FluentNumberField @bind-Value="@Content.Order" Label="Order" style="width: 100%;" />
-        <InputSelect @bind-Value="@Content.Status" style="font-family: 'FontAwesome', 'sans-serif'">
-            @foreach (var t in states.DefaultStatuses)
-            {
-                <option value=@t.Key style="background: @t.Value.BackgroundColor; color: @t.Value.Color;">@((MarkupString)$"{t.Value.UnicodeIcon}&nbsp;&nbsp;{t.Value.Name}")</option>
-            }
-        </InputSelect>
         <FluentTextField @bind-Value="@Content.Title" Label="Title" style="width: 100%;" />
-        <MarkdownEditor @bind-Value="@Content.Description" NativeSpellChecker="true" />
     </FluentStack>
 </FluentDialogBody>
 
@@ -44,7 +37,7 @@
     [CascadingParameter]
     public FluentDialog Dialog { get; set; } = default!;
     [Parameter]
-    public ProjectTaskModel Content { get; set; } = default!;
+    public ProjectBoardModel Content { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {

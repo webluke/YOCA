@@ -27,6 +27,7 @@
             </FluentCard>
             <br />
             <FluentStack>
+                <FluentButton Appearance="Appearance.Accent" OnClick="e => CreateBoard(e, p.Id)">Create Board</FluentButton>
                 <FluentButton Appearance="Appearance.Accent" OnClick="e => CreateTask(e, p.Id)">Create Task</FluentButton>
                 <FluentButton Color="Color.Success" OnClick="e => Update(e, p.Id)">Edit Project</FluentButton>
                 <FluentButton Color="Color.Success" OnClick="e => Delete(e, p)">Delete Project</FluentButton>
@@ -120,7 +121,7 @@
         var parameters = new DialogParameters()
             {
                 Height = "auto",
-                Width = "auto",
+                Width = "650px",
                 Title = $"Create Project",
                 PreventDismissOnOverlayClick = true,
                 PreventScroll = true,
@@ -193,11 +194,84 @@
         var parameters = new DialogParameters()
             {
                 Height = "auto",
-                Width = "auto",
+                Width = "650px",
                 Title = $"Create Project Task",
                 PreventDismissOnOverlayClick = true,
                 PreventScroll = true,
             };
+
+        var dialog = await DialogService.ShowDialogAsync<ProjectTaskDialog>(model, parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            ToastService.ShowSuccess("Project Task Update.");
+            await RefreshData();
+            StateHasChanged();
+        }
+    }
+
+    private async void DeleteBoard(MouseEventArgs e, ProjectTaskModel projectTaskItem)
+    {
+        DeleteDialogModel item = new();
+        item.Id = projectTaskItem.Id;
+        item.Name = projectTaskItem.Title;
+        var parameters = new DialogParameters()
+        {
+            Height = "auto",
+            Width = "650px",
+            Title = $"Delete Project Task",
+            PreventDismissOnOverlayClick = true,
+            PreventScroll = true,
+        };
+
+        var dialog = await DialogService.ShowDialogAsync<DeleteDialog>(item, parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            await taskData.Delete(projectTaskItem.Id);
+            ToastService.ShowSuccess("Project Task Deleted.");
+            await RefreshData();
+            StateHasChanged();
+        }
+    }
+
+    private async Task CreateBoard(MouseEventArgs e, string projectId)
+    {
+        ProjectTaskModel model = new();
+        model.ProjectId = projectId;
+        var parameters = new DialogParameters()
+        {
+            Height = "auto",
+            Width = "650px",
+            Title = $"Create Clipboard Item",
+            PreventDismissOnOverlayClick = true,
+            PreventScroll = true,
+        };
+
+        var dialog = await DialogService.ShowDialogAsync<ProjectTaskDialog>(model, parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            ToastService.ShowSuccess("Project Task Created.");
+            await RefreshData();
+            StateHasChanged();
+        }
+    }
+
+    private async Task UpdateBoard(MouseEventArgs e, string id)
+    {
+        ProjectTaskModel model = await taskData.GetId(id);
+        var parameters = new DialogParameters()
+        {
+            Height = "auto",
+            Width = "650px",
+            Title = $"Create Project Task",
+            PreventDismissOnOverlayClick = true,
+            PreventScroll = true,
+        };
 
         var dialog = await DialogService.ShowDialogAsync<ProjectTaskDialog>(model, parameters);
         var result = await dialog.Result;

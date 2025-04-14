@@ -29,6 +29,7 @@ builder.Services.AddMvc(options => options.EnableEndpointRouting = false);
 builder.Services.AddSingleton<ISqlDataAccess, SqlDataAccess>();
 builder.Services.AddSingleton<DayOfCodeDataAccess>();
 builder.Services.AddSingleton<ProjectDataAccess>();
+builder.Services.AddSingleton<ProjectBoardDataAccess>();
 builder.Services.AddSingleton<ProjectTaskDataAccess>();
 builder.Services.AddSingleton<PageDataAccess>();
 builder.Services.AddSingleton<ClipboardDataAccess>();
