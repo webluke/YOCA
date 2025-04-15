@@ -11,6 +11,16 @@
             @((MarkupString)Markdown.ParseHtmlString(project.Description).ToString())
         </FluentCard>
         <br />
+        <FluentStack>
+            @foreach board in project.Boards
+            {
+                <FluentStackItem>
+                    <FluentButton @onclick="() => state.SetCurrentBoard(board)" appearance="Primary">
+                        @board.Title
+                    </FluentButton>
+                </FluentStackItem>
+            }
+        </FluentStack>
         @if (project.Tasks.Count > 0)
         {
         <FluentGrid>
