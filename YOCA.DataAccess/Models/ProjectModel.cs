@@ -14,5 +14,5 @@ public class ProjectModel
     public DateTime TimeUpdated { get; set; }
     public int ViewCount { get; set; }
 
-    public List<ProjectTaskModel> Tasks { get; set; }
+    public List<ProjectBoardModel> Boards { get; set; }
 }

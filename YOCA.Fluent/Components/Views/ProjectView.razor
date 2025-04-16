@@ -12,31 +12,31 @@
         </FluentCard>
         <br />
         <FluentStack>
-            @foreach board in project.Boards
+            @foreach (var board in project.Boards)
             {
-                <FluentStackItem>
-                    <FluentButton @onclick="() => state.SetCurrentBoard(board)" appearance="Primary">
+                <FluentGrid>
+                    <FluentButton>
                         @board.Title
                     </FluentButton>
-                </FluentStackItem>
+                    @if (board.Tasks.Count > 0)
+                    {
+                        <FluentStack>
+                            @foreach (var task in board.Tasks)
+                            {
+                                <FluentGridItem xs="12" sm="6" md="4" lg="3">
+                                    <FluentCard>
+                                        <h4>@task.Title</h4>
+                                        <StatusBadge statusIndex="@task.Status" />
+                                        <br />
+                                        @((MarkupString)Markdown.ParseHtmlString(task.Description).ToString())
+                                    </FluentCard>
+                                </FluentGridItem>
+                            }
+                        </FluentStack>
+                    }
+                </FluentGrid>
             }
         </FluentStack>
-        @if (project.Tasks.Count > 0)
-        {
-        <FluentGrid>
-            @foreach (var task in project.Tasks)
-            {
-                <FluentGridItem xs="12" sm="6" md="4" lg="3">
-                    <FluentCard>
-                        <h4>@task.Title</h4>
-                        <StatusBadge statusIndex="@task.Status" />
-                        <br />
-                        @((MarkupString)Markdown.ParseHtmlString(task.Description).ToString())
-                    </FluentCard>
-                </FluentGridItem>
-            }
-        </FluentGrid>
-        }
     </FluentCard>
 }
 
