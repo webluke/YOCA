@@ -14,27 +14,23 @@
         <FluentStack>
             @foreach (var board in project.Boards)
             {
-                <FluentGrid>
-                    <FluentButton>
-                        @board.Title
-                    </FluentButton>
+                <FluentCard>
+                    <h5>@board.Title</h5>
                     @if (board.Tasks.Count > 0)
                     {
-                        <FluentStack>
+                        <FluentStack Orientation="Orientation.Vertical">
                             @foreach (var task in board.Tasks)
                             {
-                                <FluentGridItem xs="12" sm="6" md="4" lg="3">
-                                    <FluentCard>
-                                        <h4>@task.Title</h4>
-                                        <StatusBadge statusIndex="@task.Status" />
-                                        <br />
-                                        @((MarkupString)Markdown.ParseHtmlString(task.Description).ToString())
-                                    </FluentCard>
-                                </FluentGridItem>
+                                <FluentCard>
+                                    <h4>@task.Title</h4>
+                                    <StatusBadge statusIndex="@task.Status" />
+                                    <br />
+                                    @((MarkupString)Markdown.ParseHtmlString(task.Description).ToString())
+                                </FluentCard>
                             }
                         </FluentStack>
                     }
-                </FluentGrid>
+                </FluentCard>
             }
         </FluentStack>
     </FluentCard>
