@@ -1,5 +1,7 @@
 # YOCA
 
+[WebLuke's Year Of Code](https://yearofcode.webluke.net/)
+
 I know this concept isn't new—I am copying someone doing 1000 days—but I wanted to set something for myself that is a good start, so One Year of Code is my goal. This will not be my work project but my learning something new and building something new, and I will put it out on a website, Twitter, and GitHub.
 
 I will post a quick summary and a full write-up of what I did on this website each day.
