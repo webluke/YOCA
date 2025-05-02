@@ -23,9 +23,9 @@ public class ProjectDataAccess
         IEnumerable<ProjectModel> results = await DB.LoadData<ProjectModel, dynamic>("dbo.spProjects_GetAll", new { });
         foreach (var project in results)
         {
-            project.Tasks = (await DB.LoadData<ProjectTaskModel, dynamic>(
-                "dbo.spProjectTasks_GetAllByProjectId",
-                new { ProjectId = project.Id })).ToList();
+            //project.Tasks = (await DB.LoadData<ProjectTaskModel, dynamic>(
+            //    "dbo.spProjectTasks_GetAllByProjectId",
+            //    new { ProjectId = project.Id })).ToList();
         }
         return results;
     }
@@ -41,9 +41,9 @@ public class ProjectDataAccess
         IEnumerable<ProjectModel> results = await DB.LoadData<ProjectModel, dynamic>("dbo.spProjects_GetAllAdmin", new { });
         foreach (var project in results)
         {
-            project.Tasks = (await DB.LoadData<ProjectTaskModel, dynamic>(
-                "dbo.spProjectTasks_GetAllAdminByProjectId",
-                new { ProjectId = project.Id })).ToList();
+            //project.Tasks = (await DB.LoadData<ProjectTaskModel, dynamic>(
+            //    "dbo.spProjectTasks_GetAllAdminByProjectId",
+            //    new { ProjectId = project.Id })).ToList();
         }
         return results;
     }
@@ -67,9 +67,9 @@ public class ProjectDataAccess
 
         if (result != null)
         {
-            result.Tasks = (await DB.LoadData<ProjectTaskModel, dynamic>(
-                "dbo.spProjectTasks_GetAllByProjectId",
-                new { ProjectId = result.Id })).ToList();
+            //result.Tasks = (await DB.LoadData<ProjectTaskModel, dynamic>(
+            //    "dbo.spProjectTasks_GetAllByProjectId",
+            //    new { ProjectId = result.Id })).ToList();
         }
 
         return result;

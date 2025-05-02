@@ -16,6 +16,6 @@ BEGIN
 		[IsPublished]
 	FROM Rewind
 	WHERE IsPublished = 1
-	ORDER BY Date DESC
+	ORDER BY Date DESC;
 
 END

@@ -42,6 +42,15 @@ public class RewindDataAccess
         return results.FirstOrDefault();
     }
 
+    public async Task<RewindModel?> GetIdAdmin(string id)
+    {
+        var results = await DB.LoadData<RewindModel, dynamic>(
+            "dbo.spRewind_GetByIdAdmin",
+            new { Id = id });
+
+        return results.FirstOrDefault();
+    }
+
     public async Task<RewindModel?> GetSlug(string slug)
     {
         var results = await DB.LoadData<RewindModel, dynamic>(

@@ -19,6 +19,6 @@ BEGIN
 		[ViewCount],
 		[IsPublished]
 	FROM Rewind
-	WHERE [Year] = @Year AND [Month] = @Month AND IsPublished = 1
+	WHERE [Year] = @Year AND [Month] = @Month AND IsPublished = 1;
 
 END

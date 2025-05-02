@@ -12,6 +12,7 @@
         </FluentCard>
         <br />
         <FluentStack>
+            @if (project.Boards != null){
             @foreach (var board in project.Boards)
             {
                 <FluentCard>
@@ -31,6 +32,7 @@
                         </FluentStack>
                     }
                 </FluentCard>
+            }
             }
         </FluentStack>
     </FluentCard>

@@ -150,6 +150,7 @@
     <Build Include="dbo\Stored Procedures\ProjectBoards\spProjectBoards_Insert.sql" />
     <Build Include="dbo\Stored Procedures\ProjectBoards\spProjectBoards_GetProjectBoardWithTasks.sql" />
     <Build Include="dbo\Stored Procedures\ProjectBoards\spProjectBoards_GetProjectBoardWithTasksAdmin.sql" />
+    <Build Include="dbo\Stored Procedures\Rewind\spRewind_GetByIdAdmin.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />

@@ -94,7 +94,7 @@
 
     private async Task Update(MouseEventArgs e, string id)
     {
-        RewindModel model = await rewindData.GetId(id);
+        RewindModel model = await rewindData.GetIdAdmin(id);
         var parameters = new DialogParameters()
             {
                 Height = "auto",

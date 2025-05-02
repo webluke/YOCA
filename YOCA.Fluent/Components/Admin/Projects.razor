@@ -33,7 +33,7 @@
                 <FluentButton Color="Color.Success" OnClick="e => Delete(e, p)">Delete Project</FluentButton>
             </FluentStack>
             <br />
-            <FluentDataGrid AutoFit Items="@p.Tasks.AsQueryable()" id="Data">
+@*             <FluentDataGrid AutoFit Items="@p.Boards.AsQueryable()" id="Data">
                 <PropertyColumn Title="Order" Property="@(c => c.Order)" />
                 <TemplateColumn Title="Status">
                     <StatusBadge statusIndex="@context.Status" />
@@ -43,7 +43,7 @@
                     <FluentButton aria-label="Edit item" IconEnd="@(new Icons.Regular.Size16.Edit())" OnClick="e => UpdateTask(e, context.Id)" />
                     <FluentButton aria-label="Delete item" IconEnd="@(new Icons.Regular.Size16.Delete())" OnClick="e => DeleteTask(e, context)" />
                 </TemplateColumn>
-            </FluentDataG>
+            </FluentDataGrid> *@
         </FluentCard>
         <br />
     }

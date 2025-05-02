@@ -18,6 +18,6 @@ BEGIN
 		[ViewCount],
 		[IsPublished]
 	FROM Rewind
-	WHERE [Id] = @Id AND IsPublished = 1
+	WHERE [Id] = @Id AND IsPublished = 1;
 
 END

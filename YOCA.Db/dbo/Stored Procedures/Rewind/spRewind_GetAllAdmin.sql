@@ -18,6 +18,6 @@ BEGIN
 		[ViewCount],
 		[IsPublished]
 	FROM Rewind
-	ORDER BY Date DESC
+	ORDER BY Date DESC;
 
 END

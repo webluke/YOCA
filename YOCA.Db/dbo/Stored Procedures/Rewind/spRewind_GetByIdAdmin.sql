@@ -1,6 +1,6 @@
-﻿CREATE PROCEDURE [dbo].[spRewind_GetAll]
+﻿CREATE PROCEDURE [dbo].[spRewind_GetByIdAdmin]
 
-
+	@Id NCHAR(10)
 
 AS
 BEGIN
@@ -18,7 +18,6 @@ BEGIN
 		[ViewCount],
 		[IsPublished]
 	FROM Rewind
-	WHERE IsPublished = 1
-	ORDER BY Date DESC;
+	WHERE [Id] = @Id;
 
 END
