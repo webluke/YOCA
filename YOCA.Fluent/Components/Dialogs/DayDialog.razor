@@ -1,4 +1,5 @@
 ﻿@inject DayOfCodeDataAccess dataAccess
+@inject IJSRuntime JS
 @implements IDialogContentComponent<DayOfCodeModel>
 
 <!-- Header -->
@@ -19,7 +20,8 @@
         <FluentTextField @bind-Value="@Content.Goal" Label="Goal" style="width: 100%;" />
         <FluentTextField @bind-Value="@Content.Result" Label="Result" style="width: 100%;" />
         <FluentTextField @bind-Value="@Content.Tomorrow" Label="Tomorrow" style="width: 100%;" />
-        <MarkdownEditor @bind-Value="@Content.Summary" NativeSpellChecker="true" />
+@*         <MarkdownEditor @bind-Value="@Content.Summary" NativeSpellChecker="true" /> *@
+        <div id="toast-editor"></div>
     </FluentStack>
 </FluentDialogBody>
 
@@ -44,19 +46,24 @@
 
     protected override async Task OnInitializedAsync()
     {
-
+        await Task.Delay(100);
+        await JS.InvokeVoidAsync("toastuiBlazor.create", "toast-editor", Content.Summary);
     }
 
     private void Cancel() => Dialog.CancelAsync();
 
     private async void Update()
     {
+        Content.Summary = await JS.InvokeAsync<string>("toastuiBlazor.getMarkdown");
+        await JS.InvokeVoidAsync("toastuiBlazor.destroy");
         await dataAccess.Update(Content);
         await Dialog.CloseAsync();
     }
 
     private async void Create()
     {
+        Content.Summary = await JS.InvokeAsync<string>("toastuiBlazor.getMarkdown");
+        await JS.InvokeVoidAsync("toastuiBlazor.destroy");
         await dataAccess.Insert(Content);
         await Dialog.CloseAsync();
     }
