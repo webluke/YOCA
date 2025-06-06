@@ -1,4 +1,5 @@
 ﻿@inject RewindDataAccess dataAccess
+@inject IJSRuntime JS
 @using YOCA.DataAccess.Tools
 @implements IDialogContentComponent<RewindModel>
 
@@ -24,7 +25,8 @@
             <FluentNumberField @bind-Value="@Content.Year" Label="Year" style="width: 100%;" ReadOnly />
             <FluentNumberField @bind-Value="@Content.Month" Label="Month" style="width: 100%;" ReadOnly />
             <FluentSwitch @bind-Value="@Content.IsPublished" Label="Published" style="width: 100%;" />
-            <MarkdownEditor @bind-Value="@Content.Content" NativeSpellChecker="true" />
+            @* <MarkdownEditor @bind-Value="@Content.Content" NativeSpellChecker="true" /> *@
+            <div id="toast-editor"></div>
         </FluentStack>
     </EditForm>
 </FluentDialogBody>
@@ -50,19 +52,24 @@
 
     protected override async Task OnInitializedAsync()
     {
-
+        await Task.Delay(100);
+        await JS.InvokeVoidAsync("toastuiBlazor.create", "toast-editor", Content.Content);
     }
 
     private void Cancel() => Dialog.CancelAsync();
 
     private async void Update()
     {
+        Content.Content = await JS.InvokeAsync<string>("toastuiBlazor.getMarkdown");
+        await JS.InvokeVoidAsync("toastuiBlazor.destroy");
         await dataAccess.Update(Content);
         await Dialog.CloseAsync();
     }
 
     private async void Create()
     {
+        Content.Content = await JS.InvokeAsync<string>("toastuiBlazor.getMarkdown");
+        await JS.InvokeVoidAsync("toastuiBlazor.destroy");
         await dataAccess.Insert(Content);
         await Dialog.CloseAsync();
     }

@@ -1,4 +1,5 @@
 ﻿@inject IdeaDataAccess dataAccess
+@inject IJSRuntime JS
 @inject Statuses states
 @implements IDialogContentComponent<IdeaModel>
 
@@ -23,7 +24,8 @@
             }
         </InputSelect>
         <FluentTextField @bind-Value="@Content.Title" Label="Title" style="width: 100%;" />
-        <MarkdownEditor @bind-Value="@Content.Content" NativeSpellChecker="true" />
+        @* <MarkdownEditor @bind-Value="@Content.Content" NativeSpellChecker="true" /> *@
+        <div id="toast-editor"></div>
     </FluentStack>
 </FluentDialogBody>
 
@@ -48,19 +50,24 @@
 
     protected override async Task OnInitializedAsync()
     {
-
+        await Task.Delay(100);
+        await JS.InvokeVoidAsync("toastuiBlazor.create", "toast-editor", Content.Content);
     }
 
     private void Cancel() => Dialog.CancelAsync();
 
     private async void Update()
     {
+        Content.Content = await JS.InvokeAsync<string>("toastuiBlazor.getMarkdown");
+        await JS.InvokeVoidAsync("toastuiBlazor.destroy");
         await dataAccess.Update(Content);
         await Dialog.CloseAsync();
     }
 
     private async void Create()
     {
+        Content.Content = await JS.InvokeAsync<string>("toastuiBlazor.getMarkdown");
+        await JS.InvokeVoidAsync("toastuiBlazor.destroy");
         await dataAccess.Insert(Content);
         await Dialog.CloseAsync();
     }
