@@ -1,6 +1,4 @@
-﻿@* @rendermode InteractiveServer *@
-
-@inject LinkDataAccess linkData
+﻿@inject LinkDataAccess linkData
 @inject NavigationManager NavigationManager
 @inject LinkTargets targets
 
@@ -14,8 +12,6 @@
             <FluentNavLink Icon="@(FontAwesome.Icon("fas fa-lightbulb"))" IconColor="Color.Accent" Href="ideas" Match="NavLinkMatch.Prefix">Ideas</FluentNavLink>
             <FluentNavLink Icon="@(FontAwesome.Icon("fas fa-list-check"))" IconColor="Color.Accent" Href="projects" Match="NavLinkMatch.Prefix">Projects</FluentNavLink>
             <FluentNavLink Icon="@(FontAwesome.Icon("fas fa-clock-rotate-left"))" IconColor="Color.Accent" Href="rewind" Match="NavLinkMatch.Prefix">Rewind</FluentNavLink>
-@*             <FluentNavLink Href="counter" Icon="@(new Icons.Regular.Size20.NumberSymbolSquare())" IconColor="Color.Accent">Counter</FluentNavLink>
-            <FluentNavLink Href="weather" Icon="@(new Icons.Regular.Size20.WeatherPartlyCloudyDay())" IconColor="Color.Accent">Weather</FluentNavLink> *@
             @if (menuLinks != null)
             {
                 foreach (var l in menuLinks)
@@ -37,7 +33,7 @@
         </AuthorizeView>
         <AuthorizeView>
             <Authorized>
-                        @* <FluentNavLink Href="Account/Manage" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">@context.User.Identity?.Name</MudNavLink> *@
+                    @* <FluentNavLink Href="Account/Manage" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">@context.User.Identity?.Name</FluentNavLink> *@
                     <FluentNavLink Icon="@(FontAwesome.Icon("fas fa-person-through-window"))" IconColor="Color.Accent" Href="Account/Logout" Match="NavLinkMatch.Prefix">Logout</FluentNavLink>
             </Authorized>
             <NotAuthorized>

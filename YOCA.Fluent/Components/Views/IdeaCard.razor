@@ -6,7 +6,7 @@
         <h4>@data.Title</h4>
         <StatusBadge statusIndex="@data.Status" />
         <br />
-        @((MarkupString)Markdown.ParseHtmlString(data.Content).ToString())
+        @((MarkupString)MarkdownService.Parse(data.Content))
     </FluentCard>
 }
 

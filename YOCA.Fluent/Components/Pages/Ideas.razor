@@ -1,5 +1,6 @@
 ﻿@page "/ideas"
-@inject IdeaDataAccess DataAccess;
+@inject IdeaDataAccess DataAccess
+@inject IJSRuntime JS
 
 <PageTitle>Ideas</PageTitle>
 <h3>Ideas</h3>
@@ -22,6 +23,11 @@
     protected override async Task OnInitializedAsync()
     {
         await RefreshData();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JS.InvokeVoidAsync("highlightCode");
     }
 
     private async Task RefreshData()

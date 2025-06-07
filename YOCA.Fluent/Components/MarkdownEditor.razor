@@ -1,0 +1,45 @@
+﻿@inject IJSRuntime JSRuntime
+@implements IAsyncDisposable
+
+<div id="@EditorId" style="min-height: 500px;"></div>
+
+@code {
+    private string EditorId { get; } = $"tui-editor-{Guid.NewGuid()}";
+    private DotNetObjectReference<MarkdownEditor>? _dotNetHelper;
+
+    [Parameter]
+    public string? Value { get; set; }
+
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+
+    [Parameter]
+    public string Placeholder { get; set; } = "Start writing here...";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _dotNetHelper = DotNetObjectReference.Create(this);
+            await JSRuntime.InvokeVoidAsync(
+                "createEditor",
+                EditorId,
+                _dotNetHelper,
+                Value,
+                Placeholder
+            );
+        }
+    }
+
+    [JSInvokable]
+    public async Task OnMarkdownChanged(string markdown)
+    {
+        Value = markdown;
+        await ValueChanged.InvokeAsync(Value);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _dotNetHelper?.Dispose();
+    }
+}

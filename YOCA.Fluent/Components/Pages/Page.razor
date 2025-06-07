@@ -1,14 +1,19 @@
 ﻿@page "/page/{slug}"
 @inject PageDataAccess pageData
-@inject NavigationManager NavManager
+@inject IJSRuntime JS
+@rendermode InteractiveServer
 
-@if (p != null)
+@if (p == null)
+{
+    <div>Loading or not found...</div>
+}
+else
 {
     <PageTitle>@p.Title</PageTitle>
     <h3>@p.Title</h3>
     <br />
     <FluentCard Height="auto">
-        @((MarkupString)Markdown.ParseHtmlString(p.Content).ToString())
+        @((MarkupString)MarkdownService.Parse(p.Content))
     </FluentCard>
 }
 
@@ -22,12 +27,14 @@
         await RefreshData();
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JS.InvokeVoidAsync("highlightCode");
+    }
+
     private async Task RefreshData()
     {
         p = (await pageData.GetSlug(slug));
-        if (p == null)
-        {
-            NavManager.NavigateTo("/");
-        }
+
     }
 }

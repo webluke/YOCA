@@ -5,12 +5,12 @@
             <h4>@rewind.Date.ToString("MMMM yyyy") - @rewind.Title</h4>
         </FluentNavLink>
         <FluentCard Height="auto">
-        @((MarkupString)Markdown.ParseHtmlString(rewind.Content).ToString())
+            @((MarkupString)MarkdownService.Parse(rewind.Content))
         </FluentCard>
         <br />
-        <FluentNavLink Href="@($"/rewind/{rewind.Year}/{rewind.Month}/{rewind.Slug}")">
-            <h6>Read More...</h6>
-        </FluentNavLink>
+        <FluentAnchor Href="@($"/rewind/{rewind.Year}/{rewind.Month}/{rewind.Slug}")" Appearance="Appearance.Accent" IconEnd="@(FontAwesome.Icon("fas fa-book-skull"))">
+            Read More
+        </FluentAnchor>
     </FluentCard>
 }
 

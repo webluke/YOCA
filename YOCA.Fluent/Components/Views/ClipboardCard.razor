@@ -11,7 +11,7 @@
             <p><b>Completed:</b> @cb.DateCompleted.ToString("MMMM d, yyyy")</p>
             <br />
         }
-        @((MarkupString)Markdown.ParseHtmlString(cb.Note).ToString())
+        @((MarkupString)MarkdownService.Parse(cb.Note))
     </FluentCard>
 }
 

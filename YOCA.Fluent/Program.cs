@@ -1,11 +1,11 @@
 using Auth0.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.FluentUI.AspNetCore.Components;
-using Westwind.AspNetCore.Markdown;
 using YOCA.DataAccess.DataAccess;
 using YOCA.Fluent.Components;
 using YOCA.Fluent.Models;
+using YOCA.Fluent.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,7 +40,7 @@ builder.Services.AddSingleton<RewindDataAccess>();
 builder.Services.AddSingleton<Statuses>();
 builder.Services.AddSingleton<LinkTargets>();
 
-builder.Services.AddMarkdown();
+builder.Services.AddSingleton<IMarkdownService, MarkdigService>();
 
 var app = builder.Build();
 

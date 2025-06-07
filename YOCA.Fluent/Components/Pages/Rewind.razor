@@ -2,6 +2,7 @@
 
 @inject RewindDataAccess rewindData
 @rendermode InteractiveServer
+@inject IJSRuntime JS
 
 @if (rewind != null)
 {
@@ -9,9 +10,9 @@
     <h3>@rewind.Date.ToString("MMMM yyyy") - @rewind.Title</h3>
     <br />
     <FluentCard Height="auto">
-        @((MarkupString)Markdown.ParseHtmlString(rewind.Content).ToString())
+        @((MarkupString)MarkdownService.Parse(rewind.Content))
     </FluentCard>
-            <FluentAnchor Href="/rewind" Appearance="Appearance.Neutral">Monthly Rewind List</FluentAnchor>
+    <FluentAnchor Href="/rewind" Appearance="Appearance.Accent" IconEnd="@(FontAwesome.Icon("fas fa-clock-rotate-left"))">Monthly Rewind List</FluentAnchor>
 }
 
 
@@ -27,6 +28,11 @@
     protected override async Task OnInitializedAsync()
     {
         await RefreshData();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JS.InvokeVoidAsync("highlightCode");
     }
 
     private async Task RefreshData()

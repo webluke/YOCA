@@ -23,7 +23,7 @@
             <br />
             <h5>Start: @p.StartDate - End: @p.EndDate</h5>
             <FluentCard Height="auto">
-                @((MarkupString)Markdown.ParseHtmlString(p.Description).ToString())
+                @((MarkupString)MarkdownService.Parse(p.Description))
             </FluentCard>
             <br />
             <FluentStack>

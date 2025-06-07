@@ -1,6 +1,5 @@
 ﻿@inject ClipboardDataAccess dataAccess
 @inject Statuses states
-@inject IJSRuntime JS
 @implements IDialogContentComponent<ClipboardModel>
 
 <!-- Header -->
@@ -25,8 +24,7 @@
         </InputSelect>
         <FluentTextField @bind-Value="@Content.Title" Label="Title" style="width: 100%;" />
         <FluentDatePicker Value="@(Content.DateCompleted.ToDateTime(TimeOnly.MinValue))" ValueChanged="@(e => Content.DateCompleted = DateOnly.FromDateTime(e ?? DateTime.MinValue))" Label="Date" style="width: 100%;" />
-        @* <MarkdownEditor @bind-Value="@Content.Note" NativeSpellChecker="true" /> *@
-        <div id="toast-editor"></div>
+        <MarkdownEditor @bind-Value="@Content.Note" />
     </FluentStack>
 </FluentDialogBody>
 
@@ -51,24 +49,19 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await Task.Delay(100);
-        await JS.InvokeVoidAsync("toastuiBlazor.create", "toast-editor", Content.Note);
+
     }
 
     private void Cancel() => Dialog.CancelAsync();
 
     private async void Update()
     {
-        Content.Note = await JS.InvokeAsync<string>("toastuiBlazor.getMarkdown");
-        await JS.InvokeVoidAsync("toastuiBlazor.destroy");
         await dataAccess.Update(Content);
         await Dialog.CloseAsync();
     }
 
     private async void Create()
     {
-        Content.Note = await JS.InvokeAsync<string>("toastuiBlazor.getMarkdown");
-        await JS.InvokeVoidAsync("toastuiBlazor.destroy");
         await dataAccess.Insert(Content);
         await Dialog.CloseAsync();
     }
