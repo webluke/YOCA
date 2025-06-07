@@ -1,7 +1,6 @@
-﻿namespace YOCA.Fluent.Services
+﻿namespace YOCA.Fluent.Services;
+
+public interface IMarkdownService
 {
-    public interface IMarkdownService
-    {
-        string Parse(string markdown);
-    }
+    string Parse(string markdown);
 }
