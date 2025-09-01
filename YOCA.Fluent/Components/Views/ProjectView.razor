@@ -11,30 +11,9 @@
             @((MarkupString)MarkdownService.Parse(project.Description))
         </FluentCard>
         <br />
-        <FluentStack>
-            @if (project.Boards != null){
-            @foreach (var board in project.Boards)
-            {
-                <FluentCard>
-                    <h5>@board.Title</h5>
-                    @if (board.Tasks.Count > 0)
-                    {
-                        <FluentStack Orientation="Orientation.Vertical">
-                            @foreach (var task in board.Tasks)
-                            {
-                                <FluentCard>
-                                    <h4>@task.Title</h4>
-                                    <StatusBadge statusIndex="@task.Status" />
-                                    <br />
-                                        @((MarkupString)MarkdownService.Parse(task.Description))
-                                </FluentCard>
-                            }
-                        </FluentStack>
-                    }
-                </FluentCard>
-            }
-            }
-        </FluentStack>
+        @if (project.Boards != null){
+            <BoardView Boards="project.Boards" />
+        }
     </FluentCard>
 }
 
