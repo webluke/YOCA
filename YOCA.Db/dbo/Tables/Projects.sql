@@ -5,7 +5,7 @@
     [Status] INT NOT NULL DEFAULT 0,
     [StartDate] DATE NOT NULL, 
     [EndDate] DATE NOT NULL, 
-    [Title] NVARCHAR(50) NOT NULL, 
+    [Title] NVARCHAR(150) NOT NULL, 
     [Description] NVARCHAR(MAX) NULL, 
     [TimeCreated] DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(), 
     [TimeUpdated] DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
