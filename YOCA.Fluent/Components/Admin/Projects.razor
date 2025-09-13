@@ -1,6 +1,7 @@
 ﻿@page "/admin/projects"
 @attribute [Authorize(Roles = "Admin")]
 @inject ProjectDataAccess projectData
+@inject ProjectBoardDataAccess boardData
 @inject ProjectTaskDataAccess taskData
 @inject Statuses state
 @rendermode InteractiveServer
@@ -239,23 +240,23 @@
 
     private async Task CreateBoard(MouseEventArgs e, string projectId)
     {
-        ProjectTaskModel model = new();
+        ProjectBoardModel model = new();
         model.ProjectId = projectId;
         var parameters = new DialogParameters()
         {
             Height = "auto",
             Width = "auto",
-            Title = $"Create Clipboard Item",
+            Title = $"Creat Project Board",
             PreventDismissOnOverlayClick = true,
             PreventScroll = true,
         };
 
-        var dialog = await DialogService.ShowDialogAsync<ProjectTaskDialog>(model, parameters);
+        var dialog = await DialogService.ShowDialogAsync<ProjectBoardDialog>(model, parameters);
         var result = await dialog.Result;
 
         if (!result.Cancelled)
         {
-            ToastService.ShowSuccess("Project Task Created.");
+            ToastService.ShowSuccess("Project Board Created.");
             await RefreshData();
             StateHasChanged();
         }
@@ -263,22 +264,22 @@
 
     private async Task UpdateBoard(MouseEventArgs e, string id)
     {
-        ProjectTaskModel model = await taskData.GetId(id);
+        ProjectBoardModel model = await boardData.GetId(id);
         var parameters = new DialogParameters()
         {
             Height = "auto",
             Width = "auto",
-            Title = $"Create Project Task",
+            Title = $"Update Project Board",
             PreventDismissOnOverlayClick = true,
             PreventScroll = true,
         };
 
-        var dialog = await DialogService.ShowDialogAsync<ProjectTaskDialog>(model, parameters);
+        var dialog = await DialogService.ShowDialogAsync<ProjectBoardDialog>(model, parameters);
         var result = await dialog.Result;
 
         if (!result.Cancelled)
         {
-            ToastService.ShowSuccess("Project Task Update.");
+            ToastService.ShowSuccess("Project Board Update.");
             await RefreshData();
             StateHasChanged();
         }
