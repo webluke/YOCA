@@ -23,7 +23,7 @@ public class ProjectBoardDataAccess
         return results;
     }
 
-    public async Task<IEnumerable<ProjectBoardModel>> GetProjectTasks(string projectId)
+    public async Task<IEnumerable<ProjectBoardModel>> GetProjectBoards(string projectId)
     {
         var results = await DB.LoadData<ProjectBoardModel, dynamic>(
             "dbo.spProjectBoards_GetAllByProjectId",
@@ -31,7 +31,7 @@ public class ProjectBoardDataAccess
 
         return results;
     }
-    public async Task<IEnumerable<ProjectBoardModel>> GetProjectTasksAdmin(string projectId)
+    public async Task<IEnumerable<ProjectBoardModel>> GetProjectBoardssAdmin(string projectId)
     {
         var results = await DB.LoadData<ProjectBoardModel, dynamic>(
             "dbo.spProjectBoards_GetAllAdminByProjectId",

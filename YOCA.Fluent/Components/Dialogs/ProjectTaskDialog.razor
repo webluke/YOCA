@@ -1,4 +1,5 @@
 ﻿@inject ProjectTaskDataAccess dataAccess
+@inject ProjectBoardDataAccess boardDataAccess
 @inject Statuses states
 @implements IDialogContentComponent<ProjectTaskModel>
 
@@ -22,6 +23,12 @@
                 <option value=@t.Key style="background: @t.Value.BackgroundColor; color: @t.Value.Color;">@((MarkupString)$"{t.Value.UnicodeIcon}&nbsp;&nbsp;{t.Value.Name}")</option>
             }
         </InputSelect>
+        <InputSelect @bind-Value="@Content.BoardId" style="width: 100%;">
+            @foreach (var b in Boards)
+            {
+				<option value=@b.Id>@b.Title</option>
+            }
+		</InputSelect>
         <FluentTextField @bind-Value="@Content.Title" Label="Title" style="width: 100%;" />
         <MarkdownEditor @bind-Value="@Content.Description" />
     </FluentStack>
@@ -45,10 +52,11 @@
     public FluentDialog Dialog { get; set; } = default!;
     [Parameter]
     public ProjectTaskModel Content { get; set; } = default!;
+	public List<ProjectBoardModel> Boards { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
-
+		Boards = await boardDataAccess.GetProjectBoards(Content.ProjectId);
     }
 
     private void Cancel() => Dialog.CancelAsync();
