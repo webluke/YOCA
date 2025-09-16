@@ -20,57 +20,53 @@
     {
         <FluentCard Height="auto">
             <h4>@p.Title</h4>
-            <StatusBadge statusIndex="@p.Status" />
+            <FluentToolbar style="width:100%">
+                <h5>Start: @p.StartDate - End: @p.EndDate</h5>
+                <StatusBadge statusIndex="@p.Status" />
+                <FluentButton Color="Color.Success" OnClick="e => Update(e, p.Id)" IconEnd="@(FontAwesome.Icon("fas fa-file-pen"))" slot="end"></FluentButton>
+                <FluentButton Color="Color.Error" OnClick="e => Delete(e, p)" IconEnd="@(FontAwesome.Icon("fas fa-trash"))" slot="end"></FluentButton>
+            </FluentToolbar>
             <br />
-            <h5>Start: @p.StartDate - End: @p.EndDate</h5>
             <FluentCard Height="auto">
                 @((MarkupString)MarkdownService.Parse(p.Description))
             </FluentCard>
             <br />
-            <FluentStack>
-                <FluentButton Color="Color.Success" OnClick="e => Update(e, p.Id)">Edit Project</FluentButton>
-                <FluentButton Color="Color.Success" OnClick="e => Delete(e, p)">Delete Project</FluentButton>
-            </FluentStack>
             @if (p.Boards.Count > 1)
             {
-            <FluentStack>
-                <FluentButton Appearance="Appearance.Accent" OnClick="e => CreateBoard(e, p.Id)">Create Board</FluentButton>
-            </FluentStack>
             <br />
-            <div style="display: flex; overflow-x: auto; padding-bottom: 15px;">
-                @foreach (var board in p.Boards)
-                {
-                    <div style="margin-right: 15px; flex-shrink: 0; width: 300px;">
-                        <FluentCard>
-                            <h5>@board.Title</h5>
-                            <FluentStack>
-                                <FluentButton Appearance="Appearance.Accent" OnClick="e => CreateTask(e, p.Id, board.Id)">Create Task</FluentButton>
-                                <FluentButton Appearance="Appearance.Accent" OnClick="e => UpdateBoard(e, board.Id)">Edit Board</FluentButton>
-                                <FluentButton Color="Color.Error" OnClick="e => DeleteBoard(e, board)">Delete Board</FluentButton>
-                            </FluentStack>
-                            <div style="margin-top: 10px;">
-                                @foreach (var task in board.Tasks)
-                                {
-                                    <FluentCard style="margin-bottom: 10px;">
-                                        <p>@task.Title</p>
-                                        <StatusBadge statusIndex="@task.Status" />
-                                        <FluentStack>
-                                            <FluentButton Appearance="Appearance.Accent" OnClick="e => UpdateTask(e, task.Id)">Edit Task</FluentButton>
-                                            <FluentButton Color="Color.Error" OnClick="e => DeleteTask(e, task)">Delete Task</FluentButton>
-                                        </FluentStack>
-                                    </FluentCard>
-                                }
-                            </div>
-                        </FluentCard>
-                    </div>
-                }
-                </div>
-            } else
+            <FluentStack>
+            @foreach (var board in p.Boards)
             {
-                <FluentStack>
-                <FluentButton Color="Color.Error" OnClick="e => InitBoards(p.Id)">Initilize Board</FluentButton>
-                </FluentStack>
-            }
+                <FluentCard>
+                    <FluentToolbar style="width:100%">
+                        <h5>@board.Title</h5>
+                        <FluentButton OnClick="e => UpdateBoard(e, board.Id)" IconEnd="@(FontAwesome.Icon("fas fa-file-pen"))" slot="end"></FluentButton>
+                        <FluentButton Color="Color.Error" OnClick="e => DeleteBoard(e, board)" IconEnd="@(FontAwesome.Icon("fas fa-trash"))" slot="end"></FluentButton>
+                        <FluentButton Appearance="Appearance.Accent" OnClick="e => CreateTask(e, p.Id, board.Id)" IconEnd="@(FontAwesome.Icon("fas fa-plus"))" slot="end"></FluentButton>
+                    </FluentToolbar>
+                    <hr />
+                    <FluentStack Orientation="Orientation.Vertical">
+                    @foreach (var task in board.Tasks)
+                    {
+                        <FluentCard style="margin-bottom: 0px;">
+                            <FluentToolbar style="width:100%">
+                                <h4>@task.Title</h4>
+                                <FluentButton OnClick="e => UpdateTask(e, task.Id)" IconEnd="@(FontAwesome.Icon("fas fa-file-pen"))" slot="end"></FluentButton>
+                                <FluentButton Color="Color.Error" OnClick="e => DeleteTask(e, task)" IconEnd="@(FontAwesome.Icon("fas fa-trash"))" slot="end"></FluentButton>
+                            </FluentToolbar>
+                            <hr />
+                            @((MarkupString)MarkdownService.Parse(task.Description))
+                        </FluentCard>
+                    }
+                    </FluentStack>
+                </FluentCard>
+                }
+                <FluentButton Appearance="Appearance.Accent" OnClick="e => CreateBoard(e, p.Id)" IconEnd="@(FontAwesome.Icon("fas fa-plus"))"></FluentButton>
+            </FluentStack>
+        } else
+        {
+            <FluentButton Color="Color.Error" OnClick="e => InitBoards(p.Id)">Initilize Board</FluentButton>
+        }
         </FluentCard>
         <br />
     }

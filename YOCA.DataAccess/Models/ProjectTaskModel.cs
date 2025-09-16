@@ -12,4 +12,5 @@ public class ProjectTaskModel
     public string Description { get; set; }
     public DateTime TimeCreated { get; set; }
     public DateTime TimeUpdated { get; set; }
+    public bool Hidden { get; set; }
 }

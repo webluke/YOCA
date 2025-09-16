@@ -6,18 +6,61 @@
 <PageTitle>Projects</PageTitle>
 <h3>Projects</h3>
 <br />
-@if (proj != null)
+@if (projectItems != null)
 {
-    foreach (var p in proj)
+    @foreach (var p in projectItems)
     {
-        <ProjectView project="@p" />
+        <FluentCard Height="auto">
+            <h4>@p.Title</h4>
+            <FluentToolbar style="width:100%">
+                <h5>
+                    Start: @p.StartDate
+                    @if (p.Status > 99)
+                    {
+                        <span>- End: @p.EndDate</span>
+                    }
+                </h5>
+                <StatusBadge statusIndex="@p.Status" />
+            </FluentToolbar>
+            <br />
+            <FluentCard Height="auto">
+                @((MarkupString)MarkdownService.Parse(p.Description))
+            </FluentCard>
+            <br />
+            @if (p.Boards.Count > 1)
+            {
+                <br />
+                <FluentStack>
+                    @foreach (var board in p.Boards)
+                    {
+                        <FluentCard>
+                            <FluentToolbar style="width:100%">
+                                <h5>@board.Title</h5>
+                            </FluentToolbar>
+                            <hr />
+                            <FluentStack Orientation="Orientation.Vertical">
+                                @foreach (var task in board.Tasks)
+                                {
+                                    <FluentCard style="margin-bottom: 0px;">
+                                        <FluentToolbar style="width:100%">
+                                            <h4>@task.Title</h4>
+                                        </FluentToolbar>
+                                        <hr />
+                                        @((MarkupString)MarkdownService.Parse(task.Description))
+                                    </FluentCard>
+                                }
+                            </FluentStack>
+                        </FluentCard>
+                    }
+                </FluentStack>
+            }
+        </FluentCard>
         <br />
     }
-
 }
 
 @code {
-    private IEnumerable<ProjectModel>? proj { get; set; }
+    private IEnumerable<ProjectModel>? projectItems { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -31,6 +74,6 @@
 
     private async Task RefreshData()
     {
-        proj = await projectAccess.GetAllWithTasks();
+        projectItems = await projectAccess.GetAllWithTasks();
     }
 }

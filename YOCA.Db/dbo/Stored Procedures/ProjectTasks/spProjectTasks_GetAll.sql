@@ -17,6 +17,6 @@ BEGIN
 		[TimeUpdated]
 	FROM
 		[dbo].[ProjectTasks]
-	WHERE [Status] < 299
+	WHERE [Hidden] = 0
 	ORDER BY [Order] DESC, [Status] ASC;
 END

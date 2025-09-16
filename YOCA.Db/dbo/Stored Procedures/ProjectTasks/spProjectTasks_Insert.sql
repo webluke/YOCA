@@ -6,7 +6,8 @@
 	@Order INT,
 	@Status INT,
 	@Title NVARCHAR(50),
-	@Description NVARCHAR(MAX)
+	@Description NVARCHAR(MAX),
+	@Hidden BIT
 
 AS
 BEGIN
@@ -19,7 +20,8 @@ BEGIN
 		[Order],
 		[Status],
 		[Title],
-		[Description]
+		[Description],
+		[Hidden]
 	)
 	VALUES
 	(
@@ -29,7 +31,8 @@ BEGIN
 		@Order,
 		@Status,
 		@Title,
-		@Description
+		@Description,
+		@Hidden
 	)
 
 END

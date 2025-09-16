@@ -20,18 +20,6 @@ public class ProjectDataAccess
         return results;
     }
 
-    public async Task<IEnumerable<ProjectModel>> GetAllWithTasks()
-    {
-        IEnumerable<ProjectModel> results = await DB.LoadData<ProjectModel, dynamic>("dbo.spProjects_GetAll", new { });
-        foreach (var project in results)
-        {
-            //project.Tasks = (await DB.LoadData<ProjectTaskModel, dynamic>(
-            //    "dbo.spProjectTasks_GetAllByProjectId",
-            //    new { ProjectId = project.Id })).ToList();
-        }
-        return results;
-    }
-
     public async Task<IEnumerable<ProjectModel>> GetAllAdmin()
     {
         var results = await DB.LoadData<ProjectModel, dynamic>("dbo.spProjects_GetAllAdmin", new { });
@@ -59,6 +47,26 @@ public class ProjectDataAccess
         });
     }
 
+    public async Task<IEnumerable<ProjectModel>> GetAllWithTasks()
+    {
+        return await DB.LoadMultipleData("dbo.spProject_GetAllWithTasks", new { }, async (reader) =>
+        {
+            var projects = (await reader.ReadAsync<ProjectModel>()).ToList();
+            var boards = (await reader.ReadAsync<ProjectBoardModel>()).ToList();
+            var tasks = (await reader.ReadAsync<ProjectTaskModel>()).ToList();
+
+            foreach (var project in projects)
+            {
+                project.Boards = boards.Where(b => b.ProjectId == project.Id).ToList();
+                foreach (var board in project.Boards)
+                {
+                    board.Tasks = tasks.Where(t => t.BoardId == board.Id).ToList();
+                }
+            }
+
+            return projects;
+        });
+    }
 
     public async Task<ProjectModel?> GetId(string id)
     {

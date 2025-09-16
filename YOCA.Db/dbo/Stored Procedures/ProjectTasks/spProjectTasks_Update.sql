@@ -6,7 +6,8 @@
 	@Order INT,
 	@Status INT,
 	@Title NVARCHAR(50),
-	@Description NVARCHAR(MAX)
+	@Description NVARCHAR(MAX),
+	@Hidden BIT
 
 AS
 BEGIN
@@ -19,7 +20,8 @@ BEGIN
 		[Status] = @Status,
 		[Title] = @Title,
 		[Description] = @Description,
-		[TimeUpdated] = SYSUTCDATETIME()
+		[TimeUpdated] = SYSUTCDATETIME(),
+		[Hidden] = @Hidden
 
 	WHERE Id = @Id
 

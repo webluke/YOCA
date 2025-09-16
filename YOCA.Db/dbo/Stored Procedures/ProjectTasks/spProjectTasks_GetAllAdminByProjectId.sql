@@ -14,7 +14,8 @@ BEGIN
 		[Title],
 		[Description],
 		[TimeCreated],
-		[TimeUpdated]
+		[TimeUpdated],
+		[Hidden]
 	FROM
 		[dbo].[ProjectTasks]
 	WHERE

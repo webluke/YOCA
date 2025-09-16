@@ -1,4 +1,4 @@
-CREATE PROCEDURE [dbo].[spProject_GetAllAdminWithTasks]
+CREATE PROCEDURE [dbo].[spProject_GetAllWithTasks]
 AS
 BEGIN
     SELECT 
@@ -14,6 +14,7 @@ BEGIN
 		[ViewCount]
 	FROM 
 		[dbo].[Projects]
+	WHERE [Status] < 299 
 	ORDER BY [Order] DESC, [Status] ASC;
 
 	SELECT 
@@ -38,5 +39,6 @@ BEGIN
 		[Hidden]
 	FROM
 		[dbo].[ProjectTasks]
+	WHERE [Hidden] = 0
 	ORDER BY [Order] ASC;
 END

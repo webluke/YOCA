@@ -16,13 +16,10 @@
 <!-- Body -->
 <FluentDialogBody>
     <FluentStack Orientation="Orientation.Vertical">
-        <FluentNumberField @bind-Value="@Content.Order" Label="Order" style="width: 100%;" />
-@*         <InputSelect @bind-Value="@Content.Status" style="font-family: 'FontAwesome', 'sans-serif'">
-            @foreach (var t in states.DefaultStatuses)
-            {
-                <option value=@t.Key style="background: @t.Value.BackgroundColor; color: @t.Value.Color;">@((MarkupString)$"{t.Value.UnicodeIcon}&nbsp;&nbsp;{t.Value.Name}")</option>
-            }
-        </InputSelect> *@
+        <FluentStack Orientation="Orientation.Horizontal">
+            <FluentNumberField @bind-Value="@Content.Order" Label="Order" style="width: 100%;" />
+            <FluentSwitch @bind-Value="@Content.Hidden" Label="Hidden" style="width: 100%;" />
+		</FluentStack>
 @*         <InputSelect @bind-Value="@Content.BoardId" style="width: 100%;">
             @if(Boards != null) {
             @foreach (var b in Boards)

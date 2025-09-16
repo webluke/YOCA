@@ -18,7 +18,7 @@ BEGIN
 	FROM
 		[dbo].[ProjectTasks]
 	WHERE [ProjectId] = @ProjectId
-	AND [Status] < 299
+	AND [Hidden] = 0
 	ORDER BY [Order] DESC, [Status] ASC;
 
 END

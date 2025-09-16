@@ -14,9 +14,9 @@ BEGIN
 		[Title],
 		[Description],
 		[TimeCreated],
-		[TimeUpdated]
+		[TimeUpdated],
+		[Hidden]
 	FROM
 		[dbo].[ProjectTasks]
-	WHERE [Status] < 299
 	ORDER BY [Order] DESC, [Status] ASC;
 END
