@@ -65,4 +65,8 @@ public class ProjectBoardDataAccess
     public Task Delete(string id) =>
         DB.SaveData("dbo.spProjectBoards_Delete",
             new { Id = id });
+
+    public Task InitBoards(string projectId) =>
+        DB.SaveData("dbo.spProjectBoards_Init",
+            new { ProjectId = projectId, BoardIdNew = Ids.NewId(), BoardIdInProgress = Ids.NewId(), BoardIdDone = Ids.NewId() });
 }

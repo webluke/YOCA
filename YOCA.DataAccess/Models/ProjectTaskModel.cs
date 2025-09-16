@@ -4,6 +4,7 @@ public class ProjectTaskModel
 {
     public string Id { get; set; }
     public string ProjectId { get; set; }
+    public string BoardId { get; set; }
     public int Order { get; set; }
     public int Status { get; set; }
     [Required(ErrorMessage = "Please enter a title"), MaxLength(150)]

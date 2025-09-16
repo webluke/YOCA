@@ -17,18 +17,20 @@
 <FluentDialogBody>
     <FluentStack Orientation="Orientation.Vertical">
         <FluentNumberField @bind-Value="@Content.Order" Label="Order" style="width: 100%;" />
-        <InputSelect @bind-Value="@Content.Status" style="font-family: 'FontAwesome', 'sans-serif'">
+@*         <InputSelect @bind-Value="@Content.Status" style="font-family: 'FontAwesome', 'sans-serif'">
             @foreach (var t in states.DefaultStatuses)
             {
                 <option value=@t.Key style="background: @t.Value.BackgroundColor; color: @t.Value.Color;">@((MarkupString)$"{t.Value.UnicodeIcon}&nbsp;&nbsp;{t.Value.Name}")</option>
             }
-        </InputSelect>
-        <InputSelect @bind-Value="@Content.BoardId" style="width: 100%;">
+        </InputSelect> *@
+@*         <InputSelect @bind-Value="@Content.BoardId" style="width: 100%;">
+            @if(Boards != null) {
             @foreach (var b in Boards)
             {
 				<option value=@b.Id>@b.Title</option>
             }
-		</InputSelect>
+            }
+		</InputSelect> *@
         <FluentTextField @bind-Value="@Content.Title" Label="Title" style="width: 100%;" />
         <MarkdownEditor @bind-Value="@Content.Description" />
     </FluentStack>
@@ -49,14 +51,15 @@
 
 @code {
     [CascadingParameter]
-    public FluentDialog Dialog { get; set; } = default!;
+    public FluentDialog Dialog { get; set; }
     [Parameter]
-    public ProjectTaskModel Content { get; set; } = default!;
+    public ProjectTaskModel Content { get; set; }
 	public List<ProjectBoardModel> Boards { get; set; } = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
-		Boards = await boardDataAccess.GetProjectBoards(Content.ProjectId);
+		// Boards = (await boardDataAccess.GetProjectBoards(Content.ProjectId)).ToList();
+        // StateHasChanged();
     }
 
     private void Cancel() => Dialog.CancelAsync();

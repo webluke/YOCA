@@ -28,23 +28,49 @@
             </FluentCard>
             <br />
             <FluentStack>
-                <FluentButton Appearance="Appearance.Accent" OnClick="e => CreateBoard(e, p.Id)">Create Board</FluentButton>
-                <FluentButton Appearance="Appearance.Accent" OnClick="e => CreateTask(e, p.Id)">Create Task</FluentButton>
                 <FluentButton Color="Color.Success" OnClick="e => Update(e, p.Id)">Edit Project</FluentButton>
                 <FluentButton Color="Color.Success" OnClick="e => Delete(e, p)">Delete Project</FluentButton>
             </FluentStack>
+            @if (p.Boards.Count > 1)
+            {
+            <FluentStack>
+                <FluentButton Appearance="Appearance.Accent" OnClick="e => CreateBoard(e, p.Id)">Create Board</FluentButton>
+            </FluentStack>
             <br />
-@*             <FluentDataGrid AutoFit Items="@p.Boards.AsQueryable()" id="Data">
-                <PropertyColumn Title="Order" Property="@(c => c.Order)" />
-                <TemplateColumn Title="Status">
-                    <StatusBadge statusIndex="@context.Status" />
-                </TemplateColumn>
-                <PropertyColumn Title="Title" Property="@(c => c.Title)" />
-                <TemplateColumn Title="Actions" Align="@Align.End">
-                    <FluentButton aria-label="Edit item" IconEnd="@(new Icons.Regular.Size16.Edit())" OnClick="e => UpdateTask(e, context.Id)" />
-                    <FluentButton aria-label="Delete item" IconEnd="@(new Icons.Regular.Size16.Delete())" OnClick="e => DeleteTask(e, context)" />
-                </TemplateColumn>
-            </FluentDataGrid> *@
+            <div style="display: flex; overflow-x: auto; padding-bottom: 15px;">
+                @foreach (var board in p.Boards)
+                {
+                    <div style="margin-right: 15px; flex-shrink: 0; width: 300px;">
+                        <FluentCard>
+                            <h5>@board.Title</h5>
+                            <FluentStack>
+                                <FluentButton Appearance="Appearance.Accent" OnClick="e => CreateTask(e, p.Id, board.Id)">Create Task</FluentButton>
+                                <FluentButton Appearance="Appearance.Accent" OnClick="e => UpdateBoard(e, board.Id)">Edit Board</FluentButton>
+                                <FluentButton Color="Color.Error" OnClick="e => DeleteBoard(e, board)">Delete Board</FluentButton>
+                            </FluentStack>
+                            <div style="margin-top: 10px;">
+                                @foreach (var task in board.Tasks)
+                                {
+                                    <FluentCard style="margin-bottom: 10px;">
+                                        <p>@task.Title</p>
+                                        <StatusBadge statusIndex="@task.Status" />
+                                        <FluentStack>
+                                            <FluentButton Appearance="Appearance.Accent" OnClick="e => UpdateTask(e, task.Id)">Edit Task</FluentButton>
+                                            <FluentButton Color="Color.Error" OnClick="e => DeleteTask(e, task)">Delete Task</FluentButton>
+                                        </FluentStack>
+                                    </FluentCard>
+                                }
+                            </div>
+                        </FluentCard>
+                    </div>
+                }
+                </div>
+            } else
+            {
+                <FluentStack>
+                <FluentButton Color="Color.Error" OnClick="e => InitBoards(p.Id)">Initilize Board</FluentButton>
+                </FluentStack>
+            }
         </FluentCard>
         <br />
     }
@@ -63,7 +89,14 @@
 
     private async Task RefreshData()
     {
-        projectItems = await projectData.GetAllAdminWithTasks();    }
+        projectItems = await projectData.GetAllAdminWithTasks();    
+    }
+
+    private async Task InitBoards(string projectId)
+    {
+        await boardData.InitBoards(projectId);
+        await RefreshData();
+    }
 
     private async void Delete(MouseEventArgs e, ProjectModel project)
     {
@@ -165,9 +198,10 @@
         }
     }
 
-    private async Task CreateTask(MouseEventArgs e, string projectId)
+    private async Task CreateTask(MouseEventArgs e, string projectId, string boardId)
     {
         ProjectTaskModel model = new();
+        model.BoardId = boardId;
         model.ProjectId = projectId;
         var parameters = new DialogParameters()
             {
@@ -212,11 +246,11 @@
         }
     }
 
-    private async void DeleteBoard(MouseEventArgs e, ProjectTaskModel projectTaskItem)
+    private async void DeleteBoard(MouseEventArgs e, ProjectBoardModel projectBoardItem)
     {
         DeleteDialogModel item = new();
-        item.Id = projectTaskItem.Id;
-        item.Name = projectTaskItem.Title;
+        item.Id = projectBoardItem.Id;
+        item.Name = projectBoardItem.Title;
         var parameters = new DialogParameters()
         {
             Height = "auto",
@@ -231,8 +265,8 @@
 
         if (!result.Cancelled)
         {
-            await taskData.Delete(projectTaskItem.Id);
-            ToastService.ShowSuccess("Project Task Deleted.");
+            await boardData.Delete(projectBoardItem.Id);
+            ToastService.ShowSuccess("Project Board Deleted.");
             await RefreshData();
             StateHasChanged();
         }

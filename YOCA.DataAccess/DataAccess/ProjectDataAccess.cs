@@ -6,10 +6,12 @@ namespace YOCA.DataAccess.DataAccess;
 public class ProjectDataAccess
 {
     private readonly ISqlDataAccess DB;
+    private readonly ProjectBoardDataAccess BoardDB;
 
-    public ProjectDataAccess(ISqlDataAccess db)
+    public ProjectDataAccess(ISqlDataAccess db, ProjectBoardDataAccess boardDb)
     {
         DB = db;
+        BoardDB = boardDb;
     }
 
     public async Task<IEnumerable<ProjectModel>> GetAll()
@@ -38,15 +40,25 @@ public class ProjectDataAccess
 
     public async Task<IEnumerable<ProjectModel>> GetAllAdminWithTasks()
     {
-        IEnumerable<ProjectModel> results = await DB.LoadData<ProjectModel, dynamic>("dbo.spProjects_GetAllAdmin", new { });
-        foreach (var project in results)
+        return await DB.LoadMultipleData("dbo.spProject_GetAllAdminWithTasks", new { }, async (reader) =>
         {
-            //project.Tasks = (await DB.LoadData<ProjectTaskModel, dynamic>(
-            //    "dbo.spProjectTasks_GetAllAdminByProjectId",
-            //    new { ProjectId = project.Id })).ToList();
-        }
-        return results;
+            var projects = (await reader.ReadAsync<ProjectModel>()).ToList();
+            var boards = (await reader.ReadAsync<ProjectBoardModel>()).ToList();
+            var tasks = (await reader.ReadAsync<ProjectTaskModel>()).ToList();
+
+            foreach (var project in projects)
+            {
+                project.Boards = boards.Where(b => b.ProjectId == project.Id).ToList();
+                foreach (var board in project.Boards)
+                {
+                    board.Tasks = tasks.Where(t => t.BoardId == board.Id).ToList();
+                }
+            }
+
+            return projects;
+        });
     }
+
 
     public async Task<ProjectModel?> GetId(string id)
     {
@@ -80,6 +92,8 @@ public class ProjectDataAccess
         p.Id = Ids.NewId();
         await DB.SaveData("dbo.spProjects_Insert",
             new { Id = p.Id, Order = p.Order, Status = p.Status, StartDate = p.StartDate, EndDate = p.EndDate, Title = p.Title, Description = p.Description });
+
+        await BoardDB.InitBoards(p.Id);
     }
 
     public async Task Update(ProjectModel p)
