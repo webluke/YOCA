@@ -16,6 +16,11 @@
 <FluentDialogBody>
     <FluentStack Orientation="Orientation.Vertical">
         <FluentNumberField @bind-Value="@Content.Order" Label="Order" style="width: 100%;" />
+        <FluentTextField @bind-Value="@Content.Icon" Label="Icon" style="width: 100%;" />
+        <label for="color">Text Color</label>
+        <input id="color" type="color" @bind-value=@Content.Color style="width: 100%;" />
+        <label for="bgcolor">Background Color</label>
+        <input id="bgcolor" type="color" @bind-value=@Content.BackgroundColor style="width: 100%;" />
         <FluentTextField @bind-Value="@Content.Title" Label="Title" style="width: 100%;" />
     </FluentStack>
 </FluentDialogBody>

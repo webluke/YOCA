@@ -1,6 +1,6 @@
-﻿CREATE PROCEDURE [dbo].[spProjectBoards_GetAll]
+﻿CREATE PROCEDURE [dbo].[spProjectBoards_GetAllByProjectId]
 
-	
+	@ProjectId NCHAR(10)
 
 AS
 BEGIN 
@@ -15,6 +15,8 @@ BEGIN
 		[BackgroundColor]
 	FROM 
 		[dbo].[ProjectBoards]
-	ORDER BY [Order] ASC;
+	WHERE
+		[ProjectId] = @ProjectId
+	Order BY [Order] ASC;
 
 END

@@ -69,7 +69,7 @@
     private async Task Create()
     {
         DayOfCodeModel model = new();
-        model.Day = days.Count();
+        model.Day = days.FirstOrDefault().Day + 1;
         model.Date = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone));
         model.Goal = days.FirstOrDefault().Tomorrow;
         var parameters = new DialogParameters()

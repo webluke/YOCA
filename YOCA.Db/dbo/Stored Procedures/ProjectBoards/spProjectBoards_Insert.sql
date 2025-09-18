@@ -3,7 +3,10 @@
 	@Id NCHAR(10),
 	@ProjectId NCHAR(10),
 	@Order INT,
-	@Title NVARCHAR(50)
+	@Title NVARCHAR(50),
+	@Icon NVARCHAR(50), 
+	@Color NVARCHAR(50),
+	@BackgroundColor NVARCHAR(50)
 
 AS
 BEGIN
@@ -13,14 +16,20 @@ BEGIN
 		[Id],
 		[ProjectId],
 		[Order],
-		[Title]
+		[Title],
+		[Icon],
+		[Color],
+		[BackgroundColor]
 	)
 	VALUES
 	(
 		@Id,
 		@ProjectId,
 		@Order,
-		@Title
+		@Title,
+		@Icon,
+		@Color,
+		@BackgroundColor
 	)
 
 END

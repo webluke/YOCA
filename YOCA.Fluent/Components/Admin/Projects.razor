@@ -39,7 +39,9 @@
             {
                 <FluentCard>
                     <FluentToolbar style="width:100%">
-                        <h5>@board.Title</h5>
+                        <div role="status" style="height: 100%; vertical-align: middle; padding: 10px 10px 0px 10px; boarder: 2px solid gray; border-radius: 5px; color: @board.Color. ; background-color: @board.BackgroundColor ;">
+                            <h5><i class="@board.Icon" />&nbsp;&nbsp;@board.Title</h5>
+                        </div>                        
                         <FluentButton OnClick="e => UpdateBoard(e, board.Id)" IconEnd="@(FontAwesome.Icon("fas fa-file-pen"))" slot="end"></FluentButton>
                         <FluentButton Color="Color.Error" OnClick="e => DeleteBoard(e, board)" IconEnd="@(FontAwesome.Icon("fas fa-trash"))" slot="end"></FluentButton>
                         <FluentButton Appearance="Appearance.Accent" OnClick="e => CreateTask(e, p.Id, board.Id)" IconEnd="@(FontAwesome.Icon("fas fa-plus"))" slot="end"></FluentButton>
@@ -50,7 +52,7 @@
                     {
                         <FluentCard style="margin-bottom: 0px;">
                             <FluentToolbar style="width:100%">
-                                <h4>@task.Title</h4>
+                                <h5>@task.Title</h5>
                                 <FluentButton OnClick="e => UpdateTask(e, task.Id)" IconEnd="@(FontAwesome.Icon("fas fa-file-pen"))" slot="end"></FluentButton>
                                 <FluentButton Color="Color.Error" OnClick="e => DeleteTask(e, task)" IconEnd="@(FontAwesome.Icon("fas fa-trash"))" slot="end"></FluentButton>
                             </FluentToolbar>

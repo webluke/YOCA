@@ -9,7 +9,10 @@ BEGIN
 		[Id],
 		[ProjectId],
 		[Order],
-		[Title]
+		[Title],
+		[Icon],
+		[Color],
+		[BackgroundColor]
 	FROM 
 		[dbo].[ProjectBoards]
 	WHERE

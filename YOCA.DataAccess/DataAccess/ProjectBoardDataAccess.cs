@@ -31,7 +31,7 @@ public class ProjectBoardDataAccess
 
         return results;
     }
-    public async Task<IEnumerable<ProjectBoardModel>> GetProjectBoardssAdmin(string projectId)
+    public async Task<IEnumerable<ProjectBoardModel>> GetProjectBoardsAdmin(string projectId)
     {
         var results = await DB.LoadData<ProjectBoardModel, dynamic>(
             "dbo.spProjectBoards_GetAllAdminByProjectId",
@@ -53,13 +53,13 @@ public class ProjectBoardDataAccess
     {
         model.Id = Ids.NewId();
         await DB.SaveData("dbo.spProjectBoards_Insert",
-            new { Id = model.Id, ProjectId = model.ProjectId, Order = model.Order, Title = model.Title });
+            new { Id = model.Id, ProjectId = model.ProjectId, Order = model.Order, Title = model.Title, Icon = model.Icon, Color = model.Color, BackgroundColor = model.BackgroundColor });
     }
 
     public async Task Update(ProjectBoardModel model)
     {
         await DB.SaveData("dbo.spProjectBoards_Update",
-            new { Id = model.Id, ProjectId = model.ProjectId, Order = model.Order, Title = model.Title });
+            new { Id = model.Id, ProjectId = model.ProjectId, Order = model.Order, Title = model.Title, Icon = model.Icon, Color = model.Color, BackgroundColor = model.BackgroundColor });
     }
 
     public Task Delete(string id) =>

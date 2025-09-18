@@ -17,17 +17,15 @@
 <FluentDialogBody>
     <FluentStack Orientation="Orientation.Vertical">
         <FluentStack Orientation="Orientation.Horizontal">
+            <FluentSelect Items=@Boards
+                          OptionText="@(i => i.Title)"
+                          OptionValue="@(i => i.Id)"
+                          @bind-Value="Content.BoardId"
+                          Label="Board"
+                          style="width:100%" />
             <FluentNumberField @bind-Value="@Content.Order" Label="Order" style="width: 100%;" />
             <FluentSwitch @bind-Value="@Content.Hidden" Label="Hidden" style="width: 100%;" />
 		</FluentStack>
-@*         <InputSelect @bind-Value="@Content.BoardId" style="width: 100%;">
-            @if(Boards != null) {
-            @foreach (var b in Boards)
-            {
-				<option value=@b.Id>@b.Title</option>
-            }
-            }
-		</InputSelect> *@
         <FluentTextField @bind-Value="@Content.Title" Label="Title" style="width: 100%;" />
         <MarkdownEditor @bind-Value="@Content.Description" />
     </FluentStack>
@@ -53,10 +51,13 @@
     public ProjectTaskModel Content { get; set; }
 	public List<ProjectBoardModel> Boards { get; set; } = new();
 
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
     {
-		// Boards = (await boardDataAccess.GetProjectBoards(Content.ProjectId)).ToList();
-        // StateHasChanged();
+	    Boards = (await boardDataAccess.GetProjectBoards(Content.ProjectId)).ToList();
+        if (string.IsNullOrEmpty(Content.BoardId) && Boards.Any())
+        {
+            Content.BoardId = Boards.First().Id;
+        }
     }
 
     private void Cancel() => Dialog.CancelAsync();
