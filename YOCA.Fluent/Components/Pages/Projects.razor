@@ -13,27 +13,20 @@
         <FluentCard Height="auto">
             <h4>@p.Title</h4>
             <FluentToolbar style="width:100%">
-                <h5>
-                    Start: @p.StartDate
-                    @if (p.Status > 99)
-                    {
-                        <span>- End: @p.EndDate</span>
-                    }
-                </h5>
+                <h5>Start: @p.StartDate - End: @p.EndDate</h5>
                 <StatusBadge statusIndex="@p.Status" />
             </FluentToolbar>
             <br />
-            <FluentCard Height="auto">
-                @((MarkupString)MarkdownService.Parse(p.Description))
-            </FluentCard>
+            <hr />
+            @((MarkupString)MarkdownService.Parse(p.Description))
             <br />
             @if (p.Boards.Count > 1)
             {
                 <br />
-                <FluentStack>
+                <FluentStack Orientation="Orientation.Horizontal">
                     @foreach (var board in p.Boards)
                     {
-                        <FluentCard>
+                        <FluentCard Height="auto">
                             <FluentToolbar style="width:100%">
                                 <div role="status" style="height: 100%; vertical-align: middle; padding: 10px 10px 0px 10px; boarder: 2px solid gray; border-radius: 5px; color: @board.Color. ; background-color: @board.BackgroundColor ;">
                                     <h5><i class="@board.Icon" />&nbsp;&nbsp;@board.Title</h5>

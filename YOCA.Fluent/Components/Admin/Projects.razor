@@ -6,6 +6,8 @@
 @inject Statuses state
 @rendermode InteractiveServer
 @inject IToastService ToastService
+@inject IJSRuntime JS
+
 <FluentToastProvider />
 <FluentDialogProvider />
 <PageTitle>Admin - Projects</PageTitle>
@@ -18,26 +20,25 @@
 {
     @foreach (var p in projectItems)
     {
-        <FluentCard Height="auto">
-            <h4>@p.Title</h4>
-            <FluentToolbar style="width:100%">
-                <h5>Start: @p.StartDate - End: @p.EndDate</h5>
-                <StatusBadge statusIndex="@p.Status" />
-                <FluentButton Color="Color.Success" OnClick="e => Update(e, p.Id)" IconEnd="@(FontAwesome.Icon("fas fa-file-pen"))" slot="end"></FluentButton>
-                <FluentButton Color="Color.Error" OnClick="e => Delete(e, p)" IconEnd="@(FontAwesome.Icon("fas fa-trash"))" slot="end"></FluentButton>
-            </FluentToolbar>
+    <FluentCard Height="auto">
+        <h4>@p.Title</h4>
+        <FluentToolbar style="width:100%">
+            <h5>Start: @p.StartDate - End: @p.EndDate</h5>
+            <StatusBadge statusIndex="@p.Status" />
+            <FluentButton Color="Color.Success" OnClick="e => Update(e, p.Id)" IconEnd="@(FontAwesome.Icon("fas fa-file-pen"))" slot="end"></FluentButton>
+            <FluentButton Color="Color.Error" OnClick="e => Delete(e, p)" IconEnd="@(FontAwesome.Icon("fas fa-trash"))" slot="end"></FluentButton>
+        </FluentToolbar>
+        <br />
+        <hr />
+        @((MarkupString)MarkdownService.Parse(p.Description))
+        <br />
+        @if (p.Boards.Count > 1)
+        {
             <br />
-            <FluentCard Height="auto">
-                @((MarkupString)MarkdownService.Parse(p.Description))
-            </FluentCard>
-            <br />
-            @if (p.Boards.Count > 1)
-            {
-            <br />
-            <FluentStack>
+            <FluentStack Orientation="Orientation.Horizontal">
             @foreach (var board in p.Boards)
             {
-                <FluentCard>
+                <FluentCard Height="auto">
                     <FluentToolbar style="width:100%">
                         <div role="status" style="height: 100%; vertical-align: middle; padding: 10px 10px 0px 10px; boarder: 2px solid gray; border-radius: 5px; color: @board.Color. ; background-color: @board.BackgroundColor ;">
                             <h5><i class="@board.Icon" />&nbsp;&nbsp;@board.Title</h5>
@@ -62,15 +63,15 @@
                     }
                     </FluentStack>
                 </FluentCard>
-                }
-                <FluentButton Appearance="Appearance.Accent" OnClick="e => CreateBoard(e, p.Id)" IconEnd="@(FontAwesome.Icon("fas fa-plus"))"></FluentButton>
+            }
+            <FluentButton Appearance="Appearance.Accent" OnClick="e => CreateBoard(e, p.Id)" IconEnd="@(FontAwesome.Icon("fas fa-plus"))" slot="end"></FluentButton>
             </FluentStack>
         } else
         {
             <FluentButton Color="Color.Error" OnClick="e => InitBoards(p.Id)">Initilize Board</FluentButton>
         }
-        </FluentCard>
-        <br />
+    </FluentCard>
+    <br />
     }
 }
 
@@ -83,6 +84,11 @@
     protected override async Task OnInitializedAsync()
     {
         await RefreshData();
+    }
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JS.InvokeVoidAsync("highlightCode");
     }
 
     private async Task RefreshData()
