@@ -51,7 +51,7 @@
                             <FluentDragContainer TItem="ProjectTaskModel"
                                                  OnDropEnd="(e) => HandleDrop(e, p, board)"
                                                  style="min-height: 150px; width:100%">
-                                <FluentStack Orientation="Orientation.Vertical" Gap="10">
+                                <FluentStack Orientation="Orientation.Vertical">
 
                                     @foreach (var task in board.Tasks.OrderBy(t => t.Order))
                                     {
@@ -143,12 +143,14 @@
         if (draggedTask == null || sourceBoard == null)
             return;
 
-        // Remove from source board
-        sourceBoard.Tasks.Remove(draggedTask);
+        // // Remove from source board
+        // sourceBoard.Tasks.Remove(draggedTask);
 
-        // Add to destination board at drop position
-        destinationBoard.Tasks.Add(draggedTask);
-        draggedTask.BoardId = destinationBoard.Id;
+        // // Add to destination board at drop position
+        // destinationBoard.Tasks.Add(draggedTask);
+        // draggedTask.BoardId = destinationBoard.Id;
+
+		draggedTask.BoardId = destinationBoard.Id;
 
         // Reorder tasks in destination board
         int order = 0;
