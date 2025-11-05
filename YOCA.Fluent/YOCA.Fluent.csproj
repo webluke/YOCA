@@ -9,9 +9,9 @@
 
   <ItemGroup>
     <PackageReference Include="Auth0.AspNetCore.Authentication" Version="1.5.0" />
-    <PackageReference Include="Markdig" Version="0.42.0" />
-    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.12.1" />
-    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.12.1" />
+    <PackageReference Include="Markdig" Version="0.43.0" />
+    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.13.1" />
+    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.13.1" />
     <PackageReference Include="WebStoating.Markdig.Prism" Version="1.0.0" />
   </ItemGroup>
 
