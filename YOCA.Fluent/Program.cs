@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.FluentUI.AspNetCore.Components;
-using YOCA.DataAccess.DataAccess;
 using YOCA.Fluent.Components;
 using YOCA.Fluent.Models;
 using YOCA.Fluent.Services;
@@ -16,11 +15,13 @@ builder.Services.AddRazorComponents()
 builder.Services.AddFluentUIComponents();
 
 // Auth0 services
-builder.Services
-    .AddAuth0WebAppAuthentication(options => {
-        options.Domain = builder.Configuration["Auth0:Domain"];
-        options.ClientId = builder.Configuration["Auth0:ClientId"];
-    });
+builder.Services.AddAuth0WebAppAuthentication(options =>
+{
+    options.Domain = builder.Configuration["Auth0:Domain"];
+    options.ClientId = builder.Configuration["Auth0:ClientId"];
+    options.ClientSecret = builder.Configuration["Auth0:ClientSecret"];
+});
+
 builder.Services.AddAuthorizationCore();
 
 // Add services to the container.
@@ -66,10 +67,6 @@ app.UseMvcWithDefaultRoute();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseAntiforgery();
-
-app.MapStaticAssets();
-
 app.MapGet("/Account/Login", async (HttpContext httpContext, string returnUrl = "/") =>
 {
     var authenticationProperties = new LoginAuthenticationPropertiesBuilder()
@@ -88,6 +85,11 @@ app.MapGet("/Account/Logout", async (HttpContext httpContext) =>
     await httpContext.SignOutAsync(Auth0Constants.AuthenticationScheme, authenticationProperties);
     await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 });
+
+
+app.UseAntiforgery();
+
+app.MapStaticAssets();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
