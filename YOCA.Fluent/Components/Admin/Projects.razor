@@ -32,71 +32,60 @@
         <hr />
         @((MarkupString)MarkdownService.Parse(p.Description))
         <br />
-        @if (p.Boards.Count > 1)
+        @if (p.Boards.Count > 0)
         {
             <br />
-            <FluentStack Orientation="Orientation.Horizontal">
-            @foreach (var board in p.Boards)
-            {
-                <FluentCard Height="auto">
-                    <FluentToolbar style="width:100%">
-                        <div role="status" style="height: 100%; vertical-align: middle; padding: 10px 10px 0px 10px; boarder: 2px solid gray; border-radius: 5px; color: @board.Color. ; background-color: @board.BackgroundColor ;">
-                            <h5><i class="@board.Icon" />&nbsp;&nbsp;@board.Title</h5>
-                        </div>                        
-                        <FluentButton OnClick="e => UpdateBoard(e, board.Id)" IconEnd="@(FontAwesome.Icon("fas fa-file-pen"))" slot="end"></FluentButton>
-                        <FluentButton Color="Color.Error" OnClick="e => DeleteBoard(e, board)" IconEnd="@(FontAwesome.Icon("fas fa-trash"))" slot="end"></FluentButton>
-                        <FluentButton Appearance="Appearance.Accent" OnClick="e => CreateTask(e, p.Id, board.Id)" IconEnd="@(FontAwesome.Icon("fas fa-plus"))" slot="end"></FluentButton>
-                    </FluentToolbar>
-                    <hr />
-                            <FluentDragContainer TItem="ProjectTaskModel"
-                                                 OnDropEnd="(e) => HandleDrop(e, p, board)"
-                                                 style="min-height: 150px; width:100%">
-                                <FluentStack Orientation="Orientation.Vertical">
+                <FluentToolbar style="width:100%">
+                    <FluentButton Appearance="Appearance.Accent" OnClick="e => CreateBoard(e, p.Id)" IconEnd="@(FontAwesome.Icon("fas fa-plus"))" slot="end"></FluentButton>
+                </FluentToolbar>
+            <FluentGrid Spacing="2">
+                @foreach (var board in p.Boards)
+                {
+                    <FluentGridItem xs="12" sm="6" md="4">
+                        <FluentCard Height="auto">
+                            <FluentToolbar style="width:100%">
+                                <div role="status" style="height: 100%; vertical-align: middle; padding: 10px 10px 0px 10px; border: 2px solid gray; border-radius: 5px; color: @board.Color; background-color: @board.BackgroundColor;" slot="start">
+                                    <h5><i class="@board.Icon" />&nbsp;&nbsp;@board.Title</h5>
+                                </div>
+                                <FluentButton Appearance="Appearance.Accent" OnClick="e => CreateTask(e, p.Id, board.Id)" IconEnd="@(FontAwesome.Icon("fas fa-plus"))" ></FluentButton>
+                                <FluentButton OnClick="e => UpdateBoard(e, board.Id)" IconEnd="@(FontAwesome.Icon("fas fa-file-pen"))" slot="end"></FluentButton>
+                                <FluentButton Color="Color.Error" OnClick="e => DeleteBoard(e, board)" IconEnd="@(FontAwesome.Icon("fas fa-trash"))" slot="end"></FluentButton>
+                            </FluentToolbar>
+                            <hr />
+                            <FluentStack Orientation="Orientation.Vertical">
 
                                     @foreach (var task in board.Tasks.OrderBy(t => t.Order))
                                     {
-                                    <FluentDropZone TItem="ProjectTaskModel"
-                                                    OnDragStart="(e) => HandleDragStart(e, task, board)"
-                                                    Droppable="true"
-                                                    Draggable="true"
-                                                    style="width:100%">
                                         <FluentCard style="margin-bottom: 4px;">
                                             <FluentToolbar style="width:100%">
                                                 <h5>@task.Title</h5>
                                                 <FluentButton OnClick="e => UpdateTask(e, task.Id)"
-                                                                IconEnd="@(FontAwesome.Icon("fas fa-file-pen"))"
-                                                                slot="end"></FluentButton>
+                                                                  IconEnd="@(FontAwesome.Icon("fas fa-file-pen"))"
+                                                                  slot="end"></FluentButton>
                                                 <FluentButton Color="Color.Error"
-                                                                OnClick="e => DeleteTask(e, task)"
-                                                                IconEnd="@(FontAwesome.Icon("fas fa-trash"))"
-                                                                slot="end"></FluentButton>
+                                                                  OnClick="e => DeleteTask(e, task)"
+                                                                  IconEnd="@(FontAwesome.Icon("fas fa-trash"))"
+                                                                  slot="end"></FluentButton>
                                             </FluentToolbar>
                                             <hr />
                                             @((MarkupString)MarkdownService.Parse(task.Description))
                                         </FluentCard>
-                                    </FluentDropZone>
                                     }
                                     @if (board.Tasks.Count == 0)
                                     {
-                                    <!-- Empty zone at bottom to allow dropping below last item -->
-                                    <FluentDropZone TItem="ProjectTaskModel"
-                                    Droppable="true"
-                                    Draggable="false"
-                                    style="width:100%; border: 1px dashed transparent;">
                                         <FluentCard style="width:100%">
                                             <FluentToolbar>
                                                 <h5>No Tasks 😕</h5>
                                             </FluentToolbar>
                                         </FluentCard>
-                                    </FluentDropZone>
                                     }
                                 </FluentStack>
-                            </FluentDragContainer>
-                </FluentCard>
-            }
-            <FluentButton Appearance="Appearance.Accent" OnClick="e => CreateBoard(e, p.Id)" IconEnd="@(FontAwesome.Icon("fas fa-plus"))" slot="end"></FluentButton>
-            </FluentStack>
-        } else
+                        </FluentCard>
+                    </FluentGridItem>
+                }
+            </FluentGrid>
+        }
+        else
         {
             <FluentButton Color="Color.Error" OnClick="e => InitBoards(p.Id)">Initialize Board</FluentButton>
         }
@@ -126,51 +115,11 @@
         projectItems = await projectData.GetAllAdminWithTasks();    
     }
 
-    private ProjectTaskModel? draggedTask;
-    private ProjectBoardModel? sourceBoard;
 
-    private void HandleDragStart(FluentDragEventArgs<ProjectTaskModel> e, ProjectTaskModel task, ProjectBoardModel board)
-    {
-        draggedTask = task;
-        sourceBoard = board;
-    }
 
-    private async Task HandleDrop(
-        FluentDragEventArgs<ProjectTaskModel> e,
-        ProjectModel project,
-        ProjectBoardModel destinationBoard)
-    {
-        if (draggedTask == null || sourceBoard == null)
-            return;
 
-        // // Remove from source board
-        // sourceBoard.Tasks.Remove(draggedTask);
 
-        // // Add to destination board at drop position
-        // destinationBoard.Tasks.Add(draggedTask);
-        // draggedTask.BoardId = destinationBoard.Id;
 
-		draggedTask.BoardId = destinationBoard.Id;
-
-        // Reorder tasks in destination board
-        int order = 0;
-        foreach (var task in destinationBoard.Tasks.OrderBy(t => t.Order))
-        {
-            task.Order = order++;
-            await taskData.Update(task);
-        }
-
-        // Persist updates
-        await taskData.Update(draggedTask);
-
-        // Reset state
-        draggedTask = null;
-        sourceBoard = null;
-
-        ToastService.ShowSuccess("Task moved!");
-        await RefreshData();
-        StateHasChanged();
-    }
 
     private async Task InitBoards(string projectId)
     {

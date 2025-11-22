@@ -20,34 +20,36 @@
             <hr />
             @((MarkupString)MarkdownService.Parse(p.Description))
             <br />
-            @if (p.Boards.Count > 1)
+            @if (p.Boards.Count > 0)
             {
                 <br />
-                <FluentStack Orientation="Orientation.Horizontal">
+            <FluentGrid Spacing="2">
                     @foreach (var board in p.Boards)
                     {
-                        <FluentCard Height="auto">
-                            <FluentToolbar style="width:100%">
-                                <div role="status" style="height: 100%; vertical-align: middle; padding: 10px 10px 0px 10px; boarder: 2px solid gray; border-radius: 5px; color: @board.Color. ; background-color: @board.BackgroundColor ;">
-                                    <h5><i class="@board.Icon" />&nbsp;&nbsp;@board.Title</h5>
-                                </div>
-                            </FluentToolbar>
-                            <hr />
-                            <FluentStack Orientation="Orientation.Vertical">
-                                @foreach (var task in board.Tasks)
-                                {
-                                    <FluentCard style="margin-bottom: 0px;">
-                                        <FluentToolbar style="width:100%">
-                                            <h5>@task.Title</h5>
-                                        </FluentToolbar>
-                                        <hr />
-                                        @((MarkupString)MarkdownService.Parse(task.Description))
-                                    </FluentCard>
-                                }
-                            </FluentStack>
-                        </FluentCard>
+                        <FluentGridItem xs="12" sm="6" md="4">
+                            <FluentCard Height="auto">
+                                <FluentToolbar style="width:100%">
+                                    <div role="status" style="height: 100%; vertical-align: middle; padding: 10px 10px 0px 10px; border: 2px solid gray; border-radius: 5px; color: @board.Color; background-color: @board.BackgroundColor;">
+                                        <h5><i class="@board.Icon" />&nbsp;&nbsp;@board.Title</h5>
+                                    </div>
+                                </FluentToolbar>
+                                <hr />
+                                <FluentStack Orientation="Orientation.Vertical">
+                                    @foreach (var task in board.Tasks)
+                                    {
+                                        <FluentCard style="margin-bottom: 0px;">
+                                            <FluentToolbar style="width:100%">
+                                                <h5>@task.Title</h5>
+                                            </FluentToolbar>
+                                            <hr />
+                                            @((MarkupString)MarkdownService.Parse(task.Description))
+                                        </FluentCard>
+                                    }
+                                </FluentStack>
+                            </FluentCard>
+                        </FluentGridItem>
                     }
-                </FluentStack>
+                </FluentGrid>
             }
         </FluentCard>
         <br />
