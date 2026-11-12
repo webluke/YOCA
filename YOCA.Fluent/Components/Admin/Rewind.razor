@@ -1,10 +1,9 @@
 ﻿@page "/admin/rewind"
 @attribute [Authorize(Roles = "Admin")]
 @inject RewindDataAccess rewindData
+@inject AppTimeZone appTimeZone
 @rendermode InteractiveServer
 @inject IToastService ToastService
-<FluentToastProvider />
-<FluentDialogProvider />
 <PageTitle>Admin - Monthly Rewind</PageTitle>
 <h5>Monthly Rewinds</h5>
 <br />
@@ -23,11 +22,9 @@
 </FluentDataGrid>
 
 @code {
-    [Inject] private IDialogService DialogService { get; set; }
+    [Inject] private IDialogService DialogService { get; set; } = default!;
     private IEnumerable<RewindModel>? rewinds { get; set; }
     IQueryable<RewindModel>? query { get; set; }
-    private RewindModel newRewind = new();
-    TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById("Mountain Standard Time");
 
     protected override async Task OnInitializedAsync()
     {
@@ -40,78 +37,89 @@
         query = rewinds.AsQueryable();
     }
 
-    private async void Delete(MouseEventArgs e, RewindModel rewind)
+    private async Task Delete(MouseEventArgs e, RewindModel rewind)
     {
-        DeleteDialogModel item = new();
-        item.Id = rewind.Id;
-        item.Name = rewind.Title;
+        DeleteDialogModel item = new() { Id = rewind.Id, Name = rewind.Title };
         var parameters = new DialogParameters()
-            {
-                Height = "auto",
-                Width = "auto",
-                Title = $"Delete Rewind",
-                PreventDismissOnOverlayClick = true,
-                PreventScroll = true,
-            };
+        {
+            Height = "auto",
+            Width = "auto",
+            Title = "Delete Rewind",
+            PreventDismissOnOverlayClick = true,
+            PreventScroll = true,
+        };
 
         var dialog = await DialogService.ShowDialogAsync<DeleteDialog>(item, parameters);
         var result = await dialog.Result;
 
         if (!result.Cancelled)
         {
-            await rewindData.Delete(rewind.Id);
-            ToastService.ShowSuccess("Delete Rewind");
-            await RefreshData();
-            StateHasChanged();
+            try
+            {
+                await rewindData.Delete(rewind.Id);
+                ToastService.ShowSuccess("Rewind Deleted.");
+                await RefreshData();
+            }
+            catch (Exception)
+            {
+                ToastService.ShowError("Failed to delete rewind.");
+            }
         }
     }
 
     private async Task Create()
     {
-        RewindModel model = new();
-        model.Date = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone));
-        model.Year = model.Date.Year;
-        model.Month = model.Date.Month;
+        var today = appTimeZone.Today();
+        RewindModel model = new()
+        {
+            Date = today,
+            Year = today.Year,
+            Month = today.Month
+        };
         var parameters = new DialogParameters()
-            {
-                Height = "auto",
-                Width = "auto",
-                Title = $"Create Rewind",
-                PreventDismissOnOverlayClick = true,
-                PreventScroll = true,
-            };
+        {
+            Height = "auto",
+            Width = "auto",
+            Title = "Create Rewind",
+            PreventDismissOnOverlayClick = true,
+            PreventScroll = true,
+        };
 
         var dialog = await DialogService.ShowDialogAsync<RewindDialog>(model, parameters);
         var result = await dialog.Result;
 
         if (!result.Cancelled)
         {
-            ToastService.ShowSuccess("Page Created.");
+            ToastService.ShowSuccess("Rewind Created.");
             await RefreshData();
-            StateHasChanged();
         }
     }
 
     private async Task Update(MouseEventArgs e, string id)
     {
-        RewindModel model = await rewindData.GetIdAdmin(id);
+        var model = await rewindData.GetIdAdmin(id);
+        if (model is null)
+        {
+            ToastService.ShowError("Rewind not found.");
+            return;
+        }
+
         var parameters = new DialogParameters()
-            {
-                Height = "auto",
-                Width = "auto",
-                Title = $"Update Rewind",
-                PreventDismissOnOverlayClick = true,
-                PreventScroll = true,
-            };
+        {
+            Height = "auto",
+            Width = "auto",
+            Title = "Update Rewind",
+            PreventDismissOnOverlayClick = true,
+            PreventScroll = true,
+        };
 
         var dialog = await DialogService.ShowDialogAsync<RewindDialog>(model, parameters);
         var result = await dialog.Result;
 
         if (!result.Cancelled)
         {
-            ToastService.ShowSuccess("Page Updated.");
+            ToastService.ShowSuccess("Rewind Updated.");
             await RefreshData();
-            StateHasChanged();
         }
     }
 }

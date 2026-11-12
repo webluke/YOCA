@@ -1,5 +1,6 @@
 ﻿@inject LinkDataAccess dataAccess
 @inject LinkTargets targets
+@inject IToastService ToastService
 @implements IDialogContentComponent<LinkModel>
 
 <!-- Header -->
@@ -14,33 +15,39 @@
 
 <!-- Body -->
 <FluentDialogBody>
-    <FluentStack Orientation="Orientation.Vertical">
-        <FluentTextField @bind-Value="@Content.Title" Label="Title" style="width: 100%;" />
-        <FluentTextField @bind-Value="@Content.MenuName" Label="Menu Name" style="width: 100%;" />
-        <FluentTextField @bind-Value="@Content.Icon" Label="Icon" style="width: 100%;" />
-        <FluentNumberField @bind-Value="@Content.Order" Label="Order" style="width: 100%;" />
-        <InputSelect @bind-Value="@Content.Type">
-            @foreach (var t in targets.DefaultLinkTargets)
-            {
-                <option value=@t.Key>@t.Value.Name</option>
-            }
-        </InputSelect>
-        <FluentSwitch @bind-Value="@Content.IsPublished" Label="Published" style="width: 100%;" />
-        <FluentTextField @bind-Value="@Content.URL" Label="URL" style="width: 100%;" />
-    </FluentStack>
+    <EditForm Model="@Content" OnValidSubmit="SaveAsync">
+        <DataAnnotationsValidator />
+        <FluentValidationSummary />
+        <FluentStack Orientation="Orientation.Vertical">
+            <FluentTextField @bind-Value="@Content.Title" Label="Title" style="width: 100%;" />
+            <FluentTextField @bind-Value="@Content.MenuName" Label="Menu Name" style="width: 100%;" />
+            <FluentTextField @bind-Value="@Content.Icon" Label="Icon" style="width: 100%;" />
+            <FluentNumberField @bind-Value="@Content.Order" Label="Order" style="width: 100%;" />
+            <InputSelect @bind-Value="@Content.Type">
+                @foreach (var t in targets.DefaultLinkTargets)
+                {
+                    <option value=@t.Key>@t.Value.Name</option>
+                }
+            </InputSelect>
+            <FluentSwitch @bind-Value="@Content.IsPublished" Label="Published" style="width: 100%;" />
+            <FluentTextField @bind-Value="@Content.URL" Label="URL" style="width: 100%;" />
+            <FluentLabel>Use a site path (e.g. /page/about) or an http(s) URL.</FluentLabel>
+        </FluentStack>
+        <button type="submit" hidden id="link-dialog-submit" disabled="@_saving"></button>
+    </EditForm>
 </FluentDialogBody>
 
 <!-- Footer -->
 <FluentDialogFooter>
-    @if (String.IsNullOrEmpty(Content.Id))
+    @if (string.IsNullOrEmpty(Content.Id))
     {
-        <FluentButton Appearance="Appearance.Accent" OnClick="@Create">Create</FluentButton>
+        <FluentButton Appearance="Appearance.Accent" OnClick="SubmitForm" Disabled="@_saving">Create</FluentButton>
     }
     else
     {
-        <FluentButton Appearance="Appearance.Accent" OnClick="@Update">Update</FluentButton>
+        <FluentButton Appearance="Appearance.Accent" OnClick="SubmitForm" Disabled="@_saving">Update</FluentButton>
     }
-    <FluentButton Appearance="Appearance.Neutral" OnClick="@Cancel">Cancel</FluentButton>
+    <FluentButton Appearance="Appearance.Neutral" OnClick="@Cancel" Disabled="@_saving">Cancel</FluentButton>
 </FluentDialogFooter>
 
 @code {
@@ -48,24 +55,58 @@
     public FluentDialog Dialog { get; set; } = default!;
     [Parameter]
     public LinkModel Content { get; set; } = default!;
-    List<Option<int>> TargeOptions = new();
 
-    protected override async Task OnInitializedAsync()
-    {
-        
-    }
+    private bool _saving;
 
     private void Cancel() => Dialog.CancelAsync();
 
-    private async void Update()
+    private async Task SubmitForm()
     {
-        await dataAccess.Update(Content);
-        await Dialog.CloseAsync();
+        // Trigger EditForm validation via OnValidSubmit by clicking the hidden submit.
+        // Direct validate path for Fluent dialog footer buttons.
+        if (!UrlValidation.IsAllowedLinkUrl(Content.URL))
+        {
+            ToastService.ShowError("URL must be a relative path starting with / or an http(s) URL.");
+            return;
+        }
+
+        await SaveAsync();
     }
 
-    private async void Create()
+    private async Task SaveAsync()
     {
-        await dataAccess.Insert(Content);
-        await Dialog.CloseAsync();
+        if (_saving)
+        {
+            return;
+        }
+
+        if (!UrlValidation.IsAllowedLinkUrl(Content.URL))
+        {
+            ToastService.ShowError("URL must be a relative path starting with / or an http(s) URL.");
+            return;
+        }
+
+        _saving = true;
+        try
+        {
+            if (string.IsNullOrEmpty(Content.Id))
+            {
+                await dataAccess.Insert(Content);
+            }
+            else
+            {
+                await dataAccess.Update(Content);
+            }
+
+            await Dialog.CloseAsync();
+        }
+        catch (Exception)
+        {
+            ToastService.ShowError("Failed to save link.");
+        }
+        finally
+        {
+            _saving = false;
+        }
     }
 }

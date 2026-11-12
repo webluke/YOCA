@@ -14,7 +14,12 @@
     </FluentCard>
     <FluentAnchor Href="/rewind" Appearance="Appearance.Accent" IconEnd="@(FontAwesome.Icon("fas fa-clock-rotate-left"))">Monthly Rewind List</FluentAnchor>
 }
-
+else if (_loaded)
+{
+    <PageTitle>Rewind not found</PageTitle>
+    <p role="alert">That rewind post was not found.</p>
+    <FluentAnchor Href="/rewind" Appearance="Appearance.Accent" IconEnd="@(FontAwesome.Icon("fas fa-clock-rotate-left"))">Monthly Rewind List</FluentAnchor>
+}
 
 @code {
     [Parameter]
@@ -22,8 +27,11 @@
     [Parameter]
     public int month { get; set; }
     [Parameter]
-    public string slug { get; set; }
+    public string slug { get; set; } = string.Empty;
+
     private RewindModel? rewind;
+    private bool _loaded;
+    private string? _lastContent;
 
     protected override async Task OnInitializedAsync()
     {
@@ -32,11 +40,21 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await JS.InvokeVoidAsync("highlightCode");
+        if (rewind?.Content != _lastContent)
+        {
+            _lastContent = rewind?.Content;
+            await JS.InvokeVoidAsync("highlightCode");
+        }
     }
 
     private async Task RefreshData()
     {
-        rewind = await rewindData.GetYearMonth(year, month);
+        rewind = await rewindData.GetSlug(slug);
+        if (rewind is not null && (rewind.Year != year || rewind.Month != month))
+        {
+            rewind = null;
+        }
+
+        _loaded = true;
     }
 }

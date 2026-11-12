@@ -1,5 +1,6 @@
 ﻿@inject ClipboardDataAccess dataAccess
 @inject Statuses states
+@inject IToastService ToastService
 @implements IDialogContentComponent<ClipboardModel>
 
 <!-- Header -->
@@ -14,31 +15,35 @@
 
 <!-- Body -->
 <FluentDialogBody>
-    <FluentStack Orientation="Orientation.Vertical">
-        <FluentNumberField @bind-Value="@Content.Order" Label="Order" style="width: 100%;" />
-        <InputSelect @bind-Value="@Content.Status" style="font-family: 'FontAwesome', 'sans-serif'">
-            @foreach (var t in states.DefaultStatuses)
-            {
-                <option value=@t.Key style="background: @t.Value.BackgroundColor; color: @t.Value.Color;">@((MarkupString)$"{t.Value.UnicodeIcon}&nbsp;&nbsp;{t.Value.Name}")</option>
-            }
-        </InputSelect>
-        <FluentTextField @bind-Value="@Content.Title" Label="Title" style="width: 100%;" />
-        <FluentDatePicker Value="@(Content.DateCompleted.ToDateTime(TimeOnly.MinValue))" ValueChanged="@(e => Content.DateCompleted = DateOnly.FromDateTime(e ?? DateTime.MinValue))" Label="Date" style="width: 100%;" />
-        <MarkdownEditor @bind-Value="@Content.Note" />
-    </FluentStack>
+    <EditForm Model="@Content" OnValidSubmit="SaveAsync">
+        <DataAnnotationsValidator />
+        <FluentValidationSummary />
+        <FluentStack Orientation="Orientation.Vertical">
+            <FluentNumberField @bind-Value="@Content.Order" Label="Order" style="width: 100%;" />
+            <InputSelect @bind-Value="@Content.Status" style="font-family: 'FontAwesome', 'sans-serif'">
+                @foreach (var t in states.DefaultStatuses)
+                {
+                    <option value=@t.Key style="background: @t.Value.BackgroundColor; color: @t.Value.Color;">@((MarkupString)$"{t.Value.UnicodeIcon}&nbsp;&nbsp;{t.Value.Name}")</option>
+                }
+            </InputSelect>
+            <FluentTextField @bind-Value="@Content.Title" Label="Title" style="width: 100%;" />
+            <FluentDatePicker Value="@(Content.DateCompleted.ToDateTime(TimeOnly.MinValue))" ValueChanged="@(e => Content.DateCompleted = DateOnly.FromDateTime(e ?? DateTime.MinValue))" Label="Date" style="width: 100%;" />
+            <MarkdownEditor @bind-Value="@Content.Note" />
+        </FluentStack>
+    </EditForm>
 </FluentDialogBody>
 
 <!-- Footer -->
 <FluentDialogFooter>
-    @if (String.IsNullOrEmpty(Content.Id))
+    @if (string.IsNullOrEmpty(Content.Id))
     {
-        <FluentButton Appearance="Appearance.Accent" OnClick="@Create">Create</FluentButton>
+        <FluentButton Appearance="Appearance.Accent" OnClick="SaveAsync" Disabled="@_saving">Create</FluentButton>
     }
     else
     {
-        <FluentButton Appearance="Appearance.Accent" OnClick="@Update">Update</FluentButton>
+        <FluentButton Appearance="Appearance.Accent" OnClick="SaveAsync" Disabled="@_saving">Update</FluentButton>
     }
-    <FluentButton Appearance="Appearance.Neutral" OnClick="@Cancel">Cancel</FluentButton>
+    <FluentButton Appearance="Appearance.Neutral" OnClick="@Cancel" Disabled="@_saving">Cancel</FluentButton>
 </FluentDialogFooter>
 
 @code {
@@ -47,22 +52,44 @@
     [Parameter]
     public ClipboardModel Content { get; set; } = default!;
 
-    protected override async Task OnInitializedAsync()
-    {
-
-    }
+    private bool _saving;
 
     private void Cancel() => Dialog.CancelAsync();
 
-    private async void Update()
+    private async Task SaveAsync()
     {
-        await dataAccess.Update(Content);
-        await Dialog.CloseAsync();
-    }
+        if (_saving)
+        {
+            return;
+        }
 
-    private async void Create()
-    {
-        await dataAccess.Insert(Content);
-        await Dialog.CloseAsync();
+        if (string.IsNullOrWhiteSpace(Content.Title))
+        {
+            ToastService.ShowError("Please enter a title.");
+            return;
+        }
+
+        _saving = true;
+        try
+        {
+            if (string.IsNullOrEmpty(Content.Id))
+            {
+                await dataAccess.Insert(Content);
+            }
+            else
+            {
+                await dataAccess.Update(Content);
+            }
+
+            await Dialog.CloseAsync();
+        }
+        catch (Exception)
+        {
+            ToastService.ShowError("Failed to save clipboard item.");
+        }
+        finally
+        {
+            _saving = false;
+        }
     }
 }

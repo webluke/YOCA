@@ -15,7 +15,7 @@
 
 <FluentCard Height="auto">
     This is a work in progress project. You can find the source code at:
-    <a href="https://www.github.com/webluke/YOCA" trget="_blank">GitHub/WebLuke/YOCA</a>
+    <a href="https://www.github.com/webluke/YOCA" target="_blank" rel="noopener noreferrer">GitHub/WebLuke/YOCA</a>
 </FluentCard>
 <br />
 <div @ref="PostsContainer">
@@ -75,6 +75,7 @@ else
     private int TotalPages => (int)Math.Ceiling((double)TotalPosts / PageSize);
     private ElementReference PostsContainer;
     private bool firstLoad = true;
+    private bool _needsHighlight;
 
     protected override async Task OnInitializedAsync()
     {
@@ -85,7 +86,11 @@ else
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await JS.InvokeVoidAsync("highlightCode");
+        if (firstRender || _needsHighlight)
+        {
+            _needsHighlight = false;
+            await JS.InvokeVoidAsync("highlightCode");
+        }
     }
 
     private async Task LoadPosts(int pageNumber)
@@ -94,13 +99,15 @@ else
         days = posts.ToList();
         TotalPosts = totalPosts;
         CurrentPage = pageNumber;
+        _needsHighlight = true;
         if (!firstLoad)
         {
             await Task.Delay(100);
             await ScrollToTop();
         }
-        StateHasChanged(); 
+        StateHasChanged();
     }
+
 
     private async Task ScrollToTop()
     {

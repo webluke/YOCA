@@ -11,7 +11,7 @@ function createEditor(
         console.error(`Element with id ${elementId} not found.`);
         return;
     }
-    container.innerHTML = ""; 
+    container.innerHTML = "";
 
     const { codeSyntaxHighlight } = toastui.Editor.plugin;
 
@@ -22,7 +22,7 @@ function createEditor(
         previewStyle: "tab",
         initialValue: initialValue || "",
         placeholder: placeholder || "Write something awesome...",
-        theme: "dark", 
+        theme: "dark",
         plugins: [[codeSyntaxHighlight, { highlighter: Prism }]],
         events: {
             change: () => {
@@ -45,6 +45,23 @@ function getMarkdown(elementId) {
 function setMarkdown(elementId, markdown) {
     if (window.tuiEditors[elementId]) {
         window.tuiEditors[elementId].setMarkdown(markdown, false);
+    }
+}
+
+function destroyEditor(elementId) {
+    const editor = window.tuiEditors[elementId];
+    if (editor) {
+        try {
+            editor.destroy();
+        } catch (e) {
+            console.warn(`Failed to destroy editor ${elementId}`, e);
+        }
+        delete window.tuiEditors[elementId];
+    }
+
+    const container = document.getElementById(elementId);
+    if (container) {
+        container.innerHTML = "";
     }
 }
 

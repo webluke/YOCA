@@ -3,13 +3,12 @@
 @inject ProjectDataAccess projectData
 @inject ProjectBoardDataAccess boardData
 @inject ProjectTaskDataAccess taskData
+@inject AppTimeZone appTimeZone
 @inject Statuses state
 @rendermode InteractiveServer
 @inject IToastService ToastService
 @inject IJSRuntime JS
 
-<FluentToastProvider />
-<FluentDialogProvider />
 <PageTitle>Admin - Projects</PageTitle>
 <h5>Projects</h5>
 <br />
@@ -75,7 +74,7 @@
                                     {
                                         <FluentCard style="width:100%">
                                             <FluentToolbar>
-                                                <h5>No Tasks 😕</h5>
+                                                <h5>No Tasks</h5>
                                             </FluentToolbar>
                                         </FluentCard>
                                     }
@@ -95,196 +94,51 @@
 }
 
 @code {
-    [Inject] private IDialogService DialogService { get; set; }
+    [Inject] private IDialogService DialogService { get; set; } = default!;
     private IEnumerable<ProjectModel>? projectItems { get; set; }
-    private ProjectModel newProject = new();
-    TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById("Mountain Standard Time");
+    private string? _highlightedContentKey;
 
     protected override async Task OnInitializedAsync()
     {
         await RefreshData();
     }
-    
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await JS.InvokeVoidAsync("highlightCode");
+        var key = projectItems?.Count().ToString() ?? "0";
+        if (firstRender || key != _highlightedContentKey)
+        {
+            _highlightedContentKey = key;
+            await JS.InvokeVoidAsync("highlightCode");
+        }
     }
 
     private async Task RefreshData()
     {
-        projectItems = await projectData.GetAllAdminWithTasks();    
+        projectItems = await projectData.GetAllAdminWithTasks();
     }
-
-
-
-
-
-
 
     private async Task InitBoards(string projectId)
     {
-        await boardData.InitBoards(projectId);
-        await RefreshData();
-    }
-
-    private async void Delete(MouseEventArgs e, ProjectModel project)
-    {
-        DeleteDialogModel item = new();
-        item.Id = project.Id;
-        item.Name = project.Title;
-        var parameters = new DialogParameters()
-            {
-                Height = "auto",
-                Width = "auto",
-                Title = $"Delete Project",
-                PreventDismissOnOverlayClick = true,
-                PreventScroll = true,
-            };
-
-        var dialog = await DialogService.ShowDialogAsync<DeleteDialog>(item, parameters);
-        var result = await dialog.Result;
-
-        if (!result.Cancelled)
+        try
         {
-            await projectData.Delete(project.Id);
-            ToastService.ShowSuccess("Project Deleted.");
+            await boardData.InitBoards(projectId);
             await RefreshData();
-            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            ToastService.ShowError("Failed to initialize boards.");
         }
     }
 
-    private async Task Create()
+    private async Task Delete(MouseEventArgs e, ProjectModel project)
     {
-        ProjectModel model = new();
-        model.StartDate = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone));
-        model.EndDate = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone).AddDays(14));
-        var parameters = new DialogParameters()
-            {
-                Height = "auto",
-                Width = "auto",
-                Title = $"Create Project",
-                PreventDismissOnOverlayClick = true,
-                PreventScroll = true,
-            };
-
-        var dialog = await DialogService.ShowDialogAsync<ProjectDialog>(model, parameters);
-        var result = await dialog.Result;
-
-        if (!result.Cancelled)
-        {
-            ToastService.ShowSuccess("Project Created.");
-            await RefreshData();
-            StateHasChanged();
-        }
-    }
-
-    private async Task Update(MouseEventArgs e, string id)
-    {
-        ProjectModel model = await projectData.GetId(id);
-        var parameters = new DialogParameters()
-            {
-                Height = "auto",
-                Width = "auto",
-                Title = $"Create Project",
-                PreventDismissOnOverlayClick = true,
-                PreventScroll = true,
-            };
-
-        var dialog = await DialogService.ShowDialogAsync<ProjectDialog>(model, parameters);
-        var result = await dialog.Result;
-
-        if (!result.Cancelled)
-        {
-            ToastService.ShowSuccess("Project Update.");
-            await RefreshData();
-            StateHasChanged();
-        }
-    }
-
-    private async void DeleteTask(MouseEventArgs e, ProjectTaskModel projectTaskItem)
-    {
-        DeleteDialogModel item = new();
-        item.Id = projectTaskItem.Id;
-        item.Name = projectTaskItem.Title;
-        var parameters = new DialogParameters()
-            {
-                Height = "auto",
-                Width = "auto",
-                Title = $"Delete Project Task",
-                PreventDismissOnOverlayClick = true,
-                PreventScroll = true,
-            };
-
-        var dialog = await DialogService.ShowDialogAsync<DeleteDialog>(item, parameters);
-        var result = await dialog.Result;
-
-        if (!result.Cancelled)
-        {
-            await taskData.Delete(projectTaskItem.Id);
-            ToastService.ShowSuccess("Project Task Deleted.");
-            await RefreshData();
-            StateHasChanged();
-        }
-    }
-
-    private async Task CreateTask(MouseEventArgs e, string projectId, string boardId)
-    {
-        ProjectTaskModel model = new();
-        model.BoardId = boardId;
-        model.ProjectId = projectId;
-        var parameters = new DialogParameters()
-            {
-                Height = "auto",
-                Width = "auto",
-                Title = $"Create Project Task",
-                PreventDismissOnOverlayClick = true,
-                PreventScroll = true,
-            };
-
-        var dialog = await DialogService.ShowDialogAsync<ProjectTaskDialog>(model, parameters);
-        var result = await dialog.Result;
-
-        if (!result.Cancelled)
-        {
-            ToastService.ShowSuccess("Project Task Created.");
-            await RefreshData();
-            StateHasChanged();
-        }
-    }
-
-    private async Task UpdateTask(MouseEventArgs e, string id)
-    {
-        ProjectTaskModel model = await taskData.GetId(id);
-        var parameters = new DialogParameters()
-            {
-                Height = "auto",
-                Width = "auto",
-                Title = $"Update Project Task",
-                PreventDismissOnOverlayClick = true,
-                PreventScroll = true,
-            };
-
-        var dialog = await DialogService.ShowDialogAsync<ProjectTaskDialog>(model, parameters);
-        var result = await dialog.Result;
-
-        if (!result.Cancelled)
-        {
-            ToastService.ShowSuccess("Project Task Update.");
-            await RefreshData();
-            StateHasChanged();
-        }
-    }
-
-    private async void DeleteBoard(MouseEventArgs e, ProjectBoardModel projectBoardItem)
-    {
-        DeleteDialogModel item = new();
-        item.Id = projectBoardItem.Id;
-        item.Name = projectBoardItem.Title;
+        DeleteDialogModel item = new() { Id = project.Id, Name = project.Title };
         var parameters = new DialogParameters()
         {
             Height = "auto",
             Width = "auto",
-            Title = $"Delete Project Task",
+            Title = "Delete Project",
             PreventDismissOnOverlayClick = true,
             PreventScroll = true,
         };
@@ -294,22 +148,195 @@
 
         if (!result.Cancelled)
         {
-            await boardData.Delete(projectBoardItem.Id);
-            ToastService.ShowSuccess("Project Board Deleted.");
+            try
+            {
+                await projectData.Delete(project.Id);
+                ToastService.ShowSuccess("Project Deleted.");
+                await RefreshData();
+            }
+            catch (Exception)
+            {
+                ToastService.ShowError("Failed to delete project.");
+            }
+        }
+    }
+
+    private async Task Create()
+    {
+        ProjectModel model = new()
+        {
+            StartDate = appTimeZone.Today(),
+            EndDate = appTimeZone.Today().AddDays(14)
+        };
+        var parameters = new DialogParameters()
+        {
+            Height = "auto",
+            Width = "auto",
+            Title = "Create Project",
+            PreventDismissOnOverlayClick = true,
+            PreventScroll = true,
+        };
+
+        var dialog = await DialogService.ShowDialogAsync<ProjectDialog>(model, parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            ToastService.ShowSuccess("Project Created.");
             await RefreshData();
-            StateHasChanged();
+        }
+    }
+
+    private async Task Update(MouseEventArgs e, string id)
+    {
+        var model = await projectData.GetId(id);
+        if (model is null)
+        {
+            ToastService.ShowError("Project not found.");
+            return;
+        }
+
+        var parameters = new DialogParameters()
+        {
+            Height = "auto",
+            Width = "auto",
+            Title = "Update Project",
+            PreventDismissOnOverlayClick = true,
+            PreventScroll = true,
+        };
+
+        var dialog = await DialogService.ShowDialogAsync<ProjectDialog>(model, parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            ToastService.ShowSuccess("Project Updated.");
+            await RefreshData();
+        }
+    }
+
+    private async Task DeleteTask(MouseEventArgs e, ProjectTaskModel projectTaskItem)
+    {
+        DeleteDialogModel item = new() { Id = projectTaskItem.Id, Name = projectTaskItem.Title };
+        var parameters = new DialogParameters()
+        {
+            Height = "auto",
+            Width = "auto",
+            Title = "Delete Project Task",
+            PreventDismissOnOverlayClick = true,
+            PreventScroll = true,
+        };
+
+        var dialog = await DialogService.ShowDialogAsync<DeleteDialog>(item, parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            try
+            {
+                await taskData.Delete(projectTaskItem.Id);
+                ToastService.ShowSuccess("Project Task Deleted.");
+                await RefreshData();
+            }
+            catch (Exception)
+            {
+                ToastService.ShowError("Failed to delete task.");
+            }
+        }
+    }
+
+    private async Task CreateTask(MouseEventArgs e, string projectId, string boardId)
+    {
+        ProjectTaskModel model = new()
+        {
+            BoardId = boardId,
+            ProjectId = projectId
+        };
+        var parameters = new DialogParameters()
+        {
+            Height = "auto",
+            Width = "auto",
+            Title = "Create Project Task",
+            PreventDismissOnOverlayClick = true,
+            PreventScroll = true,
+        };
+
+        var dialog = await DialogService.ShowDialogAsync<ProjectTaskDialog>(model, parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            ToastService.ShowSuccess("Project Task Created.");
+            await RefreshData();
+        }
+    }
+
+    private async Task UpdateTask(MouseEventArgs e, string id)
+    {
+        var model = await taskData.GetId(id);
+        if (model is null)
+        {
+            ToastService.ShowError("Task not found.");
+            return;
+        }
+
+        var parameters = new DialogParameters()
+        {
+            Height = "auto",
+            Width = "auto",
+            Title = "Update Project Task",
+            PreventDismissOnOverlayClick = true,
+            PreventScroll = true,
+        };
+
+        var dialog = await DialogService.ShowDialogAsync<ProjectTaskDialog>(model, parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            ToastService.ShowSuccess("Project Task Updated.");
+            await RefreshData();
+        }
+    }
+
+    private async Task DeleteBoard(MouseEventArgs e, ProjectBoardModel projectBoardItem)
+    {
+        DeleteDialogModel item = new() { Id = projectBoardItem.Id, Name = projectBoardItem.Title };
+        var parameters = new DialogParameters()
+        {
+            Height = "auto",
+            Width = "auto",
+            Title = "Delete Project Board",
+            PreventDismissOnOverlayClick = true,
+            PreventScroll = true,
+        };
+
+        var dialog = await DialogService.ShowDialogAsync<DeleteDialog>(item, parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            try
+            {
+                await boardData.Delete(projectBoardItem.Id);
+                ToastService.ShowSuccess("Project Board Deleted.");
+                await RefreshData();
+            }
+            catch (Exception)
+            {
+                ToastService.ShowError("Failed to delete board.");
+            }
         }
     }
 
     private async Task CreateBoard(MouseEventArgs e, string projectId)
     {
-        ProjectBoardModel model = new();
-        model.ProjectId = projectId;
+        ProjectBoardModel model = new() { ProjectId = projectId };
         var parameters = new DialogParameters()
         {
             Height = "auto",
             Width = "auto",
-            Title = $"Creat Project Board",
+            Title = "Create Project Board",
             PreventDismissOnOverlayClick = true,
             PreventScroll = true,
         };
@@ -321,18 +348,23 @@
         {
             ToastService.ShowSuccess("Project Board Created.");
             await RefreshData();
-            StateHasChanged();
         }
     }
 
     private async Task UpdateBoard(MouseEventArgs e, string id)
     {
-        ProjectBoardModel model = await boardData.GetId(id);
+        var model = await boardData.GetId(id);
+        if (model is null)
+        {
+            ToastService.ShowError("Board not found.");
+            return;
+        }
+
         var parameters = new DialogParameters()
         {
             Height = "auto",
             Width = "auto",
-            Title = $"Update Project Board",
+            Title = "Update Project Board",
             PreventDismissOnOverlayClick = true,
             PreventScroll = true,
         };
@@ -342,9 +374,8 @@
 
         if (!result.Cancelled)
         {
-            ToastService.ShowSuccess("Project Board Update.");
+            ToastService.ShowSuccess("Project Board Updated.");
             await RefreshData();
-            StateHasChanged();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿@inject RewindDataAccess dataAccess
+@inject IToastService ToastService
 @using YOCA.DataAccess.Tools
 @implements IDialogContentComponent<RewindModel>
 
@@ -14,7 +15,7 @@
 
 <!-- Body -->
 <FluentDialogBody>
-    <EditForm Model="@Content">
+    <EditForm Model="@Content" OnValidSubmit="SaveAsync">
         <FluentStack Orientation="Orientation.Vertical">
             <DataAnnotationsValidator />
             <FluentValidationSummary />
@@ -31,15 +32,15 @@
 
 <!-- Footer -->
 <FluentDialogFooter>
-    @if (String.IsNullOrEmpty(Content.Id))
+    @if (string.IsNullOrEmpty(Content.Id))
     {
-        <FluentButton Appearance="Appearance.Accent" OnClick="@Create">Create</FluentButton>
+        <FluentButton Appearance="Appearance.Accent" OnClick="SaveAsync" Disabled="@_saving">Create</FluentButton>
     }
     else
     {
-        <FluentButton Appearance="Appearance.Accent" OnClick="@Update">Update</FluentButton>
+        <FluentButton Appearance="Appearance.Accent" OnClick="SaveAsync" Disabled="@_saving">Update</FluentButton>
     }
-    <FluentButton Appearance="Appearance.Neutral" OnClick="@Cancel">Cancel</FluentButton>
+    <FluentButton Appearance="Appearance.Neutral" OnClick="@Cancel" Disabled="@_saving">Cancel</FluentButton>
 </FluentDialogFooter>
 
 @code {
@@ -48,23 +49,45 @@
     [Parameter]
     public RewindModel Content { get; set; } = default!;
 
-    protected override async Task OnInitializedAsync()
-    {
-
-    }
+    private bool _saving;
 
     private void Cancel() => Dialog.CancelAsync();
 
-    private async void Update()
+    private async Task SaveAsync()
     {
-        await dataAccess.Update(Content);
-        await Dialog.CloseAsync();
-    }
+        if (_saving)
+        {
+            return;
+        }
 
-    private async void Create()
-    {
-        await dataAccess.Insert(Content);
-        await Dialog.CloseAsync();
+        if (string.IsNullOrWhiteSpace(Content.Title))
+        {
+            ToastService.ShowError("Please enter a title.");
+            return;
+        }
+
+        _saving = true;
+        try
+        {
+            if (string.IsNullOrEmpty(Content.Id))
+            {
+                await dataAccess.Insert(Content);
+            }
+            else
+            {
+                await dataAccess.Update(Content);
+            }
+
+            await Dialog.CloseAsync();
+        }
+        catch (Exception)
+        {
+            ToastService.ShowError("Failed to save rewind.");
+        }
+        finally
+        {
+            _saving = false;
+        }
     }
 
     private void UpdateTitle(string title)

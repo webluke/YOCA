@@ -1,4 +1,5 @@
 ﻿@inject DayOfCodeDataAccess dataAccess
+@inject IToastService ToastService
 @implements IDialogContentComponent<DayOfCodeModel>
 
 <!-- Header -->
@@ -13,27 +14,32 @@
 
 <!-- Body -->
 <FluentDialogBody>
-    <FluentStack Orientation="Orientation.Vertical">
-        <FluentNumberField @bind-Value="@Content.Day" Label="Day" style="width: 100%;" />
-        <FluentDatePicker Value="@(Content.Date.ToDateTime(TimeOnly.MinValue))" ValueChanged="@(e => Content.Date = DateOnly.FromDateTime(e ?? DateTime.Today))" Label="Date" style="width: 100%;" />
-        <FluentTextField @bind-Value="@Content.Goal" Label="Goal" style="width: 100%;" />
-        <FluentTextField @bind-Value="@Content.Result" Label="Result" style="width: 100%;" />
-        <FluentTextField @bind-Value="@Content.Tomorrow" Label="Tomorrow" style="width: 100%;" />
-        <MarkdownEditor @bind-Value="@Content.Summary" />
-    </FluentStack>
+    <EditForm Model="@Content" OnValidSubmit="SaveAsync">
+        <DataAnnotationsValidator />
+        <FluentValidationSummary />
+        <FluentStack Orientation="Orientation.Vertical">
+            <FluentNumberField @bind-Value="@Content.Day" Label="Day" style="width: 100%;" />
+            <FluentDatePicker Value="@(Content.Date.ToDateTime(TimeOnly.MinValue))" ValueChanged="@(e => Content.Date = DateOnly.FromDateTime(e ?? DateTime.Today))" Label="Date" style="width: 100%;" />
+            <FluentTextField @bind-Value="@Content.Goal" Label="Goal" style="width: 100%;" />
+            <FluentTextField @bind-Value="@Content.Result" Label="Result" style="width: 100%;" />
+            <FluentTextField @bind-Value="@Content.Tomorrow" Label="Tomorrow" style="width: 100%;" />
+            <MarkdownEditor @bind-Value="@Content.Summary" />
+        </FluentStack>
+        <button type="submit" hidden disabled="@_saving"></button>
+    </EditForm>
 </FluentDialogBody>
 
 <!-- Footer -->
 <FluentDialogFooter>
-    @if (String.IsNullOrEmpty(Content.Id))
+    @if (string.IsNullOrEmpty(Content.Id))
     {
-        <FluentButton Appearance="Appearance.Accent" OnClick="@Create">Create</FluentButton>
+        <FluentButton Appearance="Appearance.Accent" OnClick="SaveAsync" Disabled="@_saving">Create</FluentButton>
     }
     else
     {
-        <FluentButton Appearance="Appearance.Accent" OnClick="@Update">Update</FluentButton>
+        <FluentButton Appearance="Appearance.Accent" OnClick="SaveAsync" Disabled="@_saving">Update</FluentButton>
     }
-    <FluentButton Appearance="Appearance.Neutral" OnClick="@Cancel">Cancel</FluentButton>
+    <FluentButton Appearance="Appearance.Neutral" OnClick="@Cancel" Disabled="@_saving">Cancel</FluentButton>
 </FluentDialogFooter>
 
 @code {
@@ -42,22 +48,38 @@
     [Parameter]
     public DayOfCodeModel Content { get; set; } = default!;
 
-    protected override async Task OnInitializedAsync()
-    {
-
-    }
+    private bool _saving;
 
     private void Cancel() => Dialog.CancelAsync();
 
-    private async void Update()
+    private async Task SaveAsync()
     {
-        await dataAccess.Update(Content);
-        await Dialog.CloseAsync();
-    }
+        if (_saving)
+        {
+            return;
+        }
 
-    private async void Create()
-    {
-        await dataAccess.Insert(Content);
-        await Dialog.CloseAsync();
+        _saving = true;
+        try
+        {
+            if (string.IsNullOrEmpty(Content.Id))
+            {
+                await dataAccess.Insert(Content);
+            }
+            else
+            {
+                await dataAccess.Update(Content);
+            }
+
+            await Dialog.CloseAsync();
+        }
+        catch (Exception)
+        {
+            ToastService.ShowError("Failed to save day.");
+        }
+        finally
+        {
+            _saving = false;
+        }
     }
 }

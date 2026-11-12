@@ -19,8 +19,8 @@ else
 
 @code {
     [Parameter]
-    public string slug { get; set; }
-    public PageModel p { get; set; }
+    public string slug { get; set; } = string.Empty;
+    public PageModel? p { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -29,12 +29,15 @@ else
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await JS.InvokeVoidAsync("highlightCode");
+        if (firstRender && p is not null)
+        {
+            await JS.InvokeVoidAsync("highlightCode");
+        }
     }
 
     private async Task RefreshData()
     {
-        p = (await pageData.GetSlug(slug));
-
+        p = await pageData.GetSlug(slug);
     }
 }
+

@@ -27,8 +27,12 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await JS.InvokeVoidAsync("highlightCode");
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("highlightCode");
+        }
     }
+
 
     private async Task RefreshData()
     {

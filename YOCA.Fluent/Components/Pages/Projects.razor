@@ -35,7 +35,7 @@
                                 </FluentToolbar>
                                 <hr />
                                 <FluentStack Orientation="Orientation.Vertical">
-                                    @foreach (var task in board.Tasks)
+                                    @foreach (var task in board.Tasks.OrderBy(t => t.Order))
                                     {
                                         <FluentCard style="margin-bottom: 0px;">
                                             <FluentToolbar style="width:100%">
@@ -66,7 +66,10 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await JS.InvokeVoidAsync("highlightCode");
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("highlightCode");
+        }
     }
 
     private async Task RefreshData()

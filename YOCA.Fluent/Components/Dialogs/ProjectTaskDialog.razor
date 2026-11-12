@@ -1,6 +1,7 @@
 ﻿@inject ProjectTaskDataAccess dataAccess
 @inject ProjectBoardDataAccess boardDataAccess
 @inject Statuses states
+@inject IToastService ToastService
 @implements IDialogContentComponent<ProjectTaskModel>
 
 <!-- Header -->
@@ -15,62 +16,110 @@
 
 <!-- Body -->
 <FluentDialogBody>
-    <FluentStack Orientation="Orientation.Vertical">
-        <FluentStack Orientation="Orientation.Horizontal">
-            <FluentSelect Items=@Boards
-                          OptionText="@(i => i.Title)"
-                          OptionValue="@(i => i.Id)"
-                          @bind-Value="Content.BoardId"
-                          Label="Board"
-                          style="width:100%" />
-            <FluentNumberField @bind-Value="@Content.Order" Label="Order" style="width: 100%;" />
-            <FluentSwitch @bind-Value="@Content.Hidden" Label="Hidden" style="width: 100%;" />
-		</FluentStack>
-        <FluentTextField @bind-Value="@Content.Title" Label="Title" style="width: 100%;" />
-        <MarkdownEditor @bind-Value="@Content.Description" />
-    </FluentStack>
+    <EditForm Model="@Content" OnValidSubmit="SaveAsync">
+        <DataAnnotationsValidator />
+        <FluentValidationSummary />
+        <FluentStack Orientation="Orientation.Vertical">
+            <FluentStack Orientation="Orientation.Horizontal">
+                <FluentSelect Items=@Boards
+                              OptionText="@(i => i.Title)"
+                              OptionValue="@(i => i.Id)"
+                              @bind-Value="Content.BoardId"
+                              Label="Board"
+                              style="width:100%" />
+                <FluentNumberField @bind-Value="@Content.Order" Label="Order" style="width: 100%;" />
+                <FluentSwitch @bind-Value="@Content.Hidden" Label="Hidden" style="width: 100%;" />
+            </FluentStack>
+            <InputSelect @bind-Value="@Content.Status" style="font-family: 'FontAwesome', 'sans-serif'">
+                @foreach (var t in states.DefaultStatuses)
+                {
+                    <option value=@t.Key style="background: @t.Value.BackgroundColor; color: @t.Value.Color;">@((MarkupString)$"{t.Value.UnicodeIcon}&nbsp;&nbsp;{t.Value.Name}")</option>
+                }
+            </InputSelect>
+            <FluentTextField @bind-Value="@Content.Title" Label="Title" style="width: 100%;" />
+            <MarkdownEditor @bind-Value="@Content.Description" />
+        </FluentStack>
+    </EditForm>
 </FluentDialogBody>
 
 <!-- Footer -->
 <FluentDialogFooter>
-    @if (String.IsNullOrEmpty(Content.Id))
+    @if (string.IsNullOrEmpty(Content.Id))
     {
-        <FluentButton Appearance="Appearance.Accent" OnClick="@Create">Create</FluentButton>
+        <FluentButton Appearance="Appearance.Accent" OnClick="SaveAsync" Disabled="@_saving">Create</FluentButton>
     }
     else
     {
-        <FluentButton Appearance="Appearance.Accent" OnClick="@Update">Update</FluentButton>
+        <FluentButton Appearance="Appearance.Accent" OnClick="SaveAsync" Disabled="@_saving">Update</FluentButton>
     }
-    <FluentButton Appearance="Appearance.Neutral" OnClick="@Cancel">Cancel</FluentButton>
+    <FluentButton Appearance="Appearance.Neutral" OnClick="@Cancel" Disabled="@_saving">Cancel</FluentButton>
 </FluentDialogFooter>
 
 @code {
     [CascadingParameter]
-    public FluentDialog Dialog { get; set; }
+    public FluentDialog Dialog { get; set; } = default!;
     [Parameter]
-    public ProjectTaskModel Content { get; set; }
-	public List<ProjectBoardModel> Boards { get; set; } = new();
+    public ProjectTaskModel Content { get; set; } = default!;
+    public List<ProjectBoardModel> Boards { get; set; } = new();
+
+    private bool _saving;
 
     protected override async Task OnInitializedAsync()
     {
-	    Boards = (await boardDataAccess.GetProjectBoards(Content.ProjectId)).ToList();
+        Boards = (await boardDataAccess.GetProjectBoards(Content.ProjectId)).ToList();
         if (string.IsNullOrEmpty(Content.BoardId) && Boards.Any())
         {
             Content.BoardId = Boards.First().Id;
+        }
+
+        if (string.IsNullOrEmpty(Content.Id) && Content.Order == 0 && !string.IsNullOrEmpty(Content.BoardId))
+        {
+            var boardTasks = await dataAccess.GetProjectTasksAdmin(Content.ProjectId);
+            var maxOrder = boardTasks
+                .Where(t => t.BoardId == Content.BoardId)
+                .Select(t => t.Order)
+                .DefaultIfEmpty(0)
+                .Max();
+            Content.Order = maxOrder + 1;
         }
     }
 
     private void Cancel() => Dialog.CancelAsync();
 
-    private async void Update()
+    private async Task SaveAsync()
     {
-        await dataAccess.Update(Content);
-        await Dialog.CloseAsync();
-    }
+        if (_saving)
+        {
+            return;
+        }
 
-    private async void Create()
-    {
-        await dataAccess.Insert(Content);
-        await Dialog.CloseAsync();
+        if (string.IsNullOrWhiteSpace(Content.Title))
+        {
+            ToastService.ShowError("Please enter a title.");
+            return;
+        }
+
+        _saving = true;
+        try
+        {
+            if (string.IsNullOrEmpty(Content.Id))
+            {
+                await dataAccess.Insert(Content);
+            }
+            else
+            {
+                await dataAccess.Update(Content);
+            }
+
+            await Dialog.CloseAsync();
+        }
+        catch (Exception)
+        {
+            ToastService.ShowError("Failed to save task.");
+        }
+        finally
+        {
+            _saving = false;
+        }
     }
 }

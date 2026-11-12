@@ -6,6 +6,8 @@
 @code {
     private string EditorId { get; } = $"tui-editor-{Guid.NewGuid()}";
     private DotNetObjectReference<MarkdownEditor>? _dotNetHelper;
+    private bool _editorCreated;
+    private string? _lastSyncedValue;
 
     [Parameter]
     public string? Value { get; set; }
@@ -28,6 +30,15 @@
                 Value,
                 Placeholder
             );
+            _editorCreated = true;
+            _lastSyncedValue = Value;
+            return;
+        }
+
+        if (_editorCreated && Value != _lastSyncedValue)
+        {
+            await JSRuntime.InvokeVoidAsync("setMarkdown", EditorId, Value ?? string.Empty);
+            _lastSyncedValue = Value;
         }
     }
 
@@ -35,11 +46,26 @@
     public async Task OnMarkdownChanged(string markdown)
     {
         Value = markdown;
+        _lastSyncedValue = markdown;
         await ValueChanged.InvokeAsync(Value);
     }
 
     public async ValueTask DisposeAsync()
     {
-        _dotNetHelper?.Dispose();
+        try
+        {
+            if (_editorCreated)
+            {
+                await JSRuntime.InvokeVoidAsync("destroyEditor", EditorId);
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+            // Circuit already gone.
+        }
+        finally
+        {
+            _dotNetHelper?.Dispose();
+        }
     }
 }

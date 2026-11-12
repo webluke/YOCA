@@ -3,8 +3,6 @@
 @inject LinkDataAccess linkData
 @rendermode InteractiveServer
 @inject IToastService ToastService
-<FluentToastProvider />
-<FluentDialogProvider />
 <PageTitle>Admin - Links</PageTitle>
 <h5>Links</h5>
 <br />
@@ -25,10 +23,9 @@
 </FluentDataGrid>
 
 @code {
-    [Inject] private IDialogService DialogService { get; set; }
+    [Inject] private IDialogService DialogService { get; set; } = default!;
     private IEnumerable<LinkModel>? links { get; set; }
     IQueryable<LinkModel>? query { get; set; }
-    private LinkModel newLink = new ();
 
     protected override async Task OnInitializedAsync()
     {
@@ -41,29 +38,33 @@
         query = links.AsQueryable();
     }
 
-    private async void Delete(MouseEventArgs e, LinkModel link)
+    private async Task Delete(MouseEventArgs e, LinkModel link)
     {
-        DeleteDialogModel item = new();
-        item.Id = link.Id;
-        item.Name = link.Title;
+        DeleteDialogModel item = new() { Id = link.Id, Name = link.Title };
         var parameters = new DialogParameters()
-            {
-                Height = "auto",
-                Width = "auto",
-                Title = $"Delete Link",
-                PreventDismissOnOverlayClick = true,
-                PreventScroll = true,
-            };
+        {
+            Height = "auto",
+            Width = "auto",
+            Title = "Delete Link",
+            PreventDismissOnOverlayClick = true,
+            PreventScroll = true,
+        };
 
         var dialog = await DialogService.ShowDialogAsync<DeleteDialog>(item, parameters);
         var result = await dialog.Result;
 
         if (!result.Cancelled)
         {
-            await linkData.Delete(link.Id);
-            ToastService.ShowSuccess("Link Deleted.");
-            await RefreshData();
-            StateHasChanged();
+            try
+            {
+                await linkData.Delete(link.Id);
+                ToastService.ShowSuccess("Link Deleted.");
+                await RefreshData();
+            }
+            catch (Exception)
+            {
+                ToastService.ShowError("Failed to delete link.");
+            }
         }
     }
 
@@ -71,12 +72,13 @@
     {
         LinkModel model = new();
         var parameters = new DialogParameters()
-            {
-                Height = "auto",
-                Width = "650px",
-                Title = $"Create Link",
-                PreventDismissOnOverlayClick = true,
-                PreventScroll = true,            };
+        {
+            Height = "auto",
+            Width = "650px",
+            Title = "Create Link",
+            PreventDismissOnOverlayClick = true,
+            PreventScroll = true,
+        };
 
         var dialog = await DialogService.ShowDialogAsync<LinkDialog>(model, parameters);
         var result = await dialog.Result;
@@ -85,30 +87,34 @@
         {
             ToastService.ShowSuccess("Link Created.");
             await RefreshData();
-            StateHasChanged();
         }
     }
 
     private async Task Update(MouseEventArgs e, string id)
     {
-        LinkModel model = await linkData.GetId(id);
+        var model = await linkData.GetId(id);
+        if (model is null)
+        {
+            ToastService.ShowError("Link not found.");
+            return;
+        }
+
         var parameters = new DialogParameters()
-            {
-                Height = "auto",
-                Width = "650px",
-                Title = $"Create Link",
-                PreventDismissOnOverlayClick = true,
-                PreventScroll = true,
-            };
+        {
+            Height = "auto",
+            Width = "650px",
+            Title = "Update Link",
+            PreventDismissOnOverlayClick = true,
+            PreventScroll = true,
+        };
 
         var dialog = await DialogService.ShowDialogAsync<LinkDialog>(model, parameters);
         var result = await dialog.Result;
 
         if (!result.Cancelled)
         {
-            ToastService.ShowSuccess("Link Update.");
+            ToastService.ShowSuccess("Link Updated.");
             await RefreshData();
-            StateHasChanged();
         }
     }
 }

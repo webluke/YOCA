@@ -4,8 +4,6 @@
 @inject Statuses state
 @rendermode InteractiveServer
 @inject IToastService ToastService
-<FluentToastProvider />
-<FluentDialogProvider />
 <PageTitle>Admin - Ideas</PageTitle>
 <h5>Ideas</h5>
 <br />
@@ -24,11 +22,9 @@
 </FluentDataGrid>
 
 @code {
-    [Inject] private IDialogService DialogService { get; set; }
+    [Inject] private IDialogService DialogService { get; set; } = default!;
     private IEnumerable<IdeaModel>? IdeaItems { get; set; }
     IQueryable<IdeaModel>? query { get; set; }
-    private IdeaModel newIdea = new();
-    TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById("Mountain Standard Time");
 
     protected override async Task OnInitializedAsync()
     {
@@ -41,29 +37,33 @@
         query = IdeaItems.AsQueryable();
     }
 
-    private async void Delete(MouseEventArgs e, IdeaModel model)
+    private async Task Delete(MouseEventArgs e, IdeaModel model)
     {
-        DeleteDialogModel item = new();
-        item.Id = model.Id;
-        item.Name = model.Title;
+        DeleteDialogModel item = new() { Id = model.Id, Name = model.Title };
         var parameters = new DialogParameters()
-            {
-                Height = "auto",
-                Width = "auto",
-                Title = $"Delete Idea",
-                PreventDismissOnOverlayClick = true,
-                PreventScroll = true,
-            };
+        {
+            Height = "auto",
+            Width = "auto",
+            Title = "Delete Idea",
+            PreventDismissOnOverlayClick = true,
+            PreventScroll = true,
+        };
 
         var dialog = await DialogService.ShowDialogAsync<DeleteDialog>(item, parameters);
         var result = await dialog.Result;
 
         if (!result.Cancelled)
         {
-            await DataAccess.Delete(model.Id);
-            ToastService.ShowSuccess("Idea Deleted.");
-            await RefreshData();
-            StateHasChanged();
+            try
+            {
+                await DataAccess.Delete(model.Id);
+                ToastService.ShowSuccess("Idea Deleted.");
+                await RefreshData();
+            }
+            catch (Exception)
+            {
+                ToastService.ShowError("Failed to delete idea.");
+            }
         }
     }
 
@@ -71,13 +71,13 @@
     {
         IdeaModel model = new();
         var parameters = new DialogParameters()
-            {
-                Height = "auto",
-                Width = "auto",
-                Title = $"Create Idea",
-                PreventDismissOnOverlayClick = true,
-                PreventScroll = true,
-            };
+        {
+            Height = "auto",
+            Width = "auto",
+            Title = "Create Idea",
+            PreventDismissOnOverlayClick = true,
+            PreventScroll = true,
+        };
 
         var dialog = await DialogService.ShowDialogAsync<IdeaDialog>(model, parameters);
         var result = await dialog.Result;
@@ -86,30 +86,34 @@
         {
             ToastService.ShowSuccess("Idea Created.");
             await RefreshData();
-            StateHasChanged();
         }
     }
 
     private async Task Update(MouseEventArgs e, string id)
     {
-        IdeaModel model = await DataAccess.GetId(id);
+        var model = await DataAccess.GetId(id);
+        if (model is null)
+        {
+            ToastService.ShowError("Idea not found.");
+            return;
+        }
+
         var parameters = new DialogParameters()
-            {
-                Height = "auto",
-                Width = "auto",
-                Title = $"Create Idea",
-                PreventDismissOnOverlayClick = true,
-                PreventScroll = true,
-            };
+        {
+            Height = "auto",
+            Width = "auto",
+            Title = "Update Idea",
+            PreventDismissOnOverlayClick = true,
+            PreventScroll = true,
+        };
 
         var dialog = await DialogService.ShowDialogAsync<IdeaDialog>(model, parameters);
         var result = await dialog.Result;
 
         if (!result.Cancelled)
         {
-            ToastService.ShowSuccess("Idea Update.");
+            ToastService.ShowSuccess("Idea Updated.");
             await RefreshData();
-            StateHasChanged();
         }
     }
 }

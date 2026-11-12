@@ -1,4 +1,5 @@
 ﻿@inject PageDataAccess dataAccess
+@inject IToastService ToastService
 @using YOCA.DataAccess.Tools
 @implements IDialogContentComponent<PageModel>
 
@@ -14,35 +15,35 @@
 
 <!-- Body -->
 <FluentDialogBody>
-    <EditForm Model="@Content">
-    <FluentStack Orientation="Orientation.Vertical">
-        <DataAnnotationsValidator />
-        <FluentValidationSummary />
-        <FluentNumberField @bind-Value="@Content.Order" Label="Order" style="width: 100%;" />
-        <FluentTextField Value="@Content.Title" ValueChanged="@(e => UpdateTitle(e))" Label="Title" style="width: 100%;" />
-        <FluentTextField @bind-Value="@Content.Slug" Label="Slug" style="width: 100%;" />
-        <FluentTextField @bind-Value="@Content.MenuName" Label="Menu Name" style="width: 100%;" />
-        <FluentStack>
-            <FluentTextField @bind-Value="@Content.Icon" Label="Icon" style="width: 100%;" />
-            <i class="@Content.Icon" style="width: 32px;" />
+    <EditForm Model="@Content" OnValidSubmit="SaveAsync">
+        <FluentStack Orientation="Orientation.Vertical">
+            <DataAnnotationsValidator />
+            <FluentValidationSummary />
+            <FluentNumberField @bind-Value="@Content.Order" Label="Order" style="width: 100%;" />
+            <FluentTextField Value="@Content.Title" ValueChanged="@(e => UpdateTitle(e))" Label="Title" style="width: 100%;" />
+            <FluentTextField @bind-Value="@Content.Slug" Label="Slug" style="width: 100%;" />
+            <FluentTextField @bind-Value="@Content.MenuName" Label="Menu Name" style="width: 100%;" />
+            <FluentStack>
+                <FluentTextField @bind-Value="@Content.Icon" Label="Icon" style="width: 100%;" />
+                <i class="@Content.Icon" style="width: 32px;" />
+            </FluentStack>
+            <FluentSwitch @bind-Value="@Content.IsPublished" Label="Published" />
+            <MarkdownEditor @bind-Value="@Content.Content" />
         </FluentStack>
-        <FluentSwitch @bind-Value="@Content.IsPublished" Label="Published" />
-        <MarkdownEditor @bind-Value="@Content.Content" />
-    </FluentStack>
     </EditForm>
 </FluentDialogBody>
 
 <!-- Footer -->
 <FluentDialogFooter>
-    @if (String.IsNullOrEmpty(Content.Id))
+    @if (string.IsNullOrEmpty(Content.Id))
     {
-        <FluentButton Appearance="Appearance.Accent" OnClick="@Create">Create</FluentButton>
+        <FluentButton Appearance="Appearance.Accent" OnClick="SaveAsync" Disabled="@_saving">Create</FluentButton>
     }
     else
     {
-        <FluentButton Appearance="Appearance.Accent" OnClick="@Update">Update</FluentButton>
+        <FluentButton Appearance="Appearance.Accent" OnClick="SaveAsync" Disabled="@_saving">Update</FluentButton>
     }
-    <FluentButton Appearance="Appearance.Neutral" OnClick="@Cancel">Cancel</FluentButton>
+    <FluentButton Appearance="Appearance.Neutral" OnClick="@Cancel" Disabled="@_saving">Cancel</FluentButton>
 </FluentDialogFooter>
 
 @code {
@@ -51,26 +52,48 @@
     [Parameter]
     public PageModel Content { get; set; } = default!;
 
-    protected override async Task OnInitializedAsync()
-    {
-
-    }
+    private bool _saving;
 
     private void Cancel() => Dialog.CancelAsync();
 
-    private async void Update()
+    private async Task SaveAsync()
     {
-        await dataAccess.Update(Content);
-        await Dialog.CloseAsync();
+        if (_saving)
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(Content.Title))
+        {
+            ToastService.ShowError("Please enter a title.");
+            return;
+        }
+
+        _saving = true;
+        try
+        {
+            if (string.IsNullOrEmpty(Content.Id))
+            {
+                await dataAccess.Insert(Content);
+            }
+            else
+            {
+                await dataAccess.Update(Content);
+            }
+
+            await Dialog.CloseAsync();
+        }
+        catch (Exception)
+        {
+            ToastService.ShowError("Failed to save page.");
+        }
+        finally
+        {
+            _saving = false;
+        }
     }
 
-    private async void Create()
-    {
-        await dataAccess.Insert(Content);
-        await Dialog.CloseAsync();
-    }
-
-    private void UpdateTitle (string title)
+    private void UpdateTitle(string title)
     {
         Content.Title = title;
         Content.Slug = Slugs.NewSlug(title);
