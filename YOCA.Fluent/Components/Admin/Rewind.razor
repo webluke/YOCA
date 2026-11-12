@@ -1,8 +1,7 @@
-﻿@page "/admin/rewind"
+@page "/admin/rewind"
 @attribute [Authorize(Roles = "Admin")]
 @inject RewindDataAccess rewindData
 @inject AppTimeZone appTimeZone
-@rendermode InteractiveServer
 @inject IToastService ToastService
 <PageTitle>Admin - Monthly Rewind</PageTitle>
 <h5>Monthly Rewinds</h5>

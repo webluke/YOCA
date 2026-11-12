@@ -1,7 +1,6 @@
-﻿@page "/admin/links"
+@page "/admin/links"
 @attribute [Authorize(Roles = "Admin")]
 @inject LinkDataAccess linkData
-@rendermode InteractiveServer
 @inject IToastService ToastService
 <PageTitle>Admin - Links</PageTitle>
 <h5>Links</h5>

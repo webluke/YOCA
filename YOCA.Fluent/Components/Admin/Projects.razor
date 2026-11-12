@@ -1,11 +1,10 @@
-﻿@page "/admin/projects"
+@page "/admin/projects"
 @attribute [Authorize(Roles = "Admin")]
 @inject ProjectDataAccess projectData
 @inject ProjectBoardDataAccess boardData
 @inject ProjectTaskDataAccess taskData
 @inject AppTimeZone appTimeZone
 @inject Statuses state
-@rendermode InteractiveServer
 @inject IToastService ToastService
 @inject IJSRuntime JS
 

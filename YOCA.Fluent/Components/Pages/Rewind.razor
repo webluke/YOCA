@@ -1,7 +1,6 @@
-﻿@page "/rewind/{year:int}/{month:int}/{slug}"
+@page "/rewind/{year:int}/{month:int}/{slug}"
 
 @inject RewindDataAccess rewindData
-@rendermode InteractiveServer
 @inject IJSRuntime JS
 
 @if (rewind != null)

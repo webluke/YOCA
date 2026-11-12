@@ -1,8 +1,7 @@
-﻿@page "/admin/days"
+@page "/admin/days"
 @attribute [Authorize(Roles = "Admin")]
 @inject DayOfCodeDataAccess dayData
 @inject AppTimeZone appTimeZone
-@rendermode InteractiveServer
 @inject IToastService ToastService
 <PageTitle>Admin - Days</PageTitle>
 <h5>Days</h5>

@@ -19,7 +19,8 @@
 
 <body>
     <FluentDesignTheme Mode="DesignThemeModes.System" OfficeColor="OfficeColor.Windows" StorageName="theme" />
-    <Routes />
+    @* Interactive root so MainLayout FluentDialogProvider/ToastProvider share the admin page circuit. *@
+    <Routes @rendermode="InteractiveServer" />
     <script src="_framework/blazor.web.js"></script>
 
     <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>

@@ -1,7 +1,6 @@
-﻿@page "/admin/pages"
+@page "/admin/pages"
 @attribute [Authorize(Roles = "Admin")]
 @inject PageDataAccess pageData
-@rendermode InteractiveServer
 @inject IToastService ToastService
 
 <PageTitle>Admin - Pages</PageTitle>

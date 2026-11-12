@@ -1,9 +1,8 @@
-﻿@page "/admin/clipboard"
+@page "/admin/clipboard"
 @attribute [Authorize(Roles = "Admin")]
 @inject ClipboardDataAccess clipboardData
 @inject AppTimeZone appTimeZone
 @inject Statuses state
-@rendermode InteractiveServer
 @inject IToastService ToastService
 <PageTitle>Admin - Clipboard</PageTitle>
 <h5>Clipboard</h5>

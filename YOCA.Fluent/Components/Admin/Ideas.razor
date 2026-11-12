@@ -1,8 +1,7 @@
-﻿@page "/admin/ideas"
+@page "/admin/ideas"
 @attribute [Authorize(Roles = "Admin")]
 @inject IdeaDataAccess DataAccess
 @inject Statuses state
-@rendermode InteractiveServer
 @inject IToastService ToastService
 <PageTitle>Admin - Ideas</PageTitle>
 <h5>Ideas</h5>
