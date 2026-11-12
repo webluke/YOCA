@@ -36,10 +36,16 @@ public class ProjectDataAccess
 
             foreach (var project in projects)
             {
-                project.Boards = boards.Where(b => b.ProjectId == project.Id).ToList();
+                project.Boards = boards
+                    .Where(b => b.ProjectId == project.Id)
+                    .OrderBy(b => b.Order)
+                    .ToList();
                 foreach (var board in project.Boards)
                 {
-                    board.Tasks = tasks.Where(t => t.BoardId == board.Id).ToList();
+                    board.Tasks = tasks
+                        .Where(t => t.BoardId == board.Id)
+                        .OrderBy(t => t.Order)
+                        .ToList();
                 }
             }
 
@@ -57,10 +63,16 @@ public class ProjectDataAccess
 
             foreach (var project in projects)
             {
-                project.Boards = boards.Where(b => b.ProjectId == project.Id).ToList();
+                project.Boards = boards
+                    .Where(b => b.ProjectId == project.Id)
+                    .OrderBy(b => b.Order)
+                    .ToList();
                 foreach (var board in project.Boards)
                 {
-                    board.Tasks = tasks.Where(t => t.BoardId == board.Id).ToList();
+                    board.Tasks = tasks
+                        .Where(t => t.BoardId == board.Id)
+                        .OrderBy(t => t.Order)
+                        .ToList();
                 }
             }
 

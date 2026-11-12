@@ -40,7 +40,7 @@
                 @foreach (var board in p.Boards)
                 {
                     <FluentGridItem xs="12" sm="6" md="4">
-                        <FluentCard Height="auto">
+                        <FluentCard Height="auto" Class="kanban-board">
                             <FluentToolbar style="width:100%">
                                 <div role="status" style="height: 100%; vertical-align: middle; padding: 10px 10px 0px 10px; border: 2px solid gray; border-radius: 5px; color: @board.Color; background-color: @board.BackgroundColor;" slot="start">
                                     <h5><i class="@board.Icon" />&nbsp;&nbsp;@board.Title</h5>
@@ -50,34 +50,55 @@
                                 <FluentButton Color="Color.Error" OnClick="e => DeleteBoard(e, board)" IconEnd="@(FontAwesome.Icon("fas fa-trash"))" slot="end"></FluentButton>
                             </FluentToolbar>
                             <hr />
-                            <FluentStack Orientation="Orientation.Vertical">
-
-                                    @foreach (var task in board.Tasks.OrderBy(t => t.Order))
-                                    {
-                                        <FluentCard style="margin-bottom: 4px;">
-                                            <FluentToolbar style="width:100%">
-                                                <h5>@task.Title</h5>
-                                                <FluentButton OnClick="e => UpdateTask(e, task.Id)"
+                            <div class="kanban-dropzone">
+                                @if (board.Tasks.Count == 0)
+                                {
+                                    <div class="kanban-empty-hint">Drop tasks here</div>
+                                }
+                                <FluentSortableList TItem="ProjectTaskModel"
+                                                    Id="@BoardListDomId(board.Id)"
+                                                    Group="@($"project-{p.Id}")"
+                                                    Items="@board.Tasks"
+                                                    Handle="true"
+                                                    Fallback="true"
+                                                    OnUpdate="@(args => OnTaskReorderAsync(args, board))"
+                                                    OnRemove="@(args => OnTaskMoveAsync(args, p, board))"
+                                                    ListBorderWidth="0"
+                                                    ListBorderColor="transparent"
+                                                    ListItemBorderWidth="0"
+                                                    ListItemBackgroundColor="transparent"
+                                                    ListItemPadding="0"
+                                                    ListPadding="0"
+                                                    ListItemSpacing="4px"
+                                                    ListItemHeight="auto"
+                                                    Style="min-height: 140px;">
+                                    <ItemTemplate>
+                                        <div class="sortable-item-content" style="width: 100%;">
+                                            <FluentCard>
+                                                <FluentToolbar style="width:100%">
+                                                    <h5>@context.Title</h5>
+                                                    <FluentButton OnClick="e => UpdateTask(e, context.Id)"
                                                                   IconEnd="@(FontAwesome.Icon("fas fa-file-pen"))"
                                                                   slot="end"></FluentButton>
-                                                <FluentButton Color="Color.Error"
-                                                                  OnClick="e => DeleteTask(e, task)"
+                                                    <FluentButton Color="Color.Error"
+                                                                  OnClick="e => DeleteTask(e, context)"
                                                                   IconEnd="@(FontAwesome.Icon("fas fa-trash"))"
                                                                   slot="end"></FluentButton>
-                                            </FluentToolbar>
-                                            <hr />
-                                            @((MarkupString)MarkdownService.Parse(task.Description))
-                                        </FluentCard>
-                                    }
-                                    @if (board.Tasks.Count == 0)
-                                    {
-                                        <FluentCard style="width:100%">
-                                            <FluentToolbar>
-                                                <h5>No Tasks</h5>
-                                            </FluentToolbar>
-                                        </FluentCard>
-                                    }
-                                </FluentStack>
+                                                    <div class="sortable-grab" slot="end" title="Drag task">
+                                                        <FluentButton IconEnd="@(FontAwesome.Icon("fas fa-dolly"))"
+                                                                      AriaLabel="Drag task"></FluentButton>
+                                                    </div>
+                                                </FluentToolbar>
+                                                @if (!string.IsNullOrWhiteSpace(context.Description))
+                                                {
+                                                    <hr />
+                                                    @((MarkupString)MarkdownService.Parse(context.Description))
+                                                }
+                                            </FluentCard>
+                                        </div>
+                                    </ItemTemplate>
+                                </FluentSortableList>
+                            </div>
                         </FluentCard>
                     </FluentGridItem>
                 }
@@ -94,8 +115,9 @@
 
 @code {
     [Inject] private IDialogService DialogService { get; set; } = default!;
-    private IEnumerable<ProjectModel>? projectItems { get; set; }
+    private List<ProjectModel>? projectItems { get; set; }
     private string? _highlightedContentKey;
+    private readonly SemaphoreSlim _persistLock = new(1, 1);
 
     protected override async Task OnInitializedAsync()
     {
@@ -104,17 +126,159 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var key = projectItems?.Count().ToString() ?? "0";
-        if (firstRender || key != _highlightedContentKey)
+        if (firstRender)
         {
-            _highlightedContentKey = key;
+            _highlightedContentKey = projectItems?.Count.ToString();
             await JS.InvokeVoidAsync("highlightCode");
         }
     }
 
+    private static string BoardListDomId(string boardId) => $"board-{boardId}";
+
+    private static string? ParseBoardId(string? listDomId)
+    {
+        if (string.IsNullOrWhiteSpace(listDomId))
+        {
+            return null;
+        }
+
+        const string prefix = "board-";
+        return listDomId.StartsWith(prefix, StringComparison.Ordinal)
+            ? listDomId[prefix.Length..]
+            : listDomId;
+    }
+
     private async Task RefreshData()
     {
-        projectItems = await projectData.GetAllAdminWithTasks();
+        var projects = await projectData.GetAllAdminWithTasks();
+        projectItems = projects.ToList();
+        foreach (var project in projectItems)
+        {
+            project.Boards ??= [];
+            foreach (var board in project.Boards)
+            {
+                board.Tasks ??= [];
+            }
+        }
+    }
+
+    private async Task OnTaskReorderAsync(FluentSortableListEventArgs args, ProjectBoardModel board)
+    {
+        if (args is null || args.OldIndex == args.NewIndex)
+        {
+            return;
+        }
+
+        // Ignore overlapping drags while a save is in flight (prevents list thrash).
+        if (!await _persistLock.WaitAsync(0))
+        {
+            ToastService.ShowWarning("Still saving the previous move — try again in a moment.");
+            return;
+        }
+
+        try
+        {
+            if (args.OldIndex < 0 || args.OldIndex >= board.Tasks.Count)
+            {
+                return;
+            }
+
+            var item = board.Tasks[args.OldIndex];
+            board.Tasks.RemoveAt(args.OldIndex);
+            InsertAt(board.Tasks, args.NewIndex, item);
+
+            await PersistBoardsCoreAsync([board], $"Saved order for '{item.Title}'.");
+        }
+        finally
+        {
+            _persistLock.Release();
+        }
+    }
+
+    private async Task OnTaskMoveAsync(FluentSortableListEventArgs args, ProjectModel project, ProjectBoardModel fromBoard)
+    {
+        if (args is null)
+        {
+            return;
+        }
+
+        if (!await _persistLock.WaitAsync(0))
+        {
+            ToastService.ShowWarning("Still saving the previous move — try again in a moment.");
+            return;
+        }
+
+        try
+        {
+            if (args.OldIndex < 0 || args.OldIndex >= fromBoard.Tasks.Count)
+            {
+                return;
+            }
+
+            var toBoardId = ParseBoardId(args.ToListId);
+            var toBoard = project.Boards.FirstOrDefault(b => b.Id == toBoardId);
+            if (toBoard is null || toBoard.Id == fromBoard.Id)
+            {
+                ToastService.ShowError("Could not determine the target board for that move.");
+                await RefreshData();
+                return;
+            }
+
+            var item = fromBoard.Tasks[args.OldIndex];
+            fromBoard.Tasks.RemoveAt(args.OldIndex);
+            item.BoardId = toBoard.Id;
+            InsertAt(toBoard.Tasks, args.NewIndex, item);
+
+            await PersistBoardsCoreAsync(
+                [fromBoard, toBoard],
+                $"Moved '{item.Title}' to '{toBoard.Title}'.");
+        }
+        finally
+        {
+            _persistLock.Release();
+        }
+    }
+
+    private static void InsertAt(List<ProjectTaskModel> tasks, int index, ProjectTaskModel item)
+    {
+        if (index < 0 || index >= tasks.Count)
+        {
+            tasks.Add(item);
+        }
+        else
+        {
+            tasks.Insert(index, item);
+        }
+    }
+
+    private async Task PersistBoardsCoreAsync(IEnumerable<ProjectBoardModel> boards, string successMessage)
+    {
+        try
+        {
+            foreach (var board in boards)
+            {
+                for (var i = 0; i < board.Tasks.Count; i++)
+                {
+                    var task = board.Tasks[i];
+                    var order = i + 1;
+                    if (task.Order == order && task.BoardId == board.Id)
+                    {
+                        continue;
+                    }
+
+                    task.Order = order;
+                    task.BoardId = board.Id;
+                    await taskData.Update(task);
+                }
+            }
+
+            ToastService.ShowSuccess(successMessage);
+        }
+        catch (Exception)
+        {
+            ToastService.ShowError("Failed to save task changes. Reloading boards.");
+            await RefreshData();
+        }
     }
 
     private async Task InitBoards(string projectId)
