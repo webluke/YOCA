@@ -3,13 +3,14 @@
 
 @code {
     [Parameter]
-    public string InColor { get; set; }
+    public string InColor { get; set; } = string.Empty;
     [Parameter]
     public EventCallback<string> ReturnedColor { get; set; }
 
     private void UpdateIt(ChangeEventArgs e)
     {
-        InColor = e.Value.ToString();
+        // Color input Value is always a string when the change event fires.
+        InColor = e.Value!.ToString()!;
         ReturnedColor.InvokeAsync(InColor);
     }
 

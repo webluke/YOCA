@@ -22,7 +22,7 @@ public class MarkdigService : IMarkdownService
         _sanitizer = CreateSanitizer();
     }
 
-    public string Parse(string markdown)
+    public string Parse(string? markdown)
     {
         if (string.IsNullOrEmpty(markdown))
         {

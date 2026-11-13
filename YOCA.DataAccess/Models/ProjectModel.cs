@@ -2,17 +2,17 @@
 
 public class ProjectModel
 {
-    public string Id { get; set; }
+    public string Id { get; set; } = string.Empty;
     public int Order { get; set; }
     public int Status { get; set; }
     public DateOnly StartDate { get; set; }
     public DateOnly EndDate { get; set; }
     [Required(ErrorMessage = "Please enter a title"), MaxLength(150)]
-    public string Title { get; set; }
-    public string Description { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string? Description { get; set; }
     public DateTime TimeCreated { get; set; }
     public DateTime TimeUpdated { get; set; }
     public int ViewCount { get; set; }
 
-    public List<ProjectBoardModel> Boards { get; set; }
+    public List<ProjectBoardModel> Boards { get; set; } = [];
 }

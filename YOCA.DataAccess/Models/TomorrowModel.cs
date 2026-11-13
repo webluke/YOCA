@@ -5,7 +5,7 @@ public class TomorrowModel
     private DateOnly date;
     private int day;
 
-    public string Id { get; set; }
+    public string Id { get; set; } = string.Empty;
     public int Day
     {
         get { return day + 1; }

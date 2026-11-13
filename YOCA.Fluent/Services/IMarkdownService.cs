@@ -2,5 +2,5 @@
 
 public interface IMarkdownService
 {
-    string Parse(string markdown);
+    string Parse(string? markdown);
 }

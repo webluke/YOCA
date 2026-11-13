@@ -20,8 +20,9 @@ builder.Services.AddCascadingAuthenticationState();
 // (http://schemas.microsoft.com/ws/2008/06/identity/claims/role).
 builder.Services.AddAuth0WebAppAuthentication(options =>
 {
-    options.Domain = builder.Configuration["Auth0:Domain"];
-    options.ClientId = builder.Configuration["Auth0:ClientId"];
+    // Non-Development startup validates Domain/ClientId below; Development may use empty placeholders.
+    options.Domain = builder.Configuration["Auth0:Domain"]!;
+    options.ClientId = builder.Configuration["Auth0:ClientId"]!;
     options.ClientSecret = builder.Configuration["Auth0:ClientSecret"];
 });
 

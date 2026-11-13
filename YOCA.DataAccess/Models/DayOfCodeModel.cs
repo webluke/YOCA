@@ -2,7 +2,7 @@
 
 public class DayOfCodeModel
 {
-    public string Id { get; set; }
+    public string Id { get; set; } = string.Empty;
     public int Day { get; set; }
     public DateOnly Date { get; set; }
     public string? Goal { get; set; }
