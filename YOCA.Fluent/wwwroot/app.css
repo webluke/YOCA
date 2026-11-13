@@ -28,16 +28,29 @@ fluent-layout,
     display: none;
 }
 
-/* Size to menu content; scroll only when links exceed the main pane. */
+/* Size to menu content; scroll vertically or horizontally when needed.
+   Avoid a fixed px width so the scrollbar cannot clip nav buttons/arrows. */
 .navmenu {
     align-self: flex-start;
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 100%;
     max-height: 100%;
-    overflow-x: hidden;
+    overflow-x: auto;
     overflow-y: auto;
 }
 
 nav.sitenav {
     height: auto;
+    width: max-content;
+    max-width: 100%;
+}
+
+/* Fluent defaults expanded width to 100% when Width is unset; keep content-sized
+   so collapse can still apply its inline 40px width via the .collapsed class. */
+#main-menu.fluent-nav-menu:not(.collapsed) {
+    width: max-content !important;
+    box-sizing: border-box;
 }
 
 .main {
@@ -229,7 +242,8 @@ code {
         height: auto;
     }
 
-    #main-menu {
+    #main-menu,
+    #main-menu.fluent-nav-menu:not(.collapsed) {
         width: 100% !important;
     }
 
